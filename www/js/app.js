@@ -56,6 +56,15 @@ var starter = angular.module('starter', [ 'ionic', 'starter.controllers' ])
       }
     }
   })
+  .state('app.newtrip',{
+    url: "/newtrip",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/newTrip.html",
+        controller: 'NewTripCtrl'
+      }
+    }
+  })
     .state('app.playlists', {
       url: "/playlists",
       views: {
