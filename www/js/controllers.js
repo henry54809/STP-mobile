@@ -59,6 +59,37 @@ angular.module('starter.controllers', [])
   ];
 })
 
+.controller('friendsCtrl', function($scope,$location) {
+  $scope.friends = [
+    { name: 'Reggae', id: 1, face: "assets/pic1.jpg"},
+    { name: 'Chill', id: 2, face: "assets/pic2.jpg" },
+    { name: 'Dubstep', id: 3, face: "assets/pic3.jpg" },
+    { name: 'Indie', id: 4, face: "assets/pic4.jpg" },
+    { name: 'Rap', id: 5, face: "assets/pic5.jpg" },
+    { name: 'Cowbell', id: 6, face: "assets/pic6.jpg" }
+  ];
+
+  $scope.addFriend = function() {
+    $location.path('app/addFriend');
+  }
+})
+
+.controller('addFriendCtrl', function($scope,$stateParams) {
+    $scope.friends = [
+    { name: 'Reggae', id: 1, face: "assets/pic1.jpg"},
+    { name: 'Chill', id: 2, face: "assets/pic2.jpg" },
+    { name: 'Dubstep', id: 3, face: "assets/pic3.jpg" },
+    { name: 'Indie', id: 4, face: "assets/pic4.jpg" },
+    { name: 'Rap', id: 5, face: "assets/pic5.jpg" },
+    { name: 'Cowbell', id: 6, face: "assets/pic6.jpg" }
+  ];
+
+    $scope.sendRequest = function(friend) {
+      alert("test request!");
+      $scope.isDisable = true;
+    }
+})
+
 .controller('mytripCtrl', function($scope) {
   $scope.shouldShowReorder = true;
   $scope.data = {
