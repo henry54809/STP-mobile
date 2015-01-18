@@ -59,5 +59,79 @@ angular.module('starter.controllers', [])
   ];
 })
 
+.controller('mytripCtrl', function($scope) {
+  $scope.shouldShowReorder = true;
+  $scope.data = {
+    showDelete: false
+  };
+  
+  $scope.edit = function(item) {
+    alert('Edit Item: ' + item.id);
+  };
+  $scope.share = function(item) {
+    alert('Share Item: ' + item.id);
+  };
+  
+  $scope.moveItem = function(item, fromIndex, toIndex) {
+    $scope.items.splice(fromIndex, 1);
+    $scope.items.splice(toIndex, 0, item);
+  };
+  
+  
+$scope.onItemDelete = function(item) {
+    $scope.items.splice($scope.items.indexOf(item), 1);
+  };
+
+  $scope.items = [
+    {
+      title:"My trip to HK" , 
+      description:"Start at Jan",
+      img: "assets/pic13.jpg"
+    },
+    {
+      title:"My trip to Japan" , 
+      description:"Start at Feb",
+      img: "assets/pic10.jpg"
+    },
+    {
+      title:"My trip to Japan" , 
+      description:"Start at Feb",
+      img: "assets/pic10.jpg"
+    },
+    {
+      title:"My trip to Japan" , 
+      description:"Start at Feb",
+      img: "assets/pic10.jpg"
+    },
+    {
+      title:"My trip to Japan" , 
+      description:"Start at Feb",
+      img: "assets/pic10.jpg"
+    },
+    {
+      title:"My trip to Japan" , 
+      description:"Start at Feb",
+      img: "assets/pic10.jpg"
+    },
+    {
+      title:"My trip to Japan" , 
+      description:"Start at Feb",
+      img: "assets/pic10.jpg"
+    },
+    {
+      title:"My trip to Japan" , 
+      description:"Start at Feb",
+      img: "assets/pic10.jpg"
+    },
+    {
+      title:"My trip to Japan" , 
+      description:"Start at Feb",
+      img: "assets/pic10.jpg"
+    }
+  ];
+})
+
+
+
 .controller('PlaylistCtrl', function($scope, $stateParams) {
 });
