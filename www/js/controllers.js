@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, accountService) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
   // Form data for the login modal
   $scope.loginData = {};
 
@@ -25,21 +25,6 @@ angular.module('starter.controllers', [])
   $scope.doLogin = function() {
     console.log('Doing login', $scope.loginData);
 
-    //console.log(1234);
-        var userName = $scope.loginData.username;
-        console.log(userName);
-        var pw = $scope.loginData.password;
-        if (typeof userName == 'undefined') {
-            alert("Username is empty");
-            return
-        }
-        if (typeof pw == 'undefined') {
-            alert("Password is empty");
-            return
-        }
-
-        accountService.logIn(JSON.stringify($scope.loginData));
-
     // Simulate a login delay. Remove this and replace with your login
     // code if using a login system
     $timeout(function() {
@@ -61,27 +46,6 @@ angular.module('starter.controllers', [])
 
 .controller('mytripCtrl', function($scope) {
   $scope.shouldShowReorder = true;
-  $scope.data = {
-    showDelete: false
-  };
-  
-  $scope.edit = function(item) {
-    alert('Edit Item: ' + item.id);
-  };
-  $scope.share = function(item) {
-    alert('Share Item: ' + item.id);
-  };
-  
-  $scope.moveItem = function(item, fromIndex, toIndex) {
-    $scope.items.splice(fromIndex, 1);
-    $scope.items.splice(toIndex, 0, item);
-  };
-  
-  
-$scope.onItemDelete = function(item) {
-    $scope.items.splice($scope.items.indexOf(item), 1);
-  };
-
   $scope.items = [
     {
       title:"My trip to HK" , 
@@ -129,6 +93,12 @@ $scope.onItemDelete = function(item) {
       img: "assets/pic10.jpg"
     }
   ];
+})
+.controller('tripCtrl', function($scope) {
+  $scope.showSearchBar = false;
+  $scope.search = function() {
+    $scope.showSearchBar = true;
+  };
 })
 
 

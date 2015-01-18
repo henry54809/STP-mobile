@@ -1,48 +1,41 @@
 <ion-view view-title="My Trip">
+    <ion-nav-buttons side="right">
+        <a class="button button-icon icon ion-search"></a>
+        <a class="button button-icon icon ion-plus"></a>
+    </ion-nav-buttons>
+    
+    <ion-tabs class=" tabs-icon-top tabs-color-active-positive">
+        <!-- Dashboard Tab -->
+        <ion-tab title="My Trip" icon-off="ion-android-car" icon-on="ion-android-car" >
+            <ion-nav-view name="tab-dash">
+                <ion-content has-tabs="true">
+                <ion-list ng-controller="mytripCtrl">
+                    <ion-item ng-repeat="item in items"
+                    class="item-thumbnail-left">
+                        <img ng-src="{{item.img}}">
+                        <h2>{{item.title}}</h2>
+                        <p>{{item.description}}</p>
+                    </ion-item>
+                </ion-list>
+                </ion-content>
+            </ion-nav-view>
+        </ion-tab>
 
-<ion-tabs class="tabs-icon-only tabs-color-active-positive">
-
-
-  <!-- Dashboard Tab -->
-  <ion-tab title="Status" icon-off="ion-ios7-pulse" icon-on="ion-ios7-pulse-strong" href="#">
-    <ion-nav-view name="tab-dash"></ion-nav-view>
-  </ion-tab>
-
-
-  <!-- Chats Tab -->
-  <ion-tab title="Chats" icon-off="ion-ios7-chatboxes-outline" icon-on="ion-ios7-chatboxes" href="#">
-    <ion-nav-view name="tab-chats"></ion-nav-view>
-  </ion-tab>
-
-  <!-- Friends Tab -->
-  <ion-tab title="Friends" icon-off="ion-ios7-heart-outline" icon-on="ion-ios7-heart" href="#">
-    <ion-nav-view name="tab-friends"></ion-nav-view>
-  </ion-tab>
-
-
-  <!-- Account Tab -->
-  <ion-tab title="Account" icon-off="ion-ios7-gear-outline" icon-on="ion-ios7-gear" href="#">
-    <ion-nav-view name="tab-account">
-  <ion-content has-tabs="true">
-<ion-list ng-controller="mytripCtrl">
-  <ion-item ng-repeat="item in items"
-            class="item-thumbnail-left">
-    <img ng-src="{{item.img}}">
-    <h2>{{item.title}}</h2>
-    <p>{{item.description}}</p>
-  </ion-item>
-</ion-list>
-</ion-content></ion-nav-view>
-  </ion-tab>
+        <!-- Friends Tab -->
+        <ion-tab title="My Favorites" icon-off="ion-ios7-heart-outline" icon-on="ion-ios7-heart" >
+            <ion-nav-view name="tab-friends">
+                <div class="bar bar-subheader">
+                  <h2 class="title">Sub Header</h2>
+                </div>
+                <ion-content class="has-subheader"> </ion-content>    
+            </ion-nav-view>
+        </ion-tab>
 
 
-</ion-tabs>
-
-
-
-
-
-
-
-
+        <!-- Account Tab -->
+        <ion-tab title="My Shares" icon-off="ion-android-share-alt" icon-on="ion-android-share-alt" >
+            <ion-nav-view name="tab-account">
+            </ion-nav-view>
+        </ion-tab>
+    </ion-tabs>
 </ion-view>
