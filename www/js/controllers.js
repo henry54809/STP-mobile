@@ -1,5 +1,63 @@
 angular.module('starter.controllers', [])
 
+.factory('myTrips', function($rootScope) {
+    console.log(myTrips);
+    if (myTrips == undefined) {
+      var myTrips = [
+    {
+      title:"My trip to HK" , 
+      description:"Start at Jan",
+      img: "assets/pic13.jpg"
+    },
+    {
+      title:"My trip to Japan" , 
+      description:"Start at Feb",
+      img: "assets/pic10.jpg"
+    },
+    {
+      title:"My trip to Japan" , 
+      description:"Start at Feb",
+      img: "assets/pic10.jpg"
+    },
+    {
+      title:"My trip to Japan" , 
+      description:"Start at Feb",
+      img: "assets/pic10.jpg"
+    },
+    {
+      title:"My trip to Japan" , 
+      description:"Start at Feb",
+      img: "assets/pic10.jpg"
+    },
+    {
+      title:"My trip to Japan" , 
+      description:"Start at Feb",
+      img: "assets/pic10.jpg"
+    },
+    {
+      title:"My trip to Japan" , 
+      description:"Start at Feb",
+      img: "assets/pic10.jpg"
+    },
+    {
+      title:"My trip to Japan" , 
+      description:"Start at Feb",
+      img: "assets/pic10.jpg"
+    },
+    {
+      title:"My trip to Japan" , 
+      description:"Start at Feb",
+      img: "assets/pic10.jpg"
+    }
+  ];
+    console.log("initiated");
+    }
+    
+
+    return myTrips;
+})
+
+
 .controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, accountService) {
   // Form data for the login modal
   $scope.loginData = {};
@@ -59,7 +117,7 @@ angular.module('starter.controllers', [])
   ];
 })
 
-.controller('mytripCtrl', function($scope) {
+.controller('mytripCtrl', function($scope, myTrips) {
   $scope.shouldShowReorder = true;
   $scope.data = {
     showDelete: false
@@ -82,56 +140,42 @@ $scope.onItemDelete = function(item) {
     $scope.items.splice($scope.items.indexOf(item), 1);
   };
 
-  $scope.items = [
-    {
-      title:"My trip to HK" , 
-      description:"Start at Jan",
-      img: "assets/pic13.jpg"
-    },
-    {
-      title:"My trip to Japan" , 
-      description:"Start at Feb",
-      img: "assets/pic10.jpg"
-    },
-    {
-      title:"My trip to Japan" , 
-      description:"Start at Feb",
-      img: "assets/pic10.jpg"
-    },
-    {
-      title:"My trip to Japan" , 
-      description:"Start at Feb",
-      img: "assets/pic10.jpg"
-    },
-    {
-      title:"My trip to Japan" , 
-      description:"Start at Feb",
-      img: "assets/pic10.jpg"
-    },
-    {
-      title:"My trip to Japan" , 
-      description:"Start at Feb",
-      img: "assets/pic10.jpg"
-    },
-    {
-      title:"My trip to Japan" , 
-      description:"Start at Feb",
-      img: "assets/pic10.jpg"
-    },
-    {
-      title:"My trip to Japan" , 
-      description:"Start at Feb",
-      img: "assets/pic10.jpg"
-    },
-    {
-      title:"My trip to Japan" , 
-      description:"Start at Feb",
-      img: "assets/pic10.jpg"
-    }
-  ];
+  $scope.items = myTrips;
 })
 
+.controller('NewTripCtrl', function($scope, $ionicModal, $timeout, myTrips) {
+  // Form data for the login modal
+  $scope.myTripsData = {};
 
+  // Create the login modal that we will use later
+  $ionicModal.fromTemplateUrl('templates/newTrip.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.modal = modal;
+  }); 
+
+  // Triggered in the login modal to close it
+  $scope.closeAdd = function() {
+    $scope.modal.hide();
+  };
+
+  // Open the login modal
+  $scope.add = function() {
+    $scope.modal.show();
+  };
+
+  // Perform the login action when the user submits the login form
+  $scope.doAdd = function() {
+    console.log('Doing add', $scope.myTripsData);
+    myTrips.push({title: $scope.myTripsData.title, description: $scope.myTripsData.description, img: ""});
+    console.log(myTrips[myTrips.length - 1]);
+    // Simulate a login delay. Remove this and replace with your login
+    // code if using a login system
+    $timeout(function() {
+      $scope.closeAdd();
+    }, 1000);
+  };
+})
 
 .controller('PlaylistCtrl', function($scope, $stateParams) {
 });
