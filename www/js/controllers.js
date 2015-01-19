@@ -119,14 +119,32 @@ angular.module('starter.controllers', [])
     { title: 'Cowbell', id: 6 }
   ];
 })
-
-.controller('mytripCtrl', function($scope, myTrips) {
+.controller('friendtripCtrl', function($scope,myTrips){
+  $scope.items = myTrips;
+  // $scope.$on('showHeader',function(arg){
+  //   $scope.showHeader=arg;
+  //   $scope.apply();
+  //   
+  // });
+$scope.hideSearch = function() {
+    $scope.showHeader = false;
+    console.log("hide!")
+  };
+  
+})
+.controller('mytripCtrl', function($scope, myTrips,$filter) {
   $scope.items = myTrips;
 })
 .controller('tripCtrl', function($scope) {
-  $scope.showSearchBar = false;
-  $scope.search = function() {
-    $scope.showSearchBar = true;
+  $scope.showHeader = false;
+  $scope.toggleSearch = function() {
+    $scope.showHeader = !$scope.showHeader;
+
+    // $scope.$broadcast('showHeader', $scope.showHeader);
+  };
+
+  $scope.hideSearch = function() {
+    $scope.showHeader = false;
   };
 })
 
@@ -146,6 +164,8 @@ angular.module('starter.controllers', [])
     $location.path("app/mytrip");
   };
 })
+
+
 
 .controller('PlaylistCtrl', function($scope, $stateParams) {
 });
