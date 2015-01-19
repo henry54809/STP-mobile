@@ -165,6 +165,7 @@ $scope.hideSearch = function() {
   };
 })
 
+
 .controller('friendsCtrl', function($scope,$location) {
   $scope.friends = [
     { name: 'Reggae', id: 1, face: "assets/pic1.jpg"},
@@ -195,6 +196,7 @@ $scope.hideSearch = function() {
       $scope.isDisable = true;
     }
 })
+
 
 .controller('PlaylistCtrl', function($scope, $stateParams) {
 });
