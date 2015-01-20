@@ -47,6 +47,25 @@ var starter = angular.module('starter', [ 'ionic', 'starter.controllers' ])
       }
     }
   })
+  .state('app.friends', {
+    url: '/friends',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/friends.html',
+        controller: 'friendsCtrl'
+      }
+    }
+  })
+  .state('app.addFriend', {
+    url: "/addFriend",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/addFriend.html",
+        controller: 'addFriendCtrl'
+      }
+    }
+  })
+
   .state('app.mytrip',{
     url: "/mytrip",
     views: {
