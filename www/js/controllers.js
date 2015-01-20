@@ -143,7 +143,9 @@ $scope.hideSearch = function() {
     // $scope.$broadcast('showHeader', $scope.showHeader);
   };
 
-  $scope.hideSearch = function() {
+  $scope.cancelSearch = function() {
+    $scope.searchQuery= undefined;
+    console.log("cancelled!")
     $scope.showHeader = false;
   };
 })

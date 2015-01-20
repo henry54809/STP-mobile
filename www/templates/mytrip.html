@@ -6,39 +6,56 @@
     
     <ion-tabs class=" tabs-icon-top tabs-color-active-positive" >
         <!-- Dashboard Tab -->
-        <ion-tab title="My Trip" icon-off="ion-android-car" icon-on="ion-android-car" on-select="hideSearch()">
+        <ion-tab title="My Trip" icon-off="ion-android-car" icon-on="ion-android-car" on-select="cancelSearch()">
             <ion-nav-view name="tab-dash">
                 <div class="bar bar-subheader item-input-inset" ng-show="showHeader" >
                           <label class="item-input-wrapper">
                             <i class="icon ion-ios7-search placeholder-icon"></i>
                             <input type="search" placeholder="Search" ng-model="searchQuery">
                           </label>
-                          <button class="button button-clear" ng-click="toggleSearch()">
+                          <button class="button button-clear" ng-click="cancelSearch()">
                             Cancel
                           </button>
                 </div>
                 <ion-content ng-class="{'has-subheader': showHeader}">
-                <ion-list ng-controller="mytripCtrl">
+                <div class="list card" ng-repeat="item in items|filter:searchQuery">
+                  <div class="item item-avatar">
+                    <img ng-src="{{item.img}}">
+                    <h2>{{item.title}}</h2>
+                    <p>{{item.description}}</p>
+                  </div>
+
+                  <div class="item item-image">
+                    <img src="{{item.img}}">
+                  </div>
+<!-- 
+                  <a class="item item-icon-left assertive" href="#">
+                    <i class="icon ion-music-note"></i>
+                    Start listening
+                  </a>
+ -->
+                </div>
+                <!-- <ion-list ng-controller="mytripCtrl">
                     <ion-item ng-repeat="item in items|filter:searchQuery"
                     class="item-thumbnail-left">
                         <img ng-src="{{item.img}}">
                         <h2>{{item.title}}</h2>
                         <p>{{item.description}}</p>
                     </ion-item>
-                </ion-list>
+                </ion-list> -->
                 </ion-content>
             </ion-nav-view>
         </ion-tab>
 
         <!-- Friends Tab -->
-        <ion-tab title="My Favorites" icon-off="ion-ios7-heart-outline" icon-on="ion-ios7-heart" on-select="hideSearch()" >
+        <ion-tab title="My Favorites" icon-off="ion-ios7-heart-outline" icon-on="ion-ios7-heart" on-select="cancelSearch()" >
             <ion-nav-view name="tab-friends" ng-controller="friendtripCtrl">
                 <div class="bar bar-subheader item-input-inset" ng-show="showHeader">
                       <label class="item-input-wrapper">
                         <i class="icon ion-ios7-search placeholder-icon"></i>
                         <input type="search" placeholder="Search" ng-model="searchQuery">
                       </label>
-                      <button class="button button-clear" ng-click="toggleSearch()">
+                      <button class="button button-clear" ng-click="cancelSearch()">
                         Cancel
                       </button>
                 </div>
@@ -57,7 +74,7 @@
 
 
         <!-- Account Tab -->
-        <ion-tab title="My Shares" icon-off="ion-android-share-alt" icon-on="ion-android-share-alt" on-select="hideSearch()">
+        <ion-tab title="My Shares" icon-off="ion-android-share-alt" icon-on="ion-android-share-alt" on-select="cancelSearch()">
             <ion-nav-view name="tab-account">
             </ion-nav-view>
         </ion-tab>
