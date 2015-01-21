@@ -4,10 +4,11 @@
         <a class="button button-icon icon ion-plus " href="#/app/newtrip"></a>
     </ion-nav-buttons>
     
-    <ion-tabs class=" tabs-icon-top tabs-color-active-positive" >
+    <ion-tabs class=" tabs-top tabs-icon-only tabs-color-active-positive" >
         <!-- Dashboard Tab -->
         <ion-tab title="My Trip" icon-off="ion-android-car" icon-on="ion-android-car" on-select="cancelSearch()">
             <ion-nav-view name="tab-dash">
+                 <div class="bar bar-subheader item-input-inset" style="margin-bottom:10px"></div>
                 <div class="bar bar-subheader item-input-inset" ng-show="showHeader" >
                           <label class="item-input-wrapper">
                             <i class="icon ion-ios7-search placeholder-icon"></i>
@@ -20,13 +21,15 @@
                 <ion-content ng-class="{'has-subheader': showHeader}">
                 <div class="list card" ng-repeat="item in items|filter:searchQuery">
                   <div class="item item-avatar">
-                    <img ng-src="{{item.img}}">
+                    <img  ng-src="{{item.img}}">
                     <h2>{{item.title}}</h2>
                     <p>{{item.description}}</p>
                   </div>
 
                   <div class="item item-image">
-                    <img src="{{item.img}}">
+                    <div style="height:200px;width:100% overflow:hidden" >
+                    <img style="position:relative; top:-25%" src="{{item.img}}">
+                    `</div>
                   </div>
 <!-- 
                   <a class="item item-icon-left assertive" href="#">
@@ -50,6 +53,7 @@
         <!-- Friends Tab -->
         <ion-tab title="My Favorites" icon-off="ion-ios7-heart-outline" icon-on="ion-ios7-heart" on-select="cancelSearch()" >
             <ion-nav-view name="tab-friends" ng-controller="friendtripCtrl">
+            <div class="bar bar-subheader item-input-inset" style="margin-bottom:10px"></div>
                 <div class="bar bar-subheader item-input-inset" ng-show="showHeader">
                       <label class="item-input-wrapper">
                         <i class="icon ion-ios7-search placeholder-icon"></i>
