@@ -94,7 +94,7 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
     }
   })
   .state('app.placeFinder',{
-    url: "/placeFinder/:itineraryID",
+    url: "/placefinder/:itineraryID",
     views: {
       'menuContent': {
         templateUrl: "templates/placeFinder.html",
