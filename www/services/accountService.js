@@ -1,5 +1,5 @@
 
-starter.service('accountService',['$location','$http','$window', function ($location, $http, $window ) {
+stp.service('accountService',['$location','$http','$window', function ($location, $http, $window ) {
 
 
   var loggedInCallbacks = [];

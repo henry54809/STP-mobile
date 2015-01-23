@@ -4,7 +4,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-var starter = angular.module('starter', [ 'ionic', 'starter.controllers' ])
+var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -84,6 +84,26 @@ var starter = angular.module('starter', [ 'ionic', 'starter.controllers' ])
       }
     }
   })
+  .state('app.itinerary',{
+    url: "/itinerary/:itineraryID",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/itinerary.html",
+        controller: 'itineraryCtrl'
+      }
+    }
+  })
+  .state('app.placeFinder',{
+    url: "/placefinder/:itineraryID",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/placeFinder.html",
+        controller: 'placeFinderCtrl'
+      }
+    }
+  })
+
+
     .state('app.playlists', {
       url: "/playlists",
       views: {
