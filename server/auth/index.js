@@ -51,7 +51,7 @@ module.exports = function ( app ) {
 		      			resp.message = "User authenticated.";
 		      			res.json(resp);
 		      		} else {
-		      			res.status(500).json({"message":"Error when establishing a session."});
+		      			return res.status(500).json({"message":"Error when establishing a session."});
 		      		}
 		    	});
 		    });

@@ -57,9 +57,9 @@ var require_authentication = function(req, res, next){
 
 	var callback = function ( session_valid ){
 		console.log("Session valid: " + session_valid);
-		if ( requesting_url  == '/api/auth' && session_valid ){
+		if ( ( requesting_url  == '/api/auth' || requesting_url == '/api/account/create' ) && session_valid ){
 			return res.json({"message":"User authenticated!"});
-		} else if ( requesting_url  != '/api/auth' && !session_valid ){
+		} else if ( requesting_url  != '/api/auth' && requesting_url != '/api/account/create' && !session_valid ){
 			return res.status(401).json({"message":"authentication required"});
 		} else {
 			return next();

@@ -56,30 +56,38 @@ module.exports = function ( app ) {
 	  var first_name = msg.first_name;
 	  var last_name = msg.last_name;
 	  var city = msg.city;
+	  var region = msg.region;
 	  var avatar_url = msg.avatar_url;
 
-		var query = 'select fn_new_entity(\
-											$1,
-											$2,
-											crypt( $3, gen_salt(\'bf\') ) \
-											null, \
-											$3,   \
-											$4,   \
-											fn_new_entity_extra_info(      \
-																		$5,
-																		$6,
-																		$7,
-																		$8,
-																			
-																	)  \
-											'
+		var query = 'select fn_new_entity(             						\
+											$1,        						\
+											$2,        				      	\
+											crypt( $3, gen_salt(\'bf\') ), 	\
+											null, 							\
+											$4,   							\
+											$5,   							\
+											fn_new_entity_extra_info(       \
+																		$6, \
+																		$7, \
+																		$8, \
+																		$9, \
+																		$10,\
+																		$11,\
+																		$12,\
+																		$13,\
+																		$14,\
+																		$15 \
+																	)		\
+										  ) as entity';
 		pg.connect(connectionString, function(err, client, done) {
-		    	client.query( query, [cookies["AuthToken"]], function(err, result) {
+		    	client.query( query, [ 0, username, password, email_address, 1, address_line_one, address_line_two, profession, age, description, first_name, last_name, city, region, avatar_url ], function(err, result) {
 		      		done();
 		      		if ( result.rows[0] ){
-		      			return res.json(result.rows[0]);
+		      			resp.status = "OK";
+		      			resp.message = "Account created.";
+		      			return res.json(result.rows[0].entity);
 		      		} else {
-						return res.status(401).json({"message":"authentication required"});
+						return res.status(500).json({"message":"Error when creating entity."});
 		      		}
 		      	});
 			});
