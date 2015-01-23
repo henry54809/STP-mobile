@@ -79,3 +79,7 @@ require("./account/index")(app);
 var server = app.listen(app.get('port'), function() {
   console.log('Express server listening on port ' + server.address().port);
 });
+
+app.use(function(req, res ){
+     res.status(404).json({"message":"Not supported."});
+});
