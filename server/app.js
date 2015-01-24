@@ -15,8 +15,12 @@ app.use(cookieParser());
 //Connection string for postgres
 global.connectionString = "pg://webuser:8rucShn3t3pew4db@10.0.1.126/stp?ssl=true";
 
+//Constants
+global.OK = "OK";
+global.ERROR = "Error";
+
 var res_headers = function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', 'localhost');
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
  

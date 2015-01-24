@@ -9,7 +9,7 @@ module.exports = function ( app ) {
 	  var msg = req.body;
 	 
 	  if ( !msg || !msg.username || !msg.password ) {
-	    resp.status = "Error";
+	    resp.status = ERROR;
 	    resp.message = "Missing username or password.";
 	    res.json(resp);
 	    return;
@@ -25,7 +25,7 @@ module.exports = function ( app ) {
 	      		}
 
   			    if ( !pk_entity ){
-			   	    resp.status = "Error";
+			   	    resp.status = ERROR;
 			   		resp.message = "Login credentials invalid."; 
 			   		res.json(resp);
 			   		return;
@@ -47,11 +47,13 @@ module.exports = function ( app ) {
 		      		var session_id = result.rows[0].session_id;
 		      		if ( session_id ){
 		      			res.cookie('AuthToken', session_id, {maxAge: 60*24*60});
-		      			resp.status = "OK";
+		      			resp.status = OK;
 		      			resp.message = "User authenticated.";
 		      			res.json(resp);
 		      		} else {
-		      			return res.status(500).json({"message":"Error when establishing a session."});
+		      			resp.status = ERROR;
+		      			resp.message = "Error when establishing a session.";
+		      			return res.status(500).json(resp);
 		      		}
 		    	});
 		    });

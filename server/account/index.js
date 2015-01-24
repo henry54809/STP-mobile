@@ -5,6 +5,7 @@ module.exports = function ( app ) {
 	var router = express.Router();
 	
 	router.get('/', function(req, res){
+		var resp = {};
 		var cookies = req.cookies;
 		var query = 'select e.username, \
 							e.email_address,\
@@ -29,19 +30,21 @@ module.exports = function ( app ) {
 	      		if ( result.rows[0] ){
 	      			return res.json(result.rows[0]);
 	      		} else {
-					return res.status(401).json({"message":"authentication required"});
+	      			resp.status = ERROR;
+	      			resp.message = "authentication required";
+					return res.status(401).json(resp);
 	      		}
 	      	});
 		});
 	});
 
-	router.post('/create', function(req, res, next) {
+	router.post('/', function(req, res, next) {
 	  var resp = {};
 	  var msg = req.body;
 	 
 	  if ( !msg || !msg.username || !msg.password || !msg.email_address ) {
-	    resp.status = "Error";
-	    resp.message = "Missing username or password.";
+	    resp.status = ERROR;
+	    resp.message = "Missing username or passwod or email address.";
 	    return res.json(resp);
 	  }
 	  var username = msg.username;
@@ -80,14 +83,23 @@ module.exports = function ( app ) {
 																	)		\
 										  ) as entity';
 		pg.connect(connectionString, function(err, client, done) {
-		    	client.query( query, [ 0, username, password, email_address, 1, address_line_one, address_line_two, profession, age, description, first_name, last_name, city, region, avatar_url ], function(err, result) {
+		    	client.query( query, [  
+		    							0, 
+		    							username, 
+		    							password, 
+		    							email_address, 1, address_line_one, address_line_two, profession, age, description, first_name, last_name, city, region, avatar_url ], function(err, result) {
 		      		done();
 		      		if ( result.rows[0] ){
-		      			resp.status = "OK";
+		      			resp.status = OK;
 		      			resp.message = "Account created.";
-		      			return res.json(result.rows[0].entity);
+		      			return res.json(resp);
 		      		} else {
-						return res.status(500).json({"message":"Error when creating entity."});
+		      			resp.status = ERROR;
+		      			resp.message = "Error when creating entity.";
+		      			if ( err ){
+		      				console.log(err);
+		      			}
+						return res.status(500).json(resp);
 		      		}
 		      	});
 			});
