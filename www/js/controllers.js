@@ -55,7 +55,8 @@ angular.module('stp.controllers', [])
     return myTrips;
 })
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, accountService) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, $http, accountService) {
+  $scope.loggedIn = false;
   // Form data for the login modal
   $scope.loginData = {};
 
@@ -74,7 +75,16 @@ angular.module('stp.controllers', [])
     $scope.signup_modal = modal;
   });
 
-
+  $scope.logout = function() {
+    $http.post('http://picwo.com:3100/api/auth?logout=true',{},{withCredentials: true}).
+    success(function(data, status, headers, config) {
+      $scope.loggedIn = false;
+      console.log(data, status);
+    }).
+    error(function(data, status, headers, config){
+      console.log(data, status);
+    })
+  }
   // Triggered in the login modal to close it
   $scope.closeLogin = function() {
     $scope.signin_modal.hide();
@@ -86,27 +96,47 @@ angular.module('stp.controllers', [])
   };
 
   $scope.signup = function() {
-    $scope.signin_modal.hide()
-    console.log("redirect to signup");
-    $scope.signup_modal.show();
+    $http.get('http://picwo.com:3100/api/account',{withCredentials: true}).
+    success(function(data, status, headers, config){
+      console.log(data, status);
+    }).
+    error(function(data, status, headers, config){
+      console.log(data, status);
+    })
+
+    // $scope.signin_modal.hide()
+    // console.log("redirect to signup");
+    // $scope.signup_modal.show();
 
   }
 
   $scope.closeSignup = function() {
-     console.log("calling close Signup")
+    console.log("calling close Signup")
     $scope.signup_modal.hide();
   }
 
   // Perform the login action when the user submits the login form
   $scope.doLogin = function() {
-
+    
+    $scope.userInfo = {username:"gallonp"};
     console.log('Doing login', $scope.loginData);
-    $timeout(function() {
-      $scope.closeLogin();
-    }, 1000);
+    $http.post('http://picwo.com:3100/api/auth',$scope.loginData,{withCredentials: true}).
+    success(function(data, status, headers, config){
+        $scope.loggedIn =  true;
+        accountService.logIn($scope.userInfo);
+        console.log(data, status);
+    }).
+    error(function(data, status, headers, config){
+      console.log(data, status);
+    })
+    // $timeout(function() {
+    //   $scope.closeLogin();
+    // }, 1000);
   };
 })
+.controller('loginCtrl', function($scope){
 
+})
 .controller('PlaylistsCtrl', function($scope) {
   $scope.playlists = [
     { title: 'Reggae', id: 1 },

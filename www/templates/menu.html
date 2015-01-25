@@ -14,12 +14,25 @@
 
   <ion-side-menu side="left">
     <ion-header-bar class="bar-stable">
-      <h1 class="title">Left</h1>
+      <h1 class="title">Picwo</h1>
     </ion-header-bar>
     <ion-content>
+      
+
       <ion-list>
-        <ion-item nav-clear menu-close ng-click="login()">
+      <a class="item item-thumbnail-left" href="#" ng-if="loggedIn">
+      <img src="assets/pic17.jpg">
+      <h2>{{userInfo.username}}</h2>
+      <p>Welcome!</p>
+      </a>
+        <ion-item nav-clear menu-close ng-click="login()" ng-if="!loggedIn">
           Login
+        </ion-item>
+        <ion-item nav-clear menu-close href="#/app/mytrip">
+          mytrip
+        </ion-item>
+        <ion-item nav-clear menu-close href="#/app/friends">
+          Friends
         </ion-item>
         <ion-item nav-clear menu-close href="#/app/search">
           Search
@@ -30,12 +43,10 @@
         <ion-item nav-clear menu-close href="#/app/playlists">
           Playlists
         </ion-item>
-        <ion-item nav-clear menu-close href="#/app/mytrip">
-          mytrip
+        <ion-item nav-clear menu-close ng-click="logout()" ng-if="loggedIn">
+          Log out
         </ion-item>
-        <ion-item nav-clear menu-close href="#/app/friends">
-          Friends
-        </ion-item>
+        
       </ion-list>
     </ion-content>
   </ion-side-menu>

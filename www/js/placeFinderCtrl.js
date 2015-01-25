@@ -1,5 +1,6 @@
 stp.controller('placeFinderCtrl', function($scope,$location, $ionicPopover, googleMapService) {
   
+  console.log("here");
   var delay = (function(){
     var timer=0;
     return function(callback, ms,$event){
@@ -35,9 +36,11 @@ stp.controller('placeFinderCtrl', function($scope,$location, $ionicPopover, goog
   $scope.openPopover = function($event) {
     $scope.popover.show($event);
   };
-  var markers = [];
-  $scope.map = googleMapService.map
 
+  var markers = [];
+  
+  $scope.map = googleMapService.map
+  console.log($scope.map);
   $scope.input = (document.getElementById('searchbox'));
 
   $scope.searchBox =  [];//new google.maps.places.SearchBox(($scope.input));

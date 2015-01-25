@@ -30,9 +30,10 @@ stp.service('accountService',['$location','$http','$window', function ($location
   }
 
 
-  var that = this;
-  this.logIn = function(user){
-    console.log("accountService called")
+  this.logIn = function(userInfo){
+      this.userInfo = userInfo;
+      this.loggedStatus =  true;
+   
      // $http.post('./php/login.php', user,null)
      //  .success(function (data, status, headers, config)
      //    { 
