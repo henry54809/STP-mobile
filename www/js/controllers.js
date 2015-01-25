@@ -56,8 +56,11 @@ angular.module('stp.controllers', [])
 })
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, $http, accountService) {
-  $scope.loggedIn = false;
-  // Form data for the login modal
+  accountService.registerLoggedInCallback(function(userInfo,status){
+    $scope.loggedIn = status;
+    $scope.userInfo = userInfo;
+  })
+
   $scope.loginData = {};
 
   // Create the login modal that we will use later
@@ -75,10 +78,11 @@ angular.module('stp.controllers', [])
     $scope.signup_modal = modal;
   });
 
-  $scope.logout = function() {
+  $scope.logOut = function() {
     $http.post('http://picwo.com:3100/api/auth?logout=true',{},{withCredentials: true}).
     success(function(data, status, headers, config) {
       $scope.loggedIn = false;
+      accountService.logOut()
       console.log(data, status);
     }).
     error(function(data, status, headers, config){
@@ -91,22 +95,14 @@ angular.module('stp.controllers', [])
   };
 
   // Open the login modal
-  $scope.login = function() {
+  $scope.showLogin = function() {
     $scope.signin_modal.show();
   };
 
   $scope.signup = function() {
-    $http.get('http://picwo.com:3100/api/account',{withCredentials: true}).
-    success(function(data, status, headers, config){
-      console.log(data, status);
-    }).
-    error(function(data, status, headers, config){
-      console.log(data, status);
-    })
-
-    // $scope.signin_modal.hide()
-    // console.log("redirect to signup");
-    // $scope.signup_modal.show();
+    $scope.signin_modal.hide()
+    console.log("redirect to signup");
+    $scope.signup_modal.show();
 
   }
 
@@ -117,22 +113,17 @@ angular.module('stp.controllers', [])
 
   // Perform the login action when the user submits the login form
   $scope.doLogin = function() {
-    
-    $scope.userInfo = {username:"gallonp"};
     console.log('Doing login', $scope.loginData);
-    $http.post('http://picwo.com:3100/api/auth',$scope.loginData,{withCredentials: true}).
-    success(function(data, status, headers, config){
-        $scope.loggedIn =  true;
-        accountService.logIn($scope.userInfo);
-        console.log(data, status);
-        $scope.signin_modal.hide();
-    }).
-    error(function(data, status, headers, config){
-      console.log(data, status);
+    accountService.login($scope.loginData, function(userInfo,loggedIn){
+        $scope.userInfo = userInfo;
+        $scope.loggedIn = loggedIn;
+        if ($scope.loggedIn){
+          $scope.signin_modal.hide();
+        } else {
+          console.log("Failed!")
+        }
+        console.log($scope.userInfo);
     })
-    // $timeout(function() {
-    //   $scope.closeLogin();
-    // }, 1000);
   };
 })
 .controller('loginCtrl', function($scope){
