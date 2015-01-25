@@ -4,7 +4,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-var starter = angular.module('starter', [ 'ionic', 'starter.controllers' ])
+var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -47,6 +47,25 @@ var starter = angular.module('starter', [ 'ionic', 'starter.controllers' ])
       }
     }
   })
+  .state('app.friends', {
+    url: '/friends',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/friends.html',
+        controller: 'friendsCtrl'
+      }
+    }
+  })
+  .state('app.addFriend', {
+    url: "/addFriend",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/addFriend.html",
+        controller: 'addFriendCtrl'
+      }
+    }
+  })
+
   .state('app.mytrip',{
     url: "/mytrip",
     views: {
@@ -57,7 +76,7 @@ var starter = angular.module('starter', [ 'ionic', 'starter.controllers' ])
     }
   })
   .state('app.newtrip',{
-    url: "/mytrip/newtrip",
+    url: "/newtrip",
     views: {
       'menuContent': {
         templateUrl: "templates/newTrip.html",
@@ -65,6 +84,26 @@ var starter = angular.module('starter', [ 'ionic', 'starter.controllers' ])
       }
     }
   })
+  .state('app.itinerary',{
+    url: "/itinerary/:itineraryID",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/itinerary.html",
+        controller: 'itineraryCtrl'
+      }
+    }
+  })
+  .state('app.placeFinder',{
+    url: "/placefinder/:itineraryID",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/placeFinder.html",
+        controller: 'placeFinderCtrl'
+      }
+    }
+  })
+
+
     .state('app.playlists', {
       url: "/playlists",
       views: {

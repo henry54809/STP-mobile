@@ -6,9 +6,9 @@ var bundle = {};
 // bundle.dataService = 'app/js/services/dataService.js';
 // bundle.searchService = 'app/js/services/searchService.js';
 bundle.accountService = 'services/accountService.js';
-
+bundle.googleMapService = 'services/googleMapService.js'
 // //Controllers
-// bundle.globalController = 'app/js/controllers/globalController.js';
+bundle.placeFinderCtrl = 'js/placeFinderCtrl.js';
 // bundle.frontPageController = 'app/js/controllers/frontPageController.js';
 // bundle.homeController = 'app/js/controllers/homeController.js';
 // bundle.headerController = 'app/js/controllers/headerController.js';

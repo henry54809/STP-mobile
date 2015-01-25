@@ -1,1 +1,21 @@
 /* Empty. Add your own CSS if you like */
+.ng-hide {
+  /* this is just another form of hiding an element */
+  display: block!important;
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+}
+
+.popover-backdrop.active {
+ background-color: rgba(0, 0, 0, 0); 
+}
+
+#popoverr {
+    width: 97%;
+    height: 30%;
+}
+
+.pac-container {
+    width: 10%;
+}

@@ -1,0 +1,63 @@
+<ion-view view-title="My Itinerary">
+<ion-nav-buttons side="right">
+    <a class="button button-icon icon ion-arrow-return-right" ng-click="toggleReorder()"></a> 
+    <a class="button button-icon icon ion-trash-b " ng-click="toggleDelete()"></a>
+    <a class="button button-icon icon ion-plus " ng-click="addItinerary()"></a>
+    </ion-nav-buttons>
+
+<ion-content >
+<ion-list  show-delete="shouldShowDelete"
+          show-reorder="shouldShowReorder"
+          can-swipe="listCanSwipe">
+  <ion-item ng-repeat="item in items"
+            class="item-thumbnail-left item-remove-animate">
+
+    <img ng-src="{{item.img}}">
+    <h2>{{item.title}}+{{shouldShowReorder}}+{{shouldShowDelete}}+{{listCanSwipe}}</h2>
+    <p>{{item.description}}</p>
+
+
+    <ion-delete-button class="ion-minus-circled" 
+                             ng-click="onItemDelete(item)">
+          </ion-delete-button>
+
+<!--     <ion-option-button class="button-positive"
+                       ng-click="share(item)">
+      Share
+    </ion-option-button>
+    <ion-option-button class="button-info"
+                       ng-click="edit(item)">
+      Edit
+    </ion-option-button>
+    <ion-delete-button class="ion-minus-circled"
+                       ng-click="items.splice($index, 1)">
+    </ion-delete-button> -->
+    <ion-reorder-button class="ion-navicon"
+                        on-reorder="moveItem(item, $fromIndex, $toIndex)">
+    </ion-reorder-button>
+
+  </ion-item>
+</ion-list>
+    <!-- <form ng-submit="doAdd()">
+      <div class="list">
+        <label class="item item-input">
+          <span class="input-label">Title</span>
+          <input type="text" ng-model="myTripsData.title">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Description</span>
+          <input type="text" ng-model="myTripsData.description">
+        </label>
+        <label class="item">
+          <button class="button button-block button-positive" type="submit">Add!</button>
+        </label>
+        
+      </div>
+    </form> -->
+
+
+  </ion-content>
+<div class="bar bar-footer">
+  <button class="button   pull-right button-positive" type="submit">Save</button>
+</div>
+</ion-view>
