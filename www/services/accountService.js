@@ -1,64 +1,72 @@
 
 stp.service('accountService',['$location','$http','$window', function ($location, $http, $window ) {
-
-
-  var loggedInCallbacks = [];
-
-
-  
+  this.userInfo={};
+  var notifyLoggedInObservers = function(data,status){
+    this.loggedStatus =  status;
+    angular.forEach(loggedInCallbacks, function(callback){
+        callback(data,status);
+    });
+  };
   //register an observer
   this.registerLoggedInCallback = function(callback){
     loggedInCallbacks.push(callback);
   };
 
+  var loggedInCallbacks = [];
+  this.loggedStatus = false;
 
-  this.notifyLoggedInObservers = function(status){
-    this.loggedStatus =  status;
-    angular.forEach(loggedInCallbacks, function(callback){
-        callback(status);
-    });
-  };
+  // $http.get('http://picwo.com:3100/api/account',{withCredentials: true}).
+  // success(function(data, status, headers, config){
+  //   notifyLoggedInObservers(true);
+  //   this.userInfo=data;
+  // }).
+  // error(function(data, status, headers, config){
+  //   notifyLoggedInObservers(false);
+  // })
   
   this.getLogInState = function(){
+    console.log(this.loggedStatus)
     return this.loggedStatus;
   }
-  this.logOut = function(){
-    $cookieStore.remove('uid');
-    $cookieStore.remove('sid');
-    $cookieStore.remove('uname');
-    this.notifyLoggedInObservers(false);
+  var getAccount = function(callback){
+    $http.get('http://picwo.com:3100/api/account',{withCredentials: true}).
+      success(function(data, status, headers, config){
+        this.userInfo = data;
+        callback(data,true);
+        console.log(data);
+      }).
+      error(function(data, status, headers, config){
+        this.userInfo = data;
+        callback(data,false);
+        console.log(data);
+      })
   }
 
+  getAccount(function(data,status){
+      notifyLoggedInObservers(data,status);
+  });
 
-  this.logIn = function(userInfo){
-      this.userInfo = userInfo;
-      this.loggedStatus =  true;
-   
-     // $http.post('./php/login.php', user,null)
-     //  .success(function (data, status, headers, config)
-     //    { 
-     //      // console.log(data);
-     //      if (typeof data['isvalid'] == 'undefined') {
-     //        $window.alert('验证失败')
-     //        // errorCode = 1;
-     //      } else {
-     //        if (data['isvalid'] == true) {
-     //            // console.log(data['entity_pk']['entity']);
-     //            // console.log($cookies.uid);
-     //            that.notifyLoggedInObservers(true);
-     //            $location.path("/home/"+data['entity_pk']['entity']); //should route to user's homepage. code here used for test
-     //        } else {
-     //            $window.alert('用户名或密码错误');
-     //            // errorCode = 2;
-     //        }
-     //      }
-     //    })
-     //    .error(function (data, status, headers, config)
-     //    {
-     //            $window.alert('Something went wrong...');
-     //            //errorCode = 3;
-     //    });
-     
+  this.login = function(loginData, callback){
+    $http.post('http://picwo.com:3100/api/auth',loginData,{withCredentials: true}).
+    success(function(data, status, headers, config){
+        if(status =="Error"){
+          console.log(data, status);
+          callback({},false);
+        } else {
+          getAccount(function(data,status){
+          callback(data, true);
+          })
+        }
+
+    }).
+    error(function(data, status, headers, config){
+      callback({},false);
+      console.log(data, status);
+    })
+
+  }
+  this.logOut = function(){
+    this.loggedStatus = false;
   }
 
 }]);

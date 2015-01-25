@@ -114,15 +114,6 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
       }
     })
 
-    .state('app.', {
-      url: "/playlists",
-      views: {
-        'menuContent': {
-          templateUrl: "templates/playlists.html",
-          controller: 'PlaylistsCtrl'
-        }
-      }
-    })
 
   .state('app.single', {
     url: "/playlists/:playlistId",
