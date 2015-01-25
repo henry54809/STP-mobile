@@ -23,60 +23,19 @@ var res_headers = function(req, res, next) {
   res.header('Access-Control-Allow-Origin', 'http://localhost:8100' );
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
   res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Accept');
-  res.header('Access-Control-Allow-Credentials', 'true' ); 
+  res.header('Access-Control-Allow-Credentials', 'true' );
   next();
 };
 
 app.use( res_headers );
 app.set('port', 3000);
 
-var is_session_valid = function(cookies, callback){
-	if ( "AuthToken" in cookies ) {
-		pg.connect(connectionString, function(err, client, done) {
-	    	client.query('select ( expires < now() ) as expired from tb_session where session_id_hash = $1', [cookies["AuthToken"]], function(err, result) {
-	      		done();
-	      			      			console.log( result.rows[0]);
+require("./auth/index")(app);
 
-	      		if ( result.rows[0] ){
-	      			if( result.rows[0].expired ){
-	      				return callback( false );
-	      			} else {
-	      				return callback( true );
-	      			}
-	      		}
-	      		return callback( false );
-		    });
-		});
-	} else {
-		return callback( false );
-	}
-};
-
-/**
-*	Checks the authentication of all api calls.
-**/
-var require_authentication = function(req, res, next){
-	var cookies = req.cookies;
-	var requesting_url = req.url;
-
-	var callback = function ( session_valid ){
-		console.log("Session valid: " + session_valid);
-		if ( ( requesting_url  == '/api/auth' || requesting_url == '/api/account/create' ) && session_valid ){
-			return res.json({"message":"User authenticated!"});
-		} else if ( requesting_url  != '/api/auth' && requesting_url != '/api/account/create' && !session_valid ){
-			return res.status(401).json({"message":"authentication required"});
-		} else {
-			return next();
-		}
-	}
-
-	return is_session_valid( cookies, callback );
-};
-
-app.all('/api/*', require_authentication );
+var auth_functions = require('./auth/functions');
+app.all('/api/*', auth_functions.require_authentication );
 
 //Routes
-require("./auth/index")(app);
 require("./account/index")(app);
 
 //Create the server
@@ -85,5 +44,8 @@ var server = app.listen(app.get('port'), function() {
 });
 
 app.use(function(req, res ){
-     res.status(404).json({"message":"Not supported."});
+	var resp = {};
+	resp.status = ERROR;
+	resp.message = "Not Supported.";
+    res.status(404).json({"message":"Not supported."});
 });
