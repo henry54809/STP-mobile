@@ -100,6 +100,9 @@ angular.module('stp.controllers', [])
   };
 
   $scope.signup = function() {
+    $scope.signin_modal.hide()
+    console.log("redirect to signup");
+    $scope.signup_modal.show();
 
   }
 

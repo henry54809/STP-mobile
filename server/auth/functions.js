@@ -5,7 +5,6 @@ var is_session_valid = function(cookies, callback){
         pg.connect(connectionString, function(err, client, done) {
             client.query('select ( expires < now() ) as expired from tb_session where session_id_hash = $1', [cookies["AuthToken"]], function(err, result) {
                 done();
-                console.log( result.rows[0]);
 
                 if ( result.rows[0] ){
                     if( result.rows[0].expired ){
