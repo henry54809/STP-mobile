@@ -125,6 +125,7 @@ angular.module('stp.controllers', [])
         $scope.loggedIn =  true;
         accountService.logIn($scope.userInfo);
         console.log(data, status);
+        $scope.signin_modal.hide();
     }).
     error(function(data, status, headers, config){
       console.log(data, status);
