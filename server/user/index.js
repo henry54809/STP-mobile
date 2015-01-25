@@ -8,34 +8,34 @@ module.exports = function (app) {
         var resp = {};
         var cookies = req.cookies;
         pg.connect(connectionString, function (err, client, done) {
-            var query = 'select count(e.username),       \
-                                e.username,     \
-                                ee.description, \
-                                ee.city,        \
-                                avatar_url,     \
-                                ft.label as friend_status   \
-                           from tb_session as s             \
-                           join tb_entity e                 \
-                             on e.entity = s.entity         \
-                      left join tb_entity_extra_info ee     \
-                             on e.entity_extra_info = ee.entity_extra_info     \
-                      left join tb_entity_friend ef                            \
-                             on (                                              \
-                                    e.entity = ef.entity                       \
-                                 or e.entity = ef.friend                       \
-                                )                                              \
-                      left join tb_friend_type as ft                           \
-                             on ft.friend_type = ef.friend_type                \
-                          where s.session_id_hash = $1                         \
-                            and ef.friend_type in ( 1, 3, 4 )                 \
-                       group by e.entity,                                      \
-                                ee.entity_extra_info,                          \
-                                ft.friend_type   ';
+            var query = 'select e.username,                                      \
+                                ee.description,                                  \
+                                ee.city,                                         \
+                                avatar_url,                                      \
+                                ft.label as friend_status                        \
+                           from tb_session as s                                  \
+                      left join tb_entity_friend ef                              \
+                             on (                                                \
+                                    s.entity = ef.entity                         \
+                                 or s.entity = ef.friend                         \
+                                )                                                \
+                      left join tb_entity e                                      \
+                             on (                                                \
+                                  e.entity = ef.entity                           \
+                              or  e.entity = ef.friend                           \
+                                )                                                \
+                      left join tb_entity_extra_info ee                          \
+                             on e.entity_extra_info = ee.entity_extra_info       \
+                      left join tb_friend_type as ft                             \
+                             on ft.friend_type = ef.friend_type                  \
+                          where s.session_id_hash = $1                           \
+                            and ef.friend_type in ( 1, 3, 4 )                    \
+                            and e.entity != s.entity';
             client.query(query, [cookies['AuthToken']], function (err, result) {
                 done();
                 if (result) {
-                    if (result.rows[0]) {
-                        return res.json(result.rows[0]);
+                    if (result.rows) {
+                        return res.json(result.rows);
                     }
                 } else {
                     resp.status = ERROR;
