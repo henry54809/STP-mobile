@@ -8,6 +8,7 @@ module.exports = function (app) {
     var STARRED = 'Starred';
     var UNFRIENDED = 'Unfriended';
 
+    //Send friend request.
     router.post('/:entity', function (req, res, next) {
         var action = req.query.action;
         if (action !== 'add') {
@@ -63,9 +64,27 @@ module.exports = function (app) {
         return user_functions.if_entity_friend(my_entity, entity, callback);
     });
 
+    //Decline friend request.
     router.post('/:entity', function (req, res, next) {
         var action = req.query.action;
         if (action !== 'decline') {
+            next();
+        }
+        var resp = {};
+        var entity = req.entity;
+        var my_entity = req.my_entity;
+
+        var query = '';
+        pg.connect(connectionString, function (err, client, done) {
+            client.query(query, [my_entity, entity, FRIEND_REQUEST_SENT], function (err, result) {});
+        });
+
+        return res.end();
+    });
+
+    router.post('/:entity', function (req, res, next) {
+        var action = req.query.action;
+        if (action !== 'accept') {
             next();
         }
         var resp = {};

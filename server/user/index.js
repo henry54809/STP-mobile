@@ -27,7 +27,7 @@ module.exports = function (app) {
                       left join tb_friend_type as ft                           \
                              on ft.friend_type = ef.friend_type                \
                           where s.session_id_hash = $1                         \
-                            and ef.friend_type in ( 1, 3, 4 ),                 \
+                            and ef.friend_type in ( 1, 3, 4 )                 \
                        group by e.entity,                                      \
                                 ee.entity_extra_info,                          \
                                 ft.friend_type   ';
@@ -40,7 +40,7 @@ module.exports = function (app) {
                 } else {
                     resp.status = ERROR;
                     resp.message = "Friend not found.";
-                    return res.status(400).json(resp);
+                    return res.json(resp);
                 }
             });
         });
@@ -98,24 +98,24 @@ module.exports = function (app) {
         var cookies = req.cookies;
         var user_functions = require('./functions');
 
-        var my_entity_callback = function(my_entity) {
+        var my_entity_callback = function (my_entity) {
             req.my_entity = my_entity;
             next();
         };
 
         var callback = function (exists) {
-            if (exists){
-            if (!req_query.action) {
+            if (exists) {
+                if (!req_query.action) {
+                    resp.status = ERROR;
+                    resp.message = "User action not found.";
+                    res.status(400).json(resp);
+                } else {
+                    user_functions.get_my_entity(cookies, my_entity_callback);
+                }
+            } else {
                 resp.status = ERROR;
-                resp.message = "User action not found.";
-                res.status(400).json(resp);
-            } else {
-                user_functions.get_my_entity(cookies, my_entity_callback);
-            }
-            } else {
-                             resp.status = ERROR;
                 resp.message = "User not found.";
-                res.status(400).json(resp);   
+                res.status(400).json(resp);
             }
         };
 
