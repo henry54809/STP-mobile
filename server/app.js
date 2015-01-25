@@ -47,6 +47,7 @@ app.all('/api/*', auth_functions.require_authentication );
 
 //Routes
 require("./account/index")(app);
+require("./user/index")(app);
 
 //Create the server
 var server = app.listen(app.get('port'), function() {

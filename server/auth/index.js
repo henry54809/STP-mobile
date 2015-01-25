@@ -37,7 +37,6 @@ module.exports = function ( app ) {
                     return res.json(resp);
                 }
             };
-            console.log(query);
             return auth_functions.is_session_valid(cookies, callback);
         } else {
             next();
