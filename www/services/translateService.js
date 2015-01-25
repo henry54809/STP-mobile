@@ -1,4 +1,4 @@
-starter.service('translateService',['$http', function ($http) {
+stp.service('translateService',['$http', function ($http) {
 	this.translate = function(data) {
 	    // return $http({
 	    //     method: 'POST',

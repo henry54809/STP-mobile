@@ -1,7 +1,6 @@
-angular.module('starter.controllers', [])
+angular.module('stp.controllers', [])
 
 .factory('myTrips', function($rootScope) {
-    console.log(myTrips);
     if (myTrips == undefined) {
       var myTrips = [
     {
@@ -50,14 +49,14 @@ angular.module('starter.controllers', [])
       img: "assets/pic10.jpg"
     }
   ];
-    console.log("initiated");
     }
     
 
     return myTrips;
 })
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, accountService) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, $http, accountService) {
+  $scope.loggedIn = false;
   // Form data for the login modal
   $scope.loginData = {};
 
@@ -76,7 +75,16 @@ angular.module('starter.controllers', [])
     $scope.signup_modal = modal;
   });
 
-
+  $scope.logout = function() {
+    $http.post('http://picwo.com:3100/api/auth?logout=true',{},{withCredentials: true}).
+    success(function(data, status, headers, config) {
+      $scope.loggedIn = false;
+      console.log(data, status);
+    }).
+    error(function(data, status, headers, config){
+      console.log(data, status);
+    })
+  }
   // Triggered in the login modal to close it
   $scope.closeLogin = function() {
     $scope.signin_modal.hide();
@@ -88,27 +96,48 @@ angular.module('starter.controllers', [])
   };
 
   $scope.signup = function() {
-    $scope.signin_modal.hide()
-    console.log("redirect to signup");
-    $scope.signup_modal.show();
+    $http.get('http://picwo.com:3100/api/account',{withCredentials: true}).
+    success(function(data, status, headers, config){
+      console.log(data, status);
+    }).
+    error(function(data, status, headers, config){
+      console.log(data, status);
+    })
+
+    // $scope.signin_modal.hide()
+    // console.log("redirect to signup");
+    // $scope.signup_modal.show();
 
   }
 
   $scope.closeSignup = function() {
-     console.log("calling close Signup")
+    console.log("calling close Signup")
     $scope.signup_modal.hide();
   }
 
   // Perform the login action when the user submits the login form
   $scope.doLogin = function() {
-
+    
+    $scope.userInfo = {username:"gallonp"};
     console.log('Doing login', $scope.loginData);
-    $timeout(function() {
-      $scope.closeLogin();
-    }, 1000);
+    $http.post('http://picwo.com:3100/api/auth',$scope.loginData,{withCredentials: true}).
+    success(function(data, status, headers, config){
+        $scope.loggedIn =  true;
+        accountService.logIn($scope.userInfo);
+        console.log(data, status);
+        $scope.signin_modal.hide();
+    }).
+    error(function(data, status, headers, config){
+      console.log(data, status);
+    })
+    // $timeout(function() {
+    //   $scope.closeLogin();
+    // }, 1000);
   };
 })
+.controller('loginCtrl', function($scope){
 
+})
 .controller('PlaylistsCtrl', function($scope) {
   $scope.playlists = [
     { title: 'Reggae', id: 1 },
@@ -145,7 +174,6 @@ $scope.hideSearch = function() {
 
   $scope.cancelSearch = function() {
     $scope.searchQuery= undefined;
-    console.log("cancelled!")
     $scope.showHeader = false;
   };
 })
@@ -163,10 +191,54 @@ $scope.hideSearch = function() {
     console.log(myTrips[myTrips.length - 1]);
     // Simulate a login delay. Remove this and replace with your login
     // code if using a login system
-    $location.path("app/mytrip");
+
+  $scope.getItinernaryId = function() {
+    return 1;
+  }
+
+  $location.path("app/itinerary/"+$scope.getItinernaryId());
   };
 })
+.controller('itineraryCtrl', function($scope,$stateParams,$location) {
+  $scope.items = [
+    { title: "Ameristar Casinos", description:"3773 Howard Hughes Parkway Las Vegas, NV 89169", img: "assets/pic13.jpg"},
+    { title: "Death Valley National Park", description:"Death Valley National Park, Inyo County, CA", img: "assets/pic13.jpg"},
+    { title: "Ameristar Casinos", description:"3773 Howard Hughes Parkway Las Vegas, NV 89169", img: "assets/pic13.jpg"},
+    { title: "Death Valley National Park", description:"Death Valley National Park, Inyo County, CA", img: "assets/pic13.jpg"}
+  ];
+  $scope.shouldShowDelete = false;
+  $scope.shouldShowReorder = false;
+  $scope.listCanSwipe = true;
 
+  
+  $scope.edit = function(item) {
+    alert('Edit Item: ' + item.id);
+  };
+  $scope.share = function(item) {
+    alert('Share Item: ' + item.id);
+  };
+  
+  $scope.moveItem = function(item, fromIndex, toIndex) {
+    $scope.items.splice(fromIndex, 1);
+    $scope.items.splice(toIndex, 0, item);
+  };
+  
+  $scope.onItemDelete = function(item) {
+    $scope.items.splice($scope.items.indexOf(item), 1);
+  };
+  $scope.toggleDelete = function() {
+    $scope.shouldShowReorder = false;
+    $scope.shouldShowDelete = !$scope.shouldShowDelete;
+  }
+  $scope.toggleReorder = function() {
+    $scope.shouldShowDelete = false ;
+    $scope.shouldShowReorder = !$scope.shouldShowReorder;
+  }
+  $scope.addItinerary = function() {
+    $location.path("app/placefinder/1");
+  }
+
+})
 
 .controller('friendsCtrl', function($scope,$location) {
   $scope.friends = [
@@ -183,14 +255,15 @@ $scope.hideSearch = function() {
   }
 })
 
+
 .controller('addFriendCtrl', function($scope,$stateParams) {
     $scope.friends = [
-    { name: 'Reggae', id: 1, face: "assets/pic1.jpg"},
-    { name: 'Chill', id: 2, face: "assets/pic2.jpg" },
-    { name: 'Dubstep', id: 3, face: "assets/pic3.jpg" },
-    { name: 'Indie', id: 4, face: "assets/pic4.jpg" },
-    { name: 'Rap', id: 5, face: "assets/pic5.jpg" },
-    { name: 'Cowbell', id: 6, face: "assets/pic6.jpg" }
+    { name: 'Reggae', id: 1, face: "assets/pic1.jpg", img: "assets/pic13.jpg"},
+    { name: 'Chill', id: 2, face: "assets/pic2.jpg", img: "assets/pic13.jpg" },
+    { name: 'Dubstep', id: 3, face: "assets/pic3.jpg", img: "assets/pic13.jpg" },
+    { name: 'Indie', id: 4, face: "assets/pic4.jpg", img: "assets/pic13.jpg" },
+    { name: 'Rap', id: 5, face: "assets/pic5.jpg" , img: "assets/pic13.jpg"},
+    { name: 'Cowbell', id: 6, face: "assets/pic6.jpg", img: "assets/pic13.jpg" }
   ];
 
     $scope.sendRequest = function(friend) {
@@ -198,6 +271,7 @@ $scope.hideSearch = function() {
       $scope.isDisable = true;
     }
 })
+
 
 
 .controller('PlaylistCtrl', function($scope, $stateParams) {
