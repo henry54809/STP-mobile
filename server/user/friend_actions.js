@@ -24,12 +24,12 @@ module.exports = function (app) {
                 case FRIEND_REQUEST_SENT:
                     resp.status = ERROR;
                     resp.message = "Friend request exists.";
-                    res.json(resp);
+                    return res.json(resp);
                     break;
                 case FRIEND, STARRED:
                     resp.status = ERROR;
                     resp.message = "Already friend.";
-                    res.json(resp);
+                    return res.json(resp);
                     break;
                 }
             }
