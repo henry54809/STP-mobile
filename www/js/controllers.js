@@ -72,12 +72,14 @@ angular.module('stp.controllers', [])
   });
 
   $ionicModal.fromTemplateUrl('templates/signup.html', {
-    scope: $scope
+    
   }).then(function(modal) {
     id: 2,
     $scope.signup_modal = modal;
   });
-
+  $scope.doSignup = function() {
+    console.log('Doing signup', $scope.signupData);
+  }
   $scope.logOut = function() {
     $http.post('http://picwo.com:3100/api/auth?logout=true',{},{withCredentials: true}).
     success(function(data, status, headers, config) {
@@ -99,7 +101,7 @@ angular.module('stp.controllers', [])
     $scope.signin_modal.show();
   };
 
-  $scope.signup = function() {
+  $scope.showSignup = function() {
     $scope.signin_modal.hide()
     console.log("redirect to signup");
     $scope.signup_modal.show();
@@ -110,6 +112,7 @@ angular.module('stp.controllers', [])
     console.log("calling close Signup")
     $scope.signup_modal.hide();
   }
+
 
   // Perform the login action when the user submits the login form
   $scope.doLogin = function() {
