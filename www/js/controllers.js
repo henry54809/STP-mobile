@@ -62,6 +62,13 @@ angular.module('stp.controllers', [])
   })
 
   $scope.loginData = {};
+  $scope.signupData = {};
+$ionicModal.fromTemplateUrl('templates/signup.html', {
+    scope: $scope
+  }).then(function(modal) {
+    id: 2,
+    $scope.signup_modal = modal;
+  });
 
   // Create the login modal that we will use later
   $ionicModal.fromTemplateUrl('templates/login.html', {
@@ -71,14 +78,14 @@ angular.module('stp.controllers', [])
     $scope.signin_modal = modal;
   });
 
-  $ionicModal.fromTemplateUrl('templates/signup.html', {
-    
-  }).then(function(modal) {
-    id: 2,
-    $scope.signup_modal = modal;
-  });
-  $scope.doSignup = function() {
+  
+
+  $scope.doSignup = function($event) {
+    console.log($event);
     console.log('Doing signup', $scope.signupData);
+    if($scope.signupData.password == $scope.signupData.password_repeat){
+      $scope.signup_modal.hidden();
+    }
   }
   $scope.logOut = function() {
     $http.post('http://picwo.com:3100/api/auth?logout=true',{},{withCredentials: true}).
@@ -129,9 +136,7 @@ angular.module('stp.controllers', [])
     })
   };
 })
-.controller('loginCtrl', function($scope){
 
-})
 .controller('PlaylistsCtrl', function($scope) {
   $scope.playlists = [
     { title: 'Reggae', id: 1 },
