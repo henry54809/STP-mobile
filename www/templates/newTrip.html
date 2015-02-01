@@ -14,16 +14,37 @@
         </label>
         <label class="item item-input">
           <span class="input-label">Description</span>
-          <input type="text" ng-model="myTripsData.description">
+          <textarea type="text" ng-model="myTripsData.description"></textarea>
         </label>
-        <label class="item">
-          <button class="button button-block button-positive" type="submit">Next</button>
-        </label>
+         <div class="item item-divider">
+          Available Options:
+        </div>
         <div class="card">
-          <a class="item item-text-wrap" href="/#/app/chatroom/24">
+          <!-- <button class="button button-block button-positive" type="submit">Next</button> -->
+          <a class="item item-text-wrap item-icon-left" href="/#/app/itinerary/1" style="color: #444 ;">
+            <li class="ion-clipboard icon" data-pack="default" data-tags="write"></li>
+              Itinerary
+          </a>
+        </div>
+        <div class="card">
+          <a class="item item-text-wrap item-icon-left" href="/#/app/chatroom/24" style="color: #444 ;">
+            <li class="ion-chatboxes icon" data-pack="default" data-tags="talk"></li>
               Chat Room
           </a>
-          
+        </div>
+        <div class="card">
+          <label for="file" class="item item-icon-left fileContainer">
+              <i class="icon ion-ios7-camera"></i>
+              Upload a photo
+              <input id="file"  type="file" ng-model="file" ng-change="fileHandler($event)" />
+            </label>
+        </div>
+        <div class="card">
+          <label class="item item-icon-left ">
+              <i class="icon ion-calendar"></i>
+             
+              <input  type="date" ng-model="date" />
+            </label>
         </div>
       </div>
     </form>
