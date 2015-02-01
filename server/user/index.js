@@ -7,39 +7,41 @@ module.exports = function (app) {
     //Search among all entities.
     router.get('/', function (req, res, next) {
         var resp = {};
-        var cookies = req.cookies;
-        if (!req.params.search) {
-            next();
+        var url_query = req.query;
+        if ( !url_query.search ) {
+            return next();
         }
         pg.connect(connectionString, function (err, client, done) {
-            var query = 'select      ee.first_name,  \
+            var query = "select      e.entity as id, \
+                                     ee.first_name,  \
                                      ee.last_name,   \
                                      e.username,     \
                                      ee.description, \
                                      ee.city,        \
                                      avatar_url      \
                            from tb_entity e                                 \
-                      left join entity_extra_info ee                        \
+                      left join tb_entity_extra_info ee                     \
                              on e.entity_extra_info = ee.entity_extra_info  \
-                          where ee.first_name like \'%$1%\'                 \
+                          where ee.first_name like '%$1%'                   \
                              or soundex($1) = soundex(ee.first_name)        \
-                             or ee.last_name like  \'%$1%\'                 \
+                             or ee.last_name like  '%$1%'                   \
                              or soundex($1) = soundex(ee.last_name)         \
-                             or e.username like \'%$1%\'                    \
+                             or e.username like '%$1%'                      \
                              or soundex($1) = soundex(e.username)           \
-                             ';
-        });
-        client.query(query, [req.params.search], function (err, result) {
-            done();
-            if (result) {
-                if (result.rows) {
+                             ";
+            client.query(query, [url_query.search], function (err, result) {
+                done();
+                if (result && result.rows[0]) {
                     return res.json(result.rows);
+                } else {
+                    if ( err ){
+                         console.log(err);
+                    }
+                    resp.status = ERROR;
+                    resp.message = "User not found.";
+                    return res.json(resp);
                 }
-            } else {
-                resp.status = ERROR;
-                resp.message = "User not found.";
-                return res.json(resp);
-            }
+            });
         });
     });
 
@@ -47,7 +49,8 @@ module.exports = function (app) {
         var resp = {};
         var cookies = req.cookies;
         pg.connect(connectionString, function (err, client, done) {
-            var query = 'select e.username,                                      \
+            var query = 'select e.entity as id,                                  \
+                                e.username,                                      \
                                 ee.description,                                  \
                                 ee.first_name,                                   \
                                 ee.last_name,                                    \
