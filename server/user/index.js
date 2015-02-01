@@ -9,7 +9,7 @@ module.exports = function (app) {
         var resp = {};
         var cookies = req.cookies;
         if (!req.params.search) {
-            next();
+            return next();
         }
         pg.connect(connectionString, function (err, client, done) {
             var query = 'select      ee.first_name,  \
@@ -28,18 +28,18 @@ module.exports = function (app) {
                              or e.username like \'%$1%\'                    \
                              or soundex($1) = soundex(e.username)           \
                              ';
-        });
-        client.query(query, [req.params.search], function (err, result) {
-            done();
-            if (result) {
-                if (result.rows) {
-                    return res.json(result.rows);
+            client.query(query, [req.params.search], function (err, result) {
+                done();
+                if (result) {
+                    if (result.rows) {
+                        return res.json(result.rows);
+                    }
+                } else {
+                    resp.status = ERROR;
+                    resp.message = "User not found.";
+                    return res.json(resp);
                 }
-            } else {
-                resp.status = ERROR;
-                resp.message = "User not found.";
-                return res.json(resp);
-            }
+            });
         });
     });
 
