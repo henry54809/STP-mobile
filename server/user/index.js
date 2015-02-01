@@ -4,12 +4,53 @@ module.exports = function (app) {
     var express = require('express');
     var router = express.Router();
 
+    //Search among all entities.
+    router.get('/', function (req, res, next) {
+        var resp = {};
+        var cookies = req.cookies;
+        if (!req.params.search) {
+            next();
+        }
+        pg.connect(connectionString, function (err, client, done) {
+            var query = 'select      ee.first_name,  \
+                                     ee.last_name,   \
+                                     e.username,     \
+                                     ee.description, \
+                                     ee.city,        \
+                                     avatar_url      \
+                           from tb_entity e                                 \
+                      left join entity_extra_info ee                        \
+                             on e.entity_extra_info = ee.entity_extra_info  \
+                          where ee.first_name like \'%$1%\'                 \
+                             or soundex($1) = soundex(ee.first_name)        \
+                             or ee.last_name like  \'%$1%\'                 \
+                             or soundex($1) = soundex(ee.last_name)         \
+                             or e.username like \'%$1%\'                    \
+                             or soundex($1) = soundex(e.username)           \
+                             ';
+        });
+        client.query(query, [req.params.search], function (err, result) {
+            done();
+            if (result) {
+                if (result.rows) {
+                    return res.json(result.rows);
+                }
+            } else {
+                resp.status = ERROR;
+                resp.message = "User not found.";
+                return res.json(resp);
+            }
+        });
+    });
+
     router.get('/friends', function (req, res, next) {
         var resp = {};
         var cookies = req.cookies;
         pg.connect(connectionString, function (err, client, done) {
             var query = 'select e.username,                                      \
                                 ee.description,                                  \
+                                ee.first_name,                                   \
+                                ee.last_name,                                    \
                                 ee.city,                                         \
                                 avatar_url,                                      \
                                 ft.label as friend_status                        \
@@ -71,7 +112,9 @@ module.exports = function (app) {
         var resp = {};
 
         pg.connect(connectionString, function (err, client, done) {
-            var query = 'select e.username,     \
+            var query = 'select      ee.first_name,  \
+                                     ee.last_name,   \
+                                     e.username,     \
                                      ee.description, \
                                      ee.city,        \
                                      avatar_url      \
@@ -81,11 +124,14 @@ module.exports = function (app) {
                                where e.entity = $1';
             client.query(query, [entity], function (err, result) {
                 done();
-                if (result.rows[0]) {
+                if (result && result.rows[0]) {
                     return res.json(result.rows[0]);
                 } else {
                     resp.status = ERROR;
                     resp.message = "User not found.";
+                    if (err) {
+                        console.log(err);
+                    }
                     return res.status(400).json(resp);
                 }
             });
