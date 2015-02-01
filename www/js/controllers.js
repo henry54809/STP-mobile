@@ -271,6 +271,11 @@ $scope.hideSearch = function() {
     $scope.messages.push(snapshot.val());
     $ionicScrollDelegate.scrollBottom(true);
   })
+
+  $scope.scrollBottom =  function(){
+    $ionicScrollDelegate.scrollBottom(true);
+    console.log('scrol');
+  }
   
 
 
