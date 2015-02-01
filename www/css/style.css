@@ -28,3 +28,13 @@ input.ng-valid.ng-touched {
     box-shadow: 0px 0px 3px green;
   -moz-box-shadow: none;
   }
+
+.fileContainer [type=file] {   
+  opacity: 0 !important;
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+}

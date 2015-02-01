@@ -181,6 +181,7 @@ $scope.hideSearch = function() {
   };
 })
 
+
 .controller('NewTripCtrl', function($scope, $ionicModal, $timeout, $location, myTrips) {
   // Form data for the login modal
   $scope.myTripsData = {};
@@ -241,6 +242,14 @@ $scope.hideSearch = function() {
     $location.path("app/placefinder/1");
   }
 
+
+  $scope.fileHandler = function($event){
+
+    var files = $event.target.files; // FileList object
+    console.log(files);
+    console.log($scope.file);
+  }
+
 })
 .controller('chatroomCtrl', function($scope, $stateParams,$ionicScrollDelegate, accountService){
   var fb = new Firebase('https://picwochat.firebaseio.com/'+$stateParams.chartroomId)
@@ -267,14 +276,14 @@ $scope.hideSearch = function() {
   // });
   $scope.messages = [];
   postsRef.on("child_added", function(snapshot){
-    console.log(snapshot.val());
+    // console.log(snapshot.val());
     $scope.messages.push(snapshot.val());
     $ionicScrollDelegate.scrollBottom(true);
   })
 
   $scope.scrollBottom =  function(){
     $ionicScrollDelegate.scrollBottom(true);
-    console.log('scrol');
+    // console.log('scrol');
   }
   
 
