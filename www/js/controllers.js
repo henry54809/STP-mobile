@@ -55,7 +55,7 @@ angular.module('stp.controllers', [])
     return myTrips;
 })
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, $http, accountService) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, $http,$ionicSideMenuDelegate, accountService) {
   accountService.registerLoggedInCallback(function(userInfo,status){
     $scope.loggedIn = status;
     $scope.userInfo = userInfo;
@@ -80,23 +80,27 @@ $ionicModal.fromTemplateUrl('templates/signup.html', {
 
   
 
-  $scope.doSignup = function($event) {
-    console.log($event);
+  $scope.doSignup = function() {
+    // console.log($event);
     console.log('Doing signup', $scope.signupData);
     if($scope.signupData.password == $scope.signupData.password_repeat){
-      $scope.signup_modal.hidden();
+      accountService.signup($scope.signupData, function(success, data){
+        if (success){
+            $scope.userInfo = data;
+            $scope.loggedIn = true;
+            $scope.signup_modal.hide();
+        } else {
+           console.log('something went wrong:',data);
+        }
+      })
     }
   }
+
   $scope.logOut = function() {
-    $http.post('http://picwo.com:3100/api/auth?logout=true',{},{withCredentials: true}).
-    success(function(data, status, headers, config) {
-      $scope.loggedIn = false;
-      accountService.logOut()
-      console.log(data, status);
-    }).
-    error(function(data, status, headers, config){
-      console.log(data, status);
-    })
+    accountService.logOut();
+    $scope.loggedIn = false;
+    $location.path('app/home');
+    $ionicSideMenuDelegate.toggleLeft();
   }
   // Triggered in the login modal to close it
   $scope.closeLogin = function() {
@@ -124,7 +128,7 @@ $ionicModal.fromTemplateUrl('templates/signup.html', {
   // Perform the login action when the user submits the login form
   $scope.doLogin = function() {
     console.log('Doing login', $scope.loginData);
-    accountService.login($scope.loginData, function(userInfo,loggedIn){
+    accountService.login($scope.loginData, function(loggedIn, userInfo){
         $scope.userInfo = userInfo;
         $scope.loggedIn = loggedIn;
         if ($scope.loggedIn){
@@ -236,6 +240,10 @@ $scope.hideSearch = function() {
   $scope.addItinerary = function() {
     $location.path("app/placefinder/1");
   }
+
+})
+.controller('chatroomCtrl', function($scope, $stateParams){
+  var fb = new Firebase('https://picwochart.firebaseio.com/'+$stateParams)
 
 })
 

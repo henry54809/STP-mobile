@@ -2,7 +2,7 @@
 stp.service('accountService',['$location','$http','$window', function ($location, $http, $window ) {
   this.userInfo={};
   var notifyLoggedInObservers = function(data,status){
-    this.loggedStatus =  status;
+    this.loginState =  status;
     angular.forEach(loggedInCallbacks, function(callback){
         callback(data,status);
     });
@@ -13,51 +13,56 @@ stp.service('accountService',['$location','$http','$window', function ($location
   };
 
   var loggedInCallbacks = [];
-  this.loggedStatus = false;
+  this.loginState = false;
 
-  // $http.get('http://picwo.com:3100/api/account',{withCredentials: true}).
-  // success(function(data, status, headers, config){
-  //   notifyLoggedInObservers(true);
-  //   this.userInfo=data;
-  // }).
-  // error(function(data, status, headers, config){
-  //   notifyLoggedInObservers(false);
-  // })
-  
-  this.getLogInState = function(){
-    console.log(this.loggedStatus)
-    return this.loggedStatus;
+  this.signup = function(signupData,callback) {
+    var that = this;
+    $http.post('http://picwo.com:3100/api/account',signupData,{withCredentials:true}).
+      success(function (data, status, headers, config) {
+        that.login(signupData,function(success,userInfo){
+          callback(success,userInfo);
+        })
+        that.loginState = true;
+      }).
+      error(function (data, status, headers, config) {
+        that.loginState = false;
+        callback(false,data);
+      })
   }
-  var getAccount = function(callback){
+  this.getLogInState = function(){
+    return this.loginState;
+  }
+  this.getAccount = function(callback){
     $http.get('http://picwo.com:3100/api/account',{withCredentials: true}).
-      success(function(data, status, headers, config){
+      success(function (data, status, headers, config){
         this.userInfo = data;
-        callback(data,true);
+        callback(true,data);
         console.log(data);
       }).
       error(function(data, status, headers, config){
         this.userInfo = data;
-        callback(data,false);
+        callback(false,data);
         console.log(data);
       })
   }
 
-  getAccount(function(data,status){
+  this.getAccount(function(status,data){
       notifyLoggedInObservers(data,status);
   });
 
   this.login = function(loginData, callback){
+    var that = this;
     $http.post('http://picwo.com:3100/api/auth',loginData,{withCredentials: true}).
     success(function(data, status, headers, config){
         if(status =="Error"){
           console.log(data, status);
-          callback({},false);
+          callback(false,{});
         } else {
-          getAccount(function(data,status){
-          callback(data, true);
+          that.getAccount(function(status,data){
+          callback(true, data);
           })
         }
-
+        
     }).
     error(function(data, status, headers, config){
       callback({},false);
@@ -66,7 +71,14 @@ stp.service('accountService',['$location','$http','$window', function ($location
 
   }
   this.logOut = function(){
-    this.loggedStatus = false;
+    this.loginState = false;
+    $http.post('http://picwo.com:3100/api/auth?logout=true',{},{withCredentials: true}).
+    success(function(data, status, headers, config) {
+      console.log(data, status);
+    }).
+    error(function(data, status, headers, config){
+      console.log(data, status);
+    })
   }
 
 }]);

@@ -102,7 +102,15 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
       }
     }
   })
-
+  .state('app.chatroom', {
+    url: "/chatroom/:chartroomId",
+    views: {
+        'menuContent': {
+          templateUrl: "templates/chatroom.html",
+          controller: "chatroomCtrl"
+        }
+    }
+  })
 
     .state('app.playlists', {
       url: "/playlists",
