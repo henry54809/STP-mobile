@@ -211,15 +211,16 @@ $scope.hideSearch = function() {
   
   $scope.save = function(myTripsData) {
     console.log(myTripsData.title);
-    $http.post('http://picwo.com:3100/api/trip', $scope.myTripsData).
+    $http.post('http://picwo.com:3100/api/trip', myTripsData, {withCredentials:true}).
     success(function(data, status, headers, config){
       $scope.tripId = data.trip;
+      console.log($scope.tripId);
     })
 
   };
 
   $scope.addItinerary = function(tripId) {
-    $http.post('http://picwo.com:3100/api/trip/itinerary', $scope.tripId).
+    $http.post('http://picwo.com:3100/api/trip/itinerary', tripId, {withCredentials:true}).
     success(function(data, status, headers, config){
       $scope.itineraryId = data.itinerary;
     })
