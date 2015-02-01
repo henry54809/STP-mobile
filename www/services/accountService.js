@@ -1,4 +1,3 @@
-
 stp.service('accountService',['$location','$http','$window', function ($location, $http, $window ) {
   this.userInfo={};
   var notifyLoggedInObservers = function(data,status){

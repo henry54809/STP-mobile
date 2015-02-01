@@ -4,6 +4,11 @@ angular.module('stp.controllers', [])
     if (myTrips == undefined) {
       var myTrips = [
     {
+      title:"blank trip" , 
+      description:"no date",
+      // img: "assets/pic13.jpg"
+    }, 
+    {
       title:"My trip to HK" , 
       description:"Start at Jan",
       img: "assets/pic13.jpg"
@@ -55,11 +60,17 @@ angular.module('stp.controllers', [])
     return myTrips;
 })
 
+
+// .controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, $http, accountService, iteneraryService) {
+//   $scope.loggedIn = false;
+  // Form data for the login modal
+
 .controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, $http,$ionicSideMenuDelegate, accountService) {
   accountService.registerLoggedInCallback(function(userInfo,status){
     $scope.loggedIn = status;
     $scope.userInfo = userInfo;
   })
+
 
   $scope.loginData = {};
   $scope.signupData = {};
@@ -182,38 +193,53 @@ $scope.hideSearch = function() {
 })
 
 
-.controller('NewTripCtrl', function($scope, $ionicModal, $timeout, $location, myTrips) {
+.controller('NewTripCtrl', function($scope, $ionicModal, $timeout, $http, $location) {
+
   // Form data for the login modal
-  $scope.myTripsData = {};
+  // $http.get('http://picwo.com:3100/api/account', {withCredentials: true}).
+  // success(function (data, status, headers, config) {
+  //   $scope.myTripsData.tripId = data.trip;
 
+  //   $http.post('http://picwo.com:3100/api/account', $scope.myTripsData).
+  //   success(function(data, status, headers, config){
+  //     $scope.itinernaryId = data.itinernaryId;
+  //   })
+  // }).
+  // error(function(data, status, headers, config) {
+  //   $scope.itinernaryId = 1;
+  // })
+  
+  $scope.save = function(myTripsData) {
+    console.log(myTripsData.title);
+    $http.post('http://picwo.com:3100/api/trip', $scope.myTripsData).
+    success(function(data, status, headers, config){
+      $scope.tripId = data.trip;
+    })
 
+  };
 
-  // Perform the login action when the user submits the login form
-  $scope.doAdd = function() {
-    console.log('Doing add', $scope.myTripsData);
-    myTrips.push({title: $scope.myTripsData.title, description: $scope.myTripsData.description, img: ""});
-    console.log(myTrips[myTrips.length - 1]);
-    // Simulate a login delay. Remove this and replace with your login
-    // code if using a login system
-
-  $scope.getItinernaryId = function() {
-    return 1;
+  $scope.addItinerary = function(tripId) {
+    $http.post('http://picwo.com:3100/api/trip/itinerary', $scope.tripId).
+    success(function(data, status, headers, config){
+      $scope.itineraryId = data.itinerary;
+    })
+    .error(function(data, status, headers, config) {
+      console.log("fail to call server");
+    })
+    // $location.path('app/itinerary/' + $scope.itineraryId);
+    $location.path('app/itinerary/1');
   }
 
-  $location.path("app/itinerary/"+$scope.getItinernaryId());
-  };
+
 })
+
+
 .controller('itineraryCtrl', function($scope,$stateParams,$location) {
-  $scope.items = [
-    { title: "Ameristar Casinos", description:"3773 Howard Hughes Parkway Las Vegas, NV 89169", img: "assets/pic13.jpg"},
-    { title: "Death Valley National Park", description:"Death Valley National Park, Inyo County, CA", img: "assets/pic13.jpg"},
-    { title: "Ameristar Casinos", description:"3773 Howard Hughes Parkway Las Vegas, NV 89169", img: "assets/pic13.jpg"},
-    { title: "Death Valley National Park", description:"Death Valley National Park, Inyo County, CA", img: "assets/pic13.jpg"}
-  ];
+  $scope.items = [];
   $scope.shouldShowDelete = false;
   $scope.shouldShowReorder = false;
   $scope.listCanSwipe = true;
-
+  // $scope.todo = todo;
   
   $scope.edit = function(item) {
     alert('Edit Item: ' + item.id);
@@ -226,6 +252,24 @@ $scope.hideSearch = function() {
     $scope.items.splice(fromIndex, 1);
     $scope.items.splice(toIndex, 0, item);
   };
+
+  $scope.getDuration = function(startDate, endDate) {
+    var dur = endDate - startDate;
+    dur = parseInt(dur / 86400000, 10) + 1;
+    $scope.duration = dur;
+    for (i = 1; i <= dur; i++) {
+      $scope.items.push({data: "Day" + i, isDay: true});
+      $scope.items.push({data: "Add activity", isDay: false});
+    }
+    
+  };
+
+  $scope.addActivity = function(item) {
+    if (item.data == "Add activity") {
+      alert("asf");
+    }
+    
+  }
   
   $scope.onItemDelete = function(item) {
     $scope.items.splice($scope.items.indexOf(item), 1);
@@ -239,8 +283,9 @@ $scope.hideSearch = function() {
     $scope.shouldShowReorder = !$scope.shouldShowReorder;
   }
   $scope.addItinerary = function() {
-    $location.path("app/placefinder/1");
+    $location.path("app/newtrip");
   }
+
 
 
   $scope.fileHandler = function($event){
@@ -297,6 +342,7 @@ $scope.hideSearch = function() {
   success(function(data, status, headers, config) {
     // this callback will be called asynchronously
     // when the response is available
+    console.log('success');
     console.log(data);
     if (data.length == undefined) {
       $scope.friends.push(data);
@@ -311,23 +357,20 @@ $scope.hideSearch = function() {
     console.log(data);
   });
   
-  if (!$scope.friends) {
-    $scope.friends = [
-    { username: 'Reggae', avatar_url: "assets/pic1.jpg"},
-    { username: 'Chill', avatar_url: "assets/pic2.jpg" },
-    { username: 'Dubstep', avatar_url: "assets/pic3.jpg" },
-    { username: 'Indie', avatar_url: "assets/pic4.jpg" },
-    { username: 'Rap', avatar_url: "assets/pic5.jpg" },
-    { username: 'Cowbell', avatar_url: "assets/pic6.jpg" }
-  ];
-    console.log($scope.friends);
-  }
+  // if (!$scope.friends) {
+  //   $scope.friends = [
+  //   { username: 'Reggae', avatar_url: "assets/pic1.jpg"},
+  //   { username: 'Chill', avatar_url: "assets/pic2.jpg" },
+  //   { username: 'Dubstep', avatar_url: "assets/pic3.jpg" },
+  //   { username: 'Indie', avatar_url: "assets/pic4.jpg" },
+  //   { username: 'Rap', avatar_url: "assets/pic5.jpg" },
+  //   { username: 'Cowbell', avatar_url: "assets/pic6.jpg" }
+  // ];
+  //   console.log($scope.friends);
+  // }
   
 
-  $scope.friendReqs = [
-    { username: 'Reggae Bro', avatar_url: "assets/pic1.jpg"},
-    { username: 'Cowbell Bro', avatar_url: "assets/pic6.jpg" }
-  ];
+  // $scope.friendReqs = 
 
   $scope.addFriend = function() {
     $location.path('app/addFriend');
@@ -374,18 +417,46 @@ $scope.hideSearch = function() {
 })
 
 
-.controller('addFriendCtrl', function($scope,$stateParams,$http) {
-    $scope.friends = [
-    { username: 'Reggae', avatar_url: "assets/pic1.jpg"},
-    { username: 'Chill', avatar_url: "assets/pic2.jpg" },
-    { username: 'Dubstep', avatar_url: "assets/pic3.jpg" },
-    { username: 'Indie', avatar_url: "assets/pic4.jpg" },
-    { username: 'Rap', avatar_url: "assets/pic5.jpg" },
-    { username: 'Cowbell', avatar_url: "assets/pic6.jpg" }
-  ];
+.controller('addFriendCtrl', function($scope,$stateParams,$http,friendService) {
+  //   $scope.friends = [
+  //   { username: 'Reggae', avatar_url: "assets/pic1.jpg"},
+  //   { username: 'Chill', avatar_url: "assets/pic2.jpg" },
+  //   { username: 'Dubstep', avatar_url: "assets/pic3.jpg" },
+  //   { username: 'Indie', avatar_url: "assets/pic4.jpg" },
+  //   { username: 'Rap', avatar_url: "assets/pic5.jpg" },
+  //   { username: 'Cowbell', avatar_url: "assets/pic6.jpg" }
+  // ];
+  $scope.formData = {};
+    var delay = (function(){
+    var timer=0;
+    return function(callback, ms,$event){
+      clearTimeout(timer);
+      timer = setTimeout(callback,ms,$event);
+    };
+    })();
+    $scope.autoFill = function($event) {
+      if($scope.formData.searchText==""){
+         delay(function($event){},0,$event);
+      } else {
+          delay(function($event){
+            //get some autocomplete data
+          friendService.searchFriend($scope.formData.searchText, function(searchStatus, friends){
+          $scope.searchStatus = searchStatus;
+          if ($scope.searchStatus){
+            $scope.friends = friends;
+            console.log($scope.friends + "aha");
+          } else {
+            console.log("Failed!")
+          }
+          
+      })
+            
+         },300,$event)
+       }
+    }
 
-    $scope.sendRequest = function(friend) {
-      $http.post('http://picwo.com:3100/api/user/1?action=add',{},{withCredentials: true}).
+    $scope.sendRequest = function(id) {
+      $http.post('http://picwo.com:3100/api/user/'+id+'?action=add',{},{withCredentials: true}).
       success(function(data, status, headers, config) {
         // this callback will be called asynchronously
         // when the response is available
@@ -404,5 +475,11 @@ $scope.hideSearch = function() {
 
 
 
-.controller('PlaylistCtrl', function($scope, $stateParams) {
+.controller('profileCtrl', function($scope, $stateParams, $http,accountService) {
+  accountService.getAccount(function(status,data) {
+    if (status) {
+      $scope.profile = data;
+      console.log(data);
+    }
+  })
 });

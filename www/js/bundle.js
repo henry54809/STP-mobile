@@ -6,6 +6,7 @@ var bundle = {};
 // bundle.dataService = 'app/js/services/dataService.js';
 // bundle.searchService = 'app/js/services/searchService.js';
 bundle.accountService = 'services/accountService.js';
+bundle.friendService = 'services/friendService.js';
 bundle.googleMapService = 'services/googleMapService.js'
 // //Controllers
 bundle.placeFinderCtrl = 'js/placeFinderCtrl.js';

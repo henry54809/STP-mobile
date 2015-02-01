@@ -6,7 +6,7 @@
     </div>
   </ion-header-bar>
   <ion-content>
-    <form ng-submit="doAdd()">
+    <form >
       <div class="list">
         <label class="item item-input">
           <span class="input-label">Title</span>
@@ -14,39 +14,39 @@
         </label>
         <label class="item item-input">
           <span class="input-label">Description</span>
-          <textarea type="text" ng-model="myTripsData.description"></textarea>
+          <input type="text" ng-model="myTripsData.description">
         </label>
-         <div class="item item-divider">
-          Available Options:
-        </div>
-        <div class="card">
-          <!-- <button class="button button-block button-positive" type="submit">Next</button> -->
-          <a class="item item-text-wrap item-icon-left" href="/#/app/itinerary/1" style="color: #444 ;">
+        <!-- <label class="item">
+          <button class="button button-block button-positive" ng-click="addItems()">OK</button>
+        </label> -->
+        <label class="item">
+          <button class="button button-block button-positive" type="submit" ng-click="showme=true;save(myTripsData)">Save</button>
+        </label>
+
+        <div class="card" ng-show="showme" ng-click="addItinerary()">
+          <a class="item item-text-wrap item-icon-left" style="color: #444 ;">
             <li class="ion-clipboard icon" data-pack="default" data-tags="write"></li>
               Itinerary
           </a>
         </div>
-        <div class="card">
+        <div class="card" ng-show="showme">
           <a class="item item-text-wrap item-icon-left" href="/#/app/chatroom/24" style="color: #444 ;">
             <li class="ion-chatboxes icon" data-pack="default" data-tags="talk"></li>
               Chat Room
           </a>
         </div>
-        <div class="card">
+        <div class="card" ng-show="showme">
           <label for="file" class="item item-icon-left fileContainer">
               <i class="icon ion-ios7-camera"></i>
               Upload a photo
               <input id="file"  type="file" ng-model="file" ng-change="fileHandler($event)" />
             </label>
         </div>
-        <div class="card">
-          <label class="item item-icon-left ">
-              <i class="icon ion-calendar"></i>
-             
-              <input  type="date" ng-model="date" />
-            </label>
-        </div>
+        
+        
+
       </div>
     </form>
+
   </ion-content>
 </ion-view>
