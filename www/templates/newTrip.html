@@ -6,7 +6,7 @@
     </div>
   </ion-header-bar>
   <ion-content>
-    <form ng-submit="doAdd()">
+    <form >
       <div class="list">
         <label class="item item-input">
           <span class="input-label">Title</span>
@@ -16,11 +16,31 @@
           <span class="input-label">Description</span>
           <input type="text" ng-model="myTripsData.description">
         </label>
-        <label class="item">
-          <button class="button button-block button-positive" type="submit">Next</button>
-        </label>
-        
+        <!-- <label class="item">
+          <button class="button button-block button-positive" ng-click="addItems()">OK</button>
+        </label> -->
       </div>
     </form>
+
+    <div class="card">
+      <div class="item item-divider">
+      My Itenarary
+      </div>
+      <a ng-click="toItenerary()" class="item item-icon-left">
+      <i class="icon ion-calendar"></i>
+        Click to add itenrary
+      </a>
+    </div>
+
+    <div class="card">
+      <div class="item item-divider">
+      My Itenarary
+      </div>
+      <a href="#" class="item item-icon-left">
+      <i class="icon ion-calendar"></i>
+        Click to add itenrary
+      </a>
+    </div>
+
   </ion-content>
 </ion-view>

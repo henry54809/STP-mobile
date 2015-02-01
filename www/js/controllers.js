@@ -55,7 +55,7 @@ angular.module('stp.controllers', [])
     return myTrips;
 })
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, $http, accountService) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, $http, accountService, iteneraryService) {
   $scope.loggedIn = false;
   // Form data for the login modal
   $scope.loginData = {};
@@ -178,11 +178,26 @@ $scope.hideSearch = function() {
   };
 })
 
-.controller('NewTripCtrl', function($scope, $ionicModal, $timeout, $location, myTrips) {
+.controller('NewTripCtrl', function($scope, $ionicModal, $timeout, $http, $location, myTrips, todos) {
   // Form data for the login modal
   $scope.myTripsData = {};
+  // $http.get('http://picwo.com:3100/api/account', {withCredentials: true}).
+  // success(function (data, status, headers, config) {
+  //   $scope.myTripsData.tripId = data.trip;
 
+  //   $http.post('http://picwo.com:3100/api/account', $scope.myTripsData).
+  //   success(function(data, status, headers, config){
+  //     $scope.itinernaryId = data.itinernaryId;
+  //   })
+  // }).
+  // error(function(data, status, headers, config) {
+  //   $scope.itinernaryId = 1;
+  // })
+  
 
+  $scope.itinernaryId = 1;
+
+  $scope.todos = todos;
 
   // Perform the login action when the user submits the login form
   $scope.doAdd = function() {
@@ -195,11 +210,19 @@ $scope.hideSearch = function() {
   $scope.getItinernaryId = function() {
     return 1;
   }
-
-  $location.path("app/itinerary/"+$scope.getItinernaryId());
+  $location.path("app/itinerary/"+$scope.itinernaryId);
   };
+
+
+  $scope.toItenerary = function() {
+    console.log('going to itenerary', $scope.iteneraryId);
+    $location.path("app/itinerary/"+$scope.itinernaryId);
+  }
+
 })
-.controller('itineraryCtrl', function($scope,$stateParams,$location) {
+
+
+.controller('itineraryCtrl', function($scope,$stateParams,$location, todo) {
   $scope.items = [
     { title: "Ameristar Casinos", description:"3773 Howard Hughes Parkway Las Vegas, NV 89169", img: "assets/pic13.jpg"},
     { title: "Death Valley National Park", description:"Death Valley National Park, Inyo County, CA", img: "assets/pic13.jpg"},
@@ -209,7 +232,7 @@ $scope.hideSearch = function() {
   $scope.shouldShowDelete = false;
   $scope.shouldShowReorder = false;
   $scope.listCanSwipe = true;
-
+  $scope.todo = todo;
   
   $scope.edit = function(item) {
     alert('Edit Item: ' + item.id);
@@ -235,7 +258,7 @@ $scope.hideSearch = function() {
     $scope.shouldShowReorder = !$scope.shouldShowReorder;
   }
   $scope.addItinerary = function() {
-    $location.path("app/placefinder/1");
+    $location.path("app/newtrip");
   }
 
 })

@@ -1,4 +1,3 @@
-
 stp.service('accountService',['$location','$http','$window', function ($location, $http, $window ) {
 
 

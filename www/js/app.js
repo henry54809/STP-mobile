@@ -21,8 +21,9 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
+  // $urlRouterProvider.otherwise('/todos')
+  
   $stateProvider
-
   .state('app', {
     url: "/app",
     abstract: true,
@@ -83,6 +84,11 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
         controller: 'NewTripCtrl'
       }
     }
+    resolve: {
+      todos: function(IteneraryService) {
+        return IteneraryService.getTodos()
+      }
+    }
   })
   .state('app.itinerary',{
     url: "/itinerary/:itineraryID",
@@ -90,6 +96,11 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
       'menuContent': {
         templateUrl: "templates/itinerary.html",
         controller: 'itineraryCtrl'
+      }
+    }
+    resolve: {
+      todo: function($stateParams, IteneraryService) {
+        return IteneraryService.getTodo($stateParams.itemId)
       }
     }
   })
