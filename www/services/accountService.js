@@ -1,63 +1,84 @@
 stp.service('accountService',['$location','$http','$window', function ($location, $http, $window ) {
-
-
-  var loggedInCallbacks = [];
-
-
-  
+  this.userInfo={};
+  var notifyLoggedInObservers = function(data,status){
+    this.loginState =  status;
+    angular.forEach(loggedInCallbacks, function(callback){
+        callback(data,status);
+    });
+  };
   //register an observer
   this.registerLoggedInCallback = function(callback){
     loggedInCallbacks.push(callback);
   };
 
+  var loggedInCallbacks = [];
+  this.loginState = false;
 
-  this.notifyLoggedInObservers = function(status){
-    this.loggedStatus =  status;
-    angular.forEach(loggedInCallbacks, function(callback){
-        callback(status);
-    });
-  };
-  
+  this.signup = function(signupData,callback) {
+    var that = this;
+    $http.post('http://picwo.com:3100/api/account',signupData,{withCredentials:true}).
+      success(function (data, status, headers, config) {
+        that.login(signupData,function(success,userInfo){
+          callback(success,userInfo);
+        })
+        that.loginState = true;
+      }).
+      error(function (data, status, headers, config) {
+        that.loginState = false;
+        callback(false,data);
+      })
+  }
   this.getLogInState = function(){
-    return this.loggedStatus;
+    return this.loginState;
+  }
+  this.getAccount = function(callback){
+    var that = this;
+    $http.get('http://picwo.com:3100/api/account',{withCredentials: true}).
+      success(function (data, status, headers, config){
+        that.userInfo = data;
+        callback(true,data);
+        console.log(data);
+      }).
+      error(function(data, status, headers, config){
+        // that.userInfo = data;
+        callback(false,data);
+        console.log(data);
+      })
+  }
+
+  this.getAccount(function(status,data){
+      notifyLoggedInObservers(data,status);
+  });
+
+  this.login = function(loginData, callback){
+    var that = this;
+    $http.post('http://picwo.com:3100/api/auth',loginData,{withCredentials: true}).
+    success(function(data, status, headers, config){
+        if(status =="Error"){
+          console.log(data, status);
+          callback(false,{});
+        } else {
+          that.getAccount(function(status,data){
+          callback(true, data);
+          })
+        }
+        
+    }).
+    error(function(data, status, headers, config){
+      callback({},false);
+      console.log(data, status);
+    })
+
   }
   this.logOut = function(){
-    $cookieStore.remove('uid');
-    $cookieStore.remove('sid');
-    $cookieStore.remove('uname');
-    this.notifyLoggedInObservers(false);
-  }
-
-
-  this.logIn = function(userInfo){
-      this.userInfo = userInfo;
-      this.loggedStatus =  true;
-   
-     // $http.post('./php/login.php', user,null)
-     //  .success(function (data, status, headers, config)
-     //    { 
-     //      // console.log(data);
-     //      if (typeof data['isvalid'] == 'undefined') {
-     //        $window.alert('验证失败')
-     //        // errorCode = 1;
-     //      } else {
-     //        if (data['isvalid'] == true) {
-     //            // console.log(data['entity_pk']['entity']);
-     //            // console.log($cookies.uid);
-     //            that.notifyLoggedInObservers(true);
-     //            $location.path("/home/"+data['entity_pk']['entity']); //should route to user's homepage. code here used for test
-     //        } else {
-     //            $window.alert('用户名或密码错误');
-     //            // errorCode = 2;
-     //        }
-     //      }
-     //    })
-     //    .error(function (data, status, headers, config)
-     //    {
-     //            $window.alert('Something went wrong...');
-     //            //errorCode = 3;
-     //    });
-     
+    this.loginState = false;
+    $http.post('http://picwo.com:3100/api/auth?logout=true',{},{withCredentials: true}).
+    success(function(data, status, headers, config) {
+      console.log(data, status);
+    }).
+    error(function(data, status, headers, config){
+      console.log(data, status);
+    })
   }
 
 }]);

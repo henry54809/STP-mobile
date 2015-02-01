@@ -83,12 +83,12 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
         templateUrl: "templates/newTrip.html",
         controller: 'NewTripCtrl'
       }
-    }
-    resolve: {
-      todos: function(IteneraryService) {
-        return IteneraryService.getTodos()
-      }
-    }
+    },
+    // resolve: {
+    //   todos: function(IteneraryService) {
+    //     return 1
+    //   }
+    // }
   })
   .state('app.itinerary',{
     url: "/itinerary/:itineraryID",
@@ -97,12 +97,12 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
         templateUrl: "templates/itinerary.html",
         controller: 'itineraryCtrl'
       }
-    }
-    resolve: {
-      todo: function($stateParams, IteneraryService) {
-        return IteneraryService.getTodo($stateParams.itemId)
-      }
-    }
+    },
+    // resolve: {
+    //   todo: function($stateParams, IteneraryService) {
+    //     return 1
+    //   }
+    // }
   })
   .state('app.placeFinder',{
     url: "/placefinder/:itineraryID",
@@ -113,7 +113,15 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
       }
     }
   })
-
+  .state('app.chatroom', {
+    url: "/chatroom/:chartroomId",
+    views: {
+        'menuContent': {
+          templateUrl: "templates/chatroom.html",
+          controller: "chatroomCtrl"
+        }
+    }
+  })
 
     .state('app.playlists', {
       url: "/playlists",
@@ -125,15 +133,6 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
       }
     })
 
-    .state('app.', {
-      url: "/playlists",
-      views: {
-        'menuContent': {
-          templateUrl: "templates/playlists.html",
-          controller: 'PlaylistsCtrl'
-        }
-      }
-    })
 
   .state('app.single', {
     url: "/playlists/:playlistId",

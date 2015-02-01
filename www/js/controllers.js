@@ -55,10 +55,26 @@ angular.module('stp.controllers', [])
     return myTrips;
 })
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, $http, accountService, iteneraryService) {
-  $scope.loggedIn = false;
+
+// .controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, $http, accountService, iteneraryService) {
+//   $scope.loggedIn = false;
   // Form data for the login modal
+
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, $http,$ionicSideMenuDelegate, accountService) {
+  accountService.registerLoggedInCallback(function(userInfo,status){
+    $scope.loggedIn = status;
+    $scope.userInfo = userInfo;
+  })
+
+
   $scope.loginData = {};
+  $scope.signupData = {};
+$ionicModal.fromTemplateUrl('templates/signup.html', {
+    scope: $scope
+  }).then(function(modal) {
+    id: 2,
+    $scope.signup_modal = modal;
+  });
 
   // Create the login modal that we will use later
   $ionicModal.fromTemplateUrl('templates/login.html', {
@@ -68,22 +84,29 @@ angular.module('stp.controllers', [])
     $scope.signin_modal = modal;
   });
 
-  $ionicModal.fromTemplateUrl('templates/signup.html', {
-    scope: $scope
-  }).then(function(modal) {
-    id: 2,
-    $scope.signup_modal = modal;
-  });
+  
 
-  $scope.logout = function() {
-    $http.post('http://picwo.com:3100/api/auth?logout=true',{},{withCredentials: true}).
-    success(function(data, status, headers, config) {
-      $scope.loggedIn = false;
-      console.log(data, status);
-    }).
-    error(function(data, status, headers, config){
-      console.log(data, status);
-    })
+  $scope.doSignup = function() {
+    // console.log($event);
+    console.log('Doing signup', $scope.signupData);
+    if($scope.signupData.password == $scope.signupData.password_repeat){
+      accountService.signup($scope.signupData, function(success, data){
+        if (success){
+            $scope.userInfo = data;
+            $scope.loggedIn = true;
+            $scope.signup_modal.hide();
+        } else {
+           console.log('something went wrong:',data);
+        }
+      })
+    }
+  }
+
+  $scope.logOut = function() {
+    accountService.logOut();
+    $scope.loggedIn = false;
+    $location.path('app/home');
+    $ionicSideMenuDelegate.toggleLeft();
   }
   // Triggered in the login modal to close it
   $scope.closeLogin = function() {
@@ -91,19 +114,11 @@ angular.module('stp.controllers', [])
   };
 
   // Open the login modal
-  $scope.login = function() {
+  $scope.showLogin = function() {
     $scope.signin_modal.show();
   };
 
-  $scope.signup = function() {
-    $http.get('http://picwo.com:3100/api/account',{withCredentials: true}).
-    success(function(data, status, headers, config){
-      console.log(data, status);
-    }).
-    error(function(data, status, headers, config){
-      console.log(data, status);
-    })
-
+  $scope.showSignup = function() {
     $scope.signin_modal.hide()
     console.log("redirect to signup");
     $scope.signup_modal.show();
@@ -115,29 +130,23 @@ angular.module('stp.controllers', [])
     $scope.signup_modal.hide();
   }
 
+
   // Perform the login action when the user submits the login form
   $scope.doLogin = function() {
-    
-    $scope.userInfo = {username:"gallonp"};
     console.log('Doing login', $scope.loginData);
-    $http.post('http://picwo.com:3100/api/auth',$scope.loginData,{withCredentials: true}).
-    success(function(data, status, headers, config){
-        $scope.loggedIn =  true;
-        accountService.logIn($scope.userInfo);
-        console.log(data, status);
-        $scope.signin_modal.hide();
-    }).
-    error(function(data, status, headers, config){
-      console.log(data, status);
+    accountService.login($scope.loginData, function(loggedIn, userInfo){
+        $scope.userInfo = userInfo;
+        $scope.loggedIn = loggedIn;
+        if ($scope.loggedIn){
+          $scope.signin_modal.hide();
+        } else {
+          console.log("Failed!")
+        }
+        console.log($scope.userInfo);
     })
-    // $timeout(function() {
-    //   $scope.closeLogin();
-    // }, 1000);
   };
 })
-.controller('loginCtrl', function($scope){
 
-})
 .controller('PlaylistsCtrl', function($scope) {
   $scope.playlists = [
     { title: 'Reggae', id: 1 },
@@ -178,7 +187,7 @@ $scope.hideSearch = function() {
   };
 })
 
-.controller('NewTripCtrl', function($scope, $ionicModal, $timeout, $http, $location, myTrips, todos) {
+.controller('NewTripCtrl', function($scope, $ionicModal, $timeout, $http, $location) {
   // Form data for the login modal
   $scope.myTripsData = {};
   // $http.get('http://picwo.com:3100/api/account', {withCredentials: true}).
@@ -197,7 +206,7 @@ $scope.hideSearch = function() {
 
   $scope.itinernaryId = 1;
 
-  $scope.todos = todos;
+  // $scope.todos = todos;
 
   // Perform the login action when the user submits the login form
   $scope.doAdd = function() {
@@ -222,7 +231,7 @@ $scope.hideSearch = function() {
 })
 
 
-.controller('itineraryCtrl', function($scope,$stateParams,$location, todo) {
+.controller('itineraryCtrl', function($scope,$stateParams,$location) {
   $scope.items = [
     { title: "Ameristar Casinos", description:"3773 Howard Hughes Parkway Las Vegas, NV 89169", img: "assets/pic13.jpg"},
     { title: "Death Valley National Park", description:"Death Valley National Park, Inyo County, CA", img: "assets/pic13.jpg"},
@@ -232,7 +241,7 @@ $scope.hideSearch = function() {
   $scope.shouldShowDelete = false;
   $scope.shouldShowReorder = false;
   $scope.listCanSwipe = true;
-  $scope.todo = todo;
+  // $scope.todo = todo;
   
   $scope.edit = function(item) {
     alert('Edit Item: ' + item.id);
@@ -262,36 +271,154 @@ $scope.hideSearch = function() {
   }
 
 })
+.controller('chatroomCtrl', function($scope, $stateParams,$ionicScrollDelegate, accountService){
+  var fb = new Firebase('https://picwochat.firebaseio.com/'+$stateParams.chartroomId)
+  console.log(fb);
+  var postsRef = fb.child("messages");
+  // $ionicScrollDelegate.scrollBottom(true);
+  $scope.sendMsg = function(){
+    // postsRef = fb.child("messages");
+    if (accountService.userInfo.username == undefined){
+      alert('please login first')
+      return false;
+    }
+    postsRef.push({
+      author: accountService.userInfo.username,
+      content: $scope.message
+    }, function(error){
+      console.log(error);
+    });
+   
+    $scope.message = "";
+  };
+  // postsRef.once("value", function(snapshot){
+  //   console.log(snapshot.val());
+  // });
+  $scope.messages = [];
+  postsRef.on("child_added", function(snapshot){
+    console.log(snapshot.val());
+    $scope.messages.push(snapshot.val());
+    $ionicScrollDelegate.scrollBottom(true);
+  })
 
-.controller('friendsCtrl', function($scope,$location) {
-  $scope.friends = [
-    { name: 'Reggae', id: 1, face: "assets/pic1.jpg"},
-    { name: 'Chill', id: 2, face: "assets/pic2.jpg" },
-    { name: 'Dubstep', id: 3, face: "assets/pic3.jpg" },
-    { name: 'Indie', id: 4, face: "assets/pic4.jpg" },
-    { name: 'Rap', id: 5, face: "assets/pic5.jpg" },
-    { name: 'Cowbell', id: 6, face: "assets/pic6.jpg" }
+  $scope.scrollBottom =  function(){
+    $ionicScrollDelegate.scrollBottom(true);
+    console.log('scrol');
+  }
+  
+
+
+
+})
+
+.controller('friendsCtrl', function($scope,$location,$http) {
+  $scope.friends = [];
+  $http.get('http://picwo.com:3100/api/user/friends',{withCredentials: true}).
+  success(function(data, status, headers, config) {
+    // this callback will be called asynchronously
+    // when the response is available
+    console.log(data);
+    if (data.length == undefined) {
+      $scope.friends.push(data);
+    } else {
+      $scope.friends = data;
+    }
+    console.log($scope.friends);
+  }).
+  error(function(data, status, headers, config) {
+    // called asynchronously if an error occurs
+    // or server returnns response with an error status.
+    console.log(data);
+  });
+  
+  if (!$scope.friends) {
+    $scope.friends = [
+    { username: 'Reggae', avatar_url: "assets/pic1.jpg"},
+    { username: 'Chill', avatar_url: "assets/pic2.jpg" },
+    { username: 'Dubstep', avatar_url: "assets/pic3.jpg" },
+    { username: 'Indie', avatar_url: "assets/pic4.jpg" },
+    { username: 'Rap', avatar_url: "assets/pic5.jpg" },
+    { username: 'Cowbell', avatar_url: "assets/pic6.jpg" }
+  ];
+    console.log($scope.friends);
+  }
+  
+
+  $scope.friendReqs = [
+    { username: 'Reggae Bro', avatar_url: "assets/pic1.jpg"},
+    { username: 'Cowbell Bro', avatar_url: "assets/pic6.jpg" }
   ];
 
   $scope.addFriend = function() {
     $location.path('app/addFriend');
   }
+
+  $scope.acceptRequest = function(friend) {
+    $http.post('http://m.picwo.com/api/user/1?accept',{},{withCredentials: true}).
+      success(function(data, status, headers, config) {
+        // this callback will be called asynchronously
+        // when the response is available
+        console.log(data);
+        alert("test accept!");
+        $scope.friendReqs.splice($scope.friendReqs.indexOf(friend), 1);
+        $scope.isDisable = true;
+      }).
+      error(function(data, status, headers, config) {
+        // called asynchronously if an error occurs
+        // or server returns response with an error status.
+        alert("fail!");
+        console.log(data);
+      });
+  }
+
+  $scope.declineRequest = function(friend) {
+    $scope.sendRequest = function(friend) {
+      $http.post('http://m.picwo.com/api/user/1?decline',{},{withCredentials: true}).
+      success(function(data, status, headers, config) {
+        // this callback will be called asynchronously
+        // when the response is available
+        console.log(data);
+        alert("test dc!");
+    $scope.friendReqs.splice($scope.friendReqs.indexOf(friend), 1);
+    $scope.isDisable = true;
+      }).
+      error(function(data, status, headers, config) {
+        // called asynchronously if an error occurs
+        // or server returns response with an error status.
+        alert("fail!");
+        console.log(data);
+      });
+    }
+
+  }
 })
 
 
-.controller('addFriendCtrl', function($scope,$stateParams) {
+.controller('addFriendCtrl', function($scope,$stateParams,$http) {
     $scope.friends = [
-    { name: 'Reggae', id: 1, face: "assets/pic1.jpg", img: "assets/pic13.jpg"},
-    { name: 'Chill', id: 2, face: "assets/pic2.jpg", img: "assets/pic13.jpg" },
-    { name: 'Dubstep', id: 3, face: "assets/pic3.jpg", img: "assets/pic13.jpg" },
-    { name: 'Indie', id: 4, face: "assets/pic4.jpg", img: "assets/pic13.jpg" },
-    { name: 'Rap', id: 5, face: "assets/pic5.jpg" , img: "assets/pic13.jpg"},
-    { name: 'Cowbell', id: 6, face: "assets/pic6.jpg", img: "assets/pic13.jpg" }
+    { username: 'Reggae', avatar_url: "assets/pic1.jpg"},
+    { username: 'Chill', avatar_url: "assets/pic2.jpg" },
+    { username: 'Dubstep', avatar_url: "assets/pic3.jpg" },
+    { username: 'Indie', avatar_url: "assets/pic4.jpg" },
+    { username: 'Rap', avatar_url: "assets/pic5.jpg" },
+    { username: 'Cowbell', avatar_url: "assets/pic6.jpg" }
   ];
 
     $scope.sendRequest = function(friend) {
-      alert("test request!");
-      $scope.isDisable = true;
+      $http.post('http://picwo.com:3100/api/user/1?action=add',{},{withCredentials: true}).
+      success(function(data, status, headers, config) {
+        // this callback will be called asynchronously
+        // when the response is available
+        console.log(data);
+        alert("test request!");
+       $scope.isDisable = true;
+      }).
+      error(function(data, status, headers, config) {
+        // called asynchronously if an error occurs
+        // or server returns response with an error status.
+        alert("fail!");
+        console.log(data);
+      });
     }
 })
 
