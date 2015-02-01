@@ -288,6 +288,7 @@ $scope.hideSearch = function() {
   success(function(data, status, headers, config) {
     // this callback will be called asynchronously
     // when the response is available
+    console.log('success');
     console.log(data);
     if (data.length == undefined) {
       $scope.friends.push(data);
@@ -302,23 +303,20 @@ $scope.hideSearch = function() {
     console.log(data);
   });
   
-  if (!$scope.friends) {
-    $scope.friends = [
-    { username: 'Reggae', avatar_url: "assets/pic1.jpg"},
-    { username: 'Chill', avatar_url: "assets/pic2.jpg" },
-    { username: 'Dubstep', avatar_url: "assets/pic3.jpg" },
-    { username: 'Indie', avatar_url: "assets/pic4.jpg" },
-    { username: 'Rap', avatar_url: "assets/pic5.jpg" },
-    { username: 'Cowbell', avatar_url: "assets/pic6.jpg" }
-  ];
-    console.log($scope.friends);
-  }
+  // if (!$scope.friends) {
+  //   $scope.friends = [
+  //   { username: 'Reggae', avatar_url: "assets/pic1.jpg"},
+  //   { username: 'Chill', avatar_url: "assets/pic2.jpg" },
+  //   { username: 'Dubstep', avatar_url: "assets/pic3.jpg" },
+  //   { username: 'Indie', avatar_url: "assets/pic4.jpg" },
+  //   { username: 'Rap', avatar_url: "assets/pic5.jpg" },
+  //   { username: 'Cowbell', avatar_url: "assets/pic6.jpg" }
+  // ];
+  //   console.log($scope.friends);
+  // }
   
 
-  $scope.friendReqs = [
-    { username: 'Reggae Bro', avatar_url: "assets/pic1.jpg"},
-    { username: 'Cowbell Bro', avatar_url: "assets/pic6.jpg" }
-  ];
+  // $scope.friendReqs = 
 
   $scope.addFriend = function() {
     $location.path('app/addFriend');
@@ -365,18 +363,46 @@ $scope.hideSearch = function() {
 })
 
 
-.controller('addFriendCtrl', function($scope,$stateParams,$http) {
-    $scope.friends = [
-    { username: 'Reggae', avatar_url: "assets/pic1.jpg"},
-    { username: 'Chill', avatar_url: "assets/pic2.jpg" },
-    { username: 'Dubstep', avatar_url: "assets/pic3.jpg" },
-    { username: 'Indie', avatar_url: "assets/pic4.jpg" },
-    { username: 'Rap', avatar_url: "assets/pic5.jpg" },
-    { username: 'Cowbell', avatar_url: "assets/pic6.jpg" }
-  ];
+.controller('addFriendCtrl', function($scope,$stateParams,$http,friendService) {
+  //   $scope.friends = [
+  //   { username: 'Reggae', avatar_url: "assets/pic1.jpg"},
+  //   { username: 'Chill', avatar_url: "assets/pic2.jpg" },
+  //   { username: 'Dubstep', avatar_url: "assets/pic3.jpg" },
+  //   { username: 'Indie', avatar_url: "assets/pic4.jpg" },
+  //   { username: 'Rap', avatar_url: "assets/pic5.jpg" },
+  //   { username: 'Cowbell', avatar_url: "assets/pic6.jpg" }
+  // ];
+  $scope.formData = {};
+    var delay = (function(){
+    var timer=0;
+    return function(callback, ms,$event){
+      clearTimeout(timer);
+      timer = setTimeout(callback,ms,$event);
+    };
+    })();
+    $scope.autoFill = function($event) {
+      if($scope.formData.searchText==""){
+         delay(function($event){},0,$event);
+      } else {
+          delay(function($event){
+            //get some autocomplete data
+          friendService.searchFriend($scope.formData.searchText, function(searchStatus, friends){
+          $scope.searchStatus = searchStatus;
+          if ($scope.searchStatus){
+            $scope.friends = friends;
+            console.log($scope.friends + "aha");
+          } else {
+            console.log("Failed!")
+          }
+          
+      })
+            
+         },300,$event)
+       }
+    }
 
-    $scope.sendRequest = function(friend) {
-      $http.post('http://picwo.com:3100/api/user/1?action=add',{},{withCredentials: true}).
+    $scope.sendRequest = function(id) {
+      $http.post('http://picwo.com:3100/api/user/'+id+'?action=add',{},{withCredentials: true}).
       success(function(data, status, headers, config) {
         // this callback will be called asynchronously
         // when the response is available
@@ -395,5 +421,11 @@ $scope.hideSearch = function() {
 
 
 
-.controller('PlaylistCtrl', function($scope, $stateParams) {
+.controller('profileCtrl', function($scope, $stateParams, $http,accountService) {
+  accountService.getAccount(function(status,data) {
+    if (status) {
+      $scope.profile = data;
+      console.log(data);
+    }
+  })
 });

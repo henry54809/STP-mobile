@@ -4,11 +4,11 @@
     <div class="list list-inset">
   <label class="item item-input">
     <i class="icon ion-search placeholder-icon"></i>
-    <input type="text" placeholder="Name/Email/Location" ng-model="searchText">
+    <input type="text" placeholder="Name/Email/Location" ng-model="formData.searchText" ng-keyup="autoFill($event)">
   </label>
 </div>
 <ion-list>
-      <ion-item class="item-avatar" ng-repeat="friend in friends | filter:{name:searchText}" ng-if='searchText' type="item-text-wrap" href="#">
+      <ion-item class="item-avatar" ng-repeat="friend in friends | filter:{name:searchText}" type="item-text-wrap" href="#">
         <img ng-src="{{friend.avatar_url}}">
         <h2>{{friend.username}}</h2>
 <!-- 	    <ion-option-button class="button-positive"
@@ -16,7 +16,7 @@
 	      Add
 	    </ion-option-button> -->
 
-   <a class="item-icon-right" href="#" ng-click="sendRequest(friend)" >
+   <a class="item-icon-right" href="#" ng-click="sendRequest(friend.id)" >
     <i class="icon ion-plus"></i>
   </a>
   	<!-- <a class="button button-icon icon ion-settings"></a> -->

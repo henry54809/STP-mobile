@@ -28,3 +28,8 @@ input.ng-valid.ng-touched {
     box-shadow: 0px 0px 3px green;
   -moz-box-shadow: none;
   }
+
+.disable {
+  background-color: #fff;
+  border:none;
+}

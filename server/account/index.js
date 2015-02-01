@@ -119,5 +119,57 @@ module.exports = function (app) {
     });
   });
 
+router.put('/', function (req, res) {
+    var resp = {};
+    var msg = req.body;
+    var url_query = req.query;
+
+    if( !url_query.field || !url_query.value ){
+      resp.status = ERROR;
+      resp.message = "Missing something";
+      return res.json(resp);
+    }
+    var query = 'update tb_entity e \
+                       join tb_session s \
+                         on s.entity = e.entity \
+                  left join tb_entity_extra_info ee \
+                         on ee.entity_extra_info = e.entity_extra_info ';
+    var cookies = req.cookies;
+    switch( url_query.field ){
+      case 'city':
+        query = query + 'set city = $1';
+        break;
+      case 'avatar_url':
+        query = query + 'set avatar_url = $1';
+        break;
+      case 'gender':
+        query = query + 'set gender = $1';
+        break;
+      case 'description':
+        query = query + 'set description = $1';
+        break;
+      default:
+        break;
+    }
+
+
+
+    query = query + '
+                      where s.session_id_hash = $2 \
+                        and s.expires > now()';
+    pg.connect(connectionString, function (err, client, done) {
+      client.query(query, [url_query.value,cookies["AuthToken"]], function (err, result) {
+        done();
+        if (result.rows[0]) {
+          return res.json(result.rows[0]);
+        } else {
+          resp.status = ERROR;
+          resp.message = "Authentication required";
+          return res.status(401).json(resp);
+        }
+      });
+    });
+  });
+
   app.use('/api/account', router);
 };
