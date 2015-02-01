@@ -6,20 +6,31 @@
     </ion-nav-buttons>
 
 <ion-content >
-<ion-list  show-delete="shouldShowDelete"
-          show-reorder="shouldShowReorder"
-          can-swipe="listCanSwipe">
-  <ion-item ng-repeat="item in items"
-            class="item-thumbnail-left item-remove-animate">
 
-    <img ng-src="{{item.img}}">
+<label class="item item-input">
+  <span class="input-label">Start Date</span>
+  <input  type="date" ng-model="startDate" />
+</label>
+
+<label class="item item-input">
+  <span class="input-label">End Date</span>
+  <input  type="date" ng-model="endDate" />
+</label>
+
+<div>
+  <button class="button   pull-right button-positive" type="submit" ng-click="getDuration(startDate, endDate)">Confirm Dates</button>{{duration}}
+</div>
+
+
+<ion-list  show-delete="shouldShowDelete" show-reorder="shouldShowReorder" can-swipe="listCanSwipe">
+  <ion-item ng-repeat="item in items" class=" item-remove-animate" ng-class="{'item-divider item-divider-day': item.isDay, 'card': !item.isDay}" ng-click="addActivity(item)">
+
+    <!-- <img ng-src="{{item.img}}">
     <h2>{{item.title}}+{{shouldShowReorder}}+{{shouldShowDelete}}+{{listCanSwipe}}</h2>
-    <p>{{item.description}}</p>
+    <p>{{item.description}}</p> -->
+    {{item.data}}
 
-
-    <ion-delete-button class="ion-minus-circled" 
-                             ng-click="onItemDelete(item)">
-          </ion-delete-button>
+    <ion-delete-button class="ion-minus-circled" ng-click="onItemDelete(item)"></ion-delete-button>
 
 <!--     <ion-option-button class="button-positive"
                        ng-click="share(item)">
@@ -38,26 +49,11 @@
 
   </ion-item>
 </ion-list>
-    <!-- <form ng-submit="doAdd()">
-      <div class="list">
-        <label class="item item-input">
-          <span class="input-label">Title</span>
-          <input type="text" ng-model="myTripsData.title">
-        </label>
-        <label class="item item-input">
-          <span class="input-label">Description</span>
-          <input type="text" ng-model="myTripsData.description">
-        </label>
-        <label class="item">
-          <button class="button button-block button-positive" type="submit">Add!</button>
-        </label>
-        
-      </div>
-    </form> -->
 
+</ion-content>
 
-  </ion-content>
 <div class="bar bar-footer">
-  <button class="button   pull-right button-positive" type="submit">Save</button>
+  <button class="button  pull-right button-positive" type="submit">Save</button>
 </div>
+
 </ion-view>

@@ -102,7 +102,7 @@ module.exports = function (app) {
         avatar_url
       ], function (err, result) {
         done();
-        if (result.rows[0]) {
+        if (result && result.rows[0]) {
           resp.status = OK;
           resp.message = "Account created.";
           return res.json(resp);

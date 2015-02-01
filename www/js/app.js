@@ -21,8 +21,9 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
+  // $urlRouterProvider.otherwise('/todos')
+  
   $stateProvider
-
   .state('app', {
     url: "/app",
     abstract: true,
@@ -91,7 +92,12 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
         templateUrl: "templates/newTrip.html",
         controller: 'NewTripCtrl'
       }
-    }
+    },
+    // resolve: {
+    //   todos: function(IteneraryService) {
+    //     return 1
+    //   }
+    // }
   })
   .state('app.itinerary',{
     url: "/itinerary/:itineraryID",
@@ -100,7 +106,12 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
         templateUrl: "templates/itinerary.html",
         controller: 'itineraryCtrl'
       }
-    }
+    },
+    // resolve: {
+    //   todo: function($stateParams, IteneraryService) {
+    //     return 1
+    //   }
+    // }
   })
   .state('app.placeFinder',{
     url: "/placefinder/:itineraryID",
