@@ -29,6 +29,10 @@ input.ng-valid.ng-touched {
   -moz-box-shadow: none;
   }
 
+
+.disable {
+  background-color: #fff;
+
 .fileContainer [type=file] {   
   opacity: 0 !important;
   position: absolute !important;
@@ -45,4 +49,5 @@ input.ng-valid.ng-touched {
 
 .button-block-add {
    z-index: 100;
+
 }

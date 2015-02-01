@@ -48,6 +48,15 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
       }
     }
   })
+  .state('app.profile', {
+    url: '/profile',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/profile.html',
+        controller: 'profileCtrl'
+      }
+    }
+  })
   .state('app.friends', {
     url: '/friends',
     views: {
