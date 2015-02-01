@@ -33,14 +33,15 @@ stp.service('accountService',['$location','$http','$window', function ($location
     return this.loginState;
   }
   this.getAccount = function(callback){
+    var that = this;
     $http.get('http://picwo.com:3100/api/account',{withCredentials: true}).
       success(function (data, status, headers, config){
-        this.userInfo = data;
+        that.userInfo = data;
         callback(true,data);
         console.log(data);
       }).
       error(function(data, status, headers, config){
-        this.userInfo = data;
+        // that.userInfo = data;
         callback(false,data);
         console.log(data);
       })

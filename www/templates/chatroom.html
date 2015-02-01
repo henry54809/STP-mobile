@@ -1,13 +1,27 @@
 <ion-view view-title="Chatroom">
-  <ion-content class="has-footer">
+  <ion-content class="has-footer" style="margin-bottom:50px">
+    <ion-list>
+      <div ng-repeat="msg in messages">
+        <!-- <div class="card"> -->
+        <div style="margin-left:10px">
+            {{msg.author}}
+        </div>
+        <div class="card" style="margin-top:5px">
 
+        <div class="item item-text-wrap">
+        {{msg.content}}
+        </div>
+        </div>
+        <!-- </div> -->
+      </div>
+    </ion-list>
   </ion-content>
     
     <div class="bar bar-footer item-input-inset" style='height:100px'>
       <label class="item-input-wrapper" style='height:80px' >
         <textarea placeholder="Comments" ng-model="message" style='height:80px; background:#eee;font-size:1.25em'></textarea>
       </label>
-      <button class="button " style="display:block" ng-click="sendMsg()">
+      <button class="button" type="submit" style="display:block" ng-click="sendMsg()">
         send
       </button>
     </div>

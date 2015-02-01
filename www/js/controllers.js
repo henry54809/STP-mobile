@@ -242,8 +242,38 @@ $scope.hideSearch = function() {
   }
 
 })
-.controller('chatroomCtrl', function($scope, $stateParams){
-  var fb = new Firebase('https://picwochart.firebaseio.com/'+$stateParams)
+.controller('chatroomCtrl', function($scope, $stateParams,$ionicScrollDelegate, accountService){
+  var fb = new Firebase('https://picwochat.firebaseio.com/'+$stateParams.chartroomId)
+  console.log(fb);
+  var postsRef = fb.child("messages");
+  // $ionicScrollDelegate.scrollBottom(true);
+  $scope.sendMsg = function(){
+    // postsRef = fb.child("messages");
+    if (accountService.userInfo.username == undefined){
+      alert('please login first')
+      return false;
+    }
+    postsRef.push({
+      author: accountService.userInfo.username,
+      content: $scope.message
+    }, function(error){
+      console.log(error);
+    });
+   
+    $scope.message = "";
+  };
+  // postsRef.once("value", function(snapshot){
+  //   console.log(snapshot.val());
+  // });
+  $scope.messages = [];
+  postsRef.on("child_added", function(snapshot){
+    console.log(snapshot.val());
+    $scope.messages.push(snapshot.val());
+    $ionicScrollDelegate.scrollBottom(true);
+  })
+  
+
+
 
 })
 
