@@ -12,6 +12,7 @@ module.exports = function (app) {
             return next();
         }
         pg.connect(connectionString, function (err, client, done) {
+            var wildcard_search = '%' + url_query.search + '%';
             var query = "select      e.entity as id, \
                                      ee.first_name,  \
                                      ee.last_name,   \
@@ -22,14 +23,14 @@ module.exports = function (app) {
                            from tb_entity e                                 \
                       left join tb_entity_extra_info ee                     \
                              on e.entity_extra_info = ee.entity_extra_info  \
-                          where ee.first_name like '%$1%'                   \
-                             or soundex($1) = soundex(ee.first_name)        \
-                             or ee.last_name like  '%$1%'                   \
-                             or soundex($1) = soundex(ee.last_name)         \
-                             or e.username like '%$1%'                      \
-                             or soundex($1) = soundex(e.username)           \
+                          where ee.first_name like $1                       \
+                             or soundex($2) = soundex(ee.first_name)        \
+                             or ee.last_name like  $1                       \
+                             or soundex($2) = soundex(ee.last_name)         \
+                             or e.username like $1                          \
+                             or soundex($2) = soundex(e.username)           \
                              ";
-            client.query(query, [url_query.search], function (err, result) {
+            client.query(query, [wildcard_search,url_query.search], function (err, result) {
                 done();
                 if (result && result.rows[0]) {
                     return res.json(result.rows);
