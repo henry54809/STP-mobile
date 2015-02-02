@@ -29,6 +29,10 @@ input.ng-valid.ng-touched {
   -moz-box-shadow: none;
   }
 
+
+.disable {
+  background-color: #fff;
+
 .fileContainer [type=file] {   
   opacity: 0 !important;
   position: absolute !important;
@@ -37,4 +41,13 @@ input.ng-valid.ng-touched {
   top: 0 !important;
   bottom: 0 !important;
   width: 100% !important;
+}
+
+.item-divider-day {
+  margin:auto;
+}
+
+.button-block-add {
+   z-index: 100;
+
 }
