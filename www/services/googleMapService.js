@@ -7,9 +7,18 @@ stp.service('googleMapService',['$window', function ($window) {
     var mapOptions = {
             zoom: 8,
             };
-    this.map = new google.maps.Map(document.getElementById('map-canvas'),
+    this.getMapInstance = function(elementId){
+      // if (elementId in this.map){
+      //   return this.map[elementId];
+      // }
+      var map = new google.maps.Map(document.getElementById('map-canvas'),
                      mapOptions);
-    this.map.fitBounds(defaultBounds);
+      map.fitBounds(defaultBounds);
+      // this.map[elementId] = map;
+      return map;
+    }
+    // this.map = {};
+    // this.;
         
     this.AutocompleteService = new google.maps.places.AutocompleteService();
     

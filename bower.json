@@ -4,5 +4,8 @@
   "devDependencies": {
     "ionic": "driftyco/ionic-bower#1.0.0-beta.14",
     "angular-cookie": "~4.0.6"
+  },
+  "dependencies": {
+    "angular-elastic": "~2.4.2"
   }
 }
