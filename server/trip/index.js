@@ -4,6 +4,29 @@ module.exports = function (app) {
   var express = require('express');
   var router = express.Router();
 
+  router.get('/', function (req, res) {
+    var resp = {};
+    pg.connect(connectionString, function (err, client, done) {
+      var query = "select nextval('sq_pk_event') as trip";
+
+      client.query(query, function (err, result) {
+        done();
+        if (result && result.rows[0]) {
+          resp.status = OK;
+          resp.trip = result.rows[0].trip;
+          return res.json(resp);
+        } else {
+          resp.status = ERROR;
+          resp.message = "Error when getting new trip id.";
+          if (err) {
+            console.log(err);
+          }
+          return res.status(500).json(resp);
+        }
+      });
+    });
+  });
+
   router.post('/', function (req, res, next) {
     var resp = {};
     var msg = req.body;
