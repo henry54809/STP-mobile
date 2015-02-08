@@ -55,6 +55,7 @@ require("./account/index")(app);
 require("./user/index")(app);
 require("./user/friend_actions")(app);
 require("./trip/index")(app);
+require("./location/index")(app);
 
 //Create the server
 var server = app.listen(app.get('port'), function () {

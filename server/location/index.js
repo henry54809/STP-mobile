@@ -21,6 +21,7 @@ module.exports = function (app) {
           if (err) {
             resp.status = ERROR;
             resp.message = "Could not get countries list.";
+             res.status(500).json(resp);
           }
         }
       });
@@ -28,6 +29,7 @@ module.exports = function (app) {
   });
 
   router.get('/:country/regions', function (req, res) {
+    var resp = {};
     if (!req.params.country) {
       resp.status = ERROR;
       resp.message = "Country id required.";
@@ -54,6 +56,7 @@ module.exports = function (app) {
           if (err) {
             resp.status = ERROR;
             resp.message = "Could not get regions list.";
+            res.status(500).json(resp);
           }
         }
       });
