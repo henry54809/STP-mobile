@@ -57,6 +57,16 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
       }
     }
   })
+  //country select, could be generic
+  .state('app.country', {
+    url:'/country',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/country.html',
+        controller: 'countryCtrl'
+      }
+    }
+  })
   .state('app.friends', {
     url: '/friends',
     views: {
