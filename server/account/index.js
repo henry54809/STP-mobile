@@ -253,28 +253,30 @@ module.exports = function (app) {
     req.db_query = req.db_query + ' where s.session_id_hash = $ \
                                 and s.expires > now()';
     var indices = [];
-    for (var i = 0; i < req.query.length; i++) {
-      if (req.query[i] === "$") {
+    for (var i = 0; i < req.db_query.length; i++) {
+      if (req.db_query[i] === "$") {
         indices.push(i);
       }
     }
 
     for (var i = 0; i < indices.length; i++) {
-      req.query = req.query.splice(indices[i] + i, 0, i + 1);
+      req.db_query = req.db_query.splice(indices[i] + i, 0, i + 1);
     }
-    console.log(req.query);
+    console.log(req.db_query);
     pg.connect(connectionString, function (err, client, done) {
-      client.query(query, values, function (err, result) {
+      client.query(req.db_query, values, function (err, result) {
         done();
-        if (result.rows[0]) {
-          return res.json(result.rows[0]);
+        if (result) {
+          resp.status = OK;
+          resp.message = "User information updated.";
+          return res.json(resp);
         } else {
           if (err) {
             console.log(err);
+            resp.status = ERROR;
+            resp.message = "Could not update user.";
+            res.status(500).json(resp);
           }
-          resp.status = ERROR;
-          resp.message = "Authentication required";
-          return res.status(401).json(resp);
         }
       });
     });
