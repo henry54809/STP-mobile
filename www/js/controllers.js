@@ -524,6 +524,16 @@ $scope.hideSearch = function() {
     }
 })
 
+.controller('countryCtrl',function($scope,$http,accountService) {
+  accountService.getCountries(function(status,data) {
+    if (status) {
+      $scope.Countries = data.countries;
+      console.log(data);
+    }
+  })
+
+})
+
 
 
 .controller('profileCtrl', function($scope, $stateParams, $http,accountService) {
@@ -533,4 +543,18 @@ $scope.hideSearch = function() {
       console.log(data);
     }
   })
+  $scope.update = function(field,value) {
+    if(value != null && value != "") {
+      accountService.update(field,value,function(status,data) {
+          if (status) {
+            accountService.getAccount(function(status,data) {
+              if (status) {
+                $scope.profile = data;
+                console.log(data);
+              }
+            })
+          }
+      })
+    }
+  }
 });

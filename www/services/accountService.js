@@ -81,4 +81,34 @@ stp.service('accountService',['$location','$http','$window', function ($location
     })
   }
 
+  this.update = function(field,value,callback) {
+    var encodeValue = encodeURIComponent(value);
+    var updateUrl = 'http://picwo.com:3100/api/account?' + field + '=' + encodeValue;
+    $http.put(updateUrl,{},{withCredentials:true}).
+      success(function(data,status,headers,config) {
+        if(status != 'Error') {
+          callback(true,data);
+        } else {
+          callback(false,{});
+        }
+      })
+      .error(function(data,status,headers,config) {
+        callback(false,{});
+      })
+  }
+
+  this.getCountries = function(callback) {
+    $http.get('http://picwo.com:3100/api/location/countries',{withCredentials:true}).
+    success(function(data, status, headers, config) {
+        if(status != 'Error') {
+          callback(true,data);
+        } else {
+          callback(false,{});
+        }
+    }).
+    error(function(data, status, headers, config){
+      console.log(data, status);
+    })
+  }
+
 }]);
