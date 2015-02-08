@@ -119,53 +119,170 @@ module.exports = function (app) {
     });
   });
 
-router.put('/', function (req, res) {
+  router.put('/', function (req, res, next) {
     var resp = {};
-    var msg = req.body;
+
+    var callback = function (session_valid) {
+      if (!session_valid) {
+        resp.status = ERROR;
+        resp.message = "Authentication required.";
+        return res.status(401).json(resp);
+      }
+      var query = 'update tb_entity_extra_info ee\
+                        set';
+      req.db_query = query;
+      req.values = [];
+      return next();
+    };
+
+    var auth_functions = require('../auth/functions');
+    auth_functions.is_session_valid(req.cookies, callback);
+  });
+
+  router.put('/', function (req, res, next) {
+    var resp = {};
     var url_query = req.query;
 
-    if( !url_query.field || !url_query.value ){
+    if (!url_query.address_line_one) {
+      return next();
+    }
+    req.db_query = req.db_query + ' address_line_one = $, ';
+    req.values.push(url_query.address_line_one);
+    next();
+  });
+
+  router.put('/', function (req, res, next) {
+    var resp = {};
+    var url_query = req.query;
+
+    if (!url_query.address_line_two) {
+      return next();
+    }
+    req.db_query = req.db_query + ' address_line_two = $, ';
+    req.values.push(url_query.address_line_two);
+    next();
+  });
+
+  router.put('/', function (req, res, next) {
+    var resp = {};
+    var url_query = req.query;
+
+    if (!url_query.profession) {
+      return next();
+    }
+    req.db_query = req.db_query + ' profession = $, ';
+    req.values.push(url_query.profession);
+    next();
+  });
+
+  router.put('/', function (req, res, next) {
+    var resp = {};
+    var url_query = req.query;
+
+    if (!url_query.age) {
+      return next();
+    }
+    req.db_query = req.db_query + ' age = $, ';
+    req.values.push(url_query.age);
+    next();
+  });
+
+  router.put('/', function (req, res, next) {
+    var resp = {};
+    var url_query = req.query;
+
+    if (!url_query.description) {
+      return next();
+    }
+    req.db_query = req.db_query + ' description = $, ';
+    req.values.push(url_query.description);
+    next();
+  });
+
+  router.put('/', function (req, res, next) {
+    var resp = {};
+    var url_query = req.query;
+
+    if (!url_query.first_name) {
+      return next();
+    }
+    req.db_query = req.db_query + ' first_name = $, ';
+    req.values.push(url_query.first_name);
+    next();
+  });
+
+  router.put('/', function (req, res, next) {
+    var resp = {};
+    var url_query = req.query;
+
+    if (!url_query.last_name) {
+      return next();
+    }
+    req.db_query = req.db_query + ' last_name = $, ';
+    req.values.push(url_query.last_name);
+    next();
+  });
+
+  router.put('/', function (req, res, next) {
+    var resp = {};
+    var url_query = req.query;
+
+    if (!url_query.city) {
+      return next();
+    }
+    req.db_query = req.db_query + ' city = $, ';
+    req.values.push(url_query.city);
+    next();
+  });
+
+  router.put('/', function (req, res, next) {
+    var query = req.query;
+    var resp = {};
+    var values = req.values;
+    if (values.length === 0) {
       resp.status = ERROR;
-      resp.message = "Missing something";
+      resp.message = "No field to update.";
       return res.json(resp);
     }
-    var query = 'update tb_entity e \
-                       join tb_session s \
-                         on s.entity = e.entity \
-                  left join tb_entity_extra_info ee \
-                         on ee.entity_extra_info = e.entity_extra_info ';
+    
+    req.db_query = req.db_query.substring(0, req.db_query.length - 2);
+        
     var cookies = req.cookies;
-    switch( url_query.field ){
-      case 'city':
-        query = query + 'set city = $1';
-        break;
-      case 'avatar_url':
-        query = query + 'set avatar_url = $1';
-        break;
-      case 'gender':
-        query = query + 'set gender = $1';
-        break;
-      case 'description':
-        query = query + 'set description = $1';
-        break;
-      default:
-        break;
+    values.push(cookies["AuthToken"]);
+    req.db_query = req.db_query + 
+                     " from tb_session s, \
+                            tb_entity e  \
+                      where s.entity = e.entity \
+                        and ee.entity_extra_info = e.entity_extra_info \
+                   ";
+     
+    req.db_query = req.db_query + ' and s.session_id_hash = $ \
+                                and s.expires > now()';
+    //Find where the $ are
+    var indices = [];
+    for (var i = 0; i < req.db_query.length; i++) {
+      if (req.db_query[i] === "$") {
+        indices.push(i + 1);
+      }
     }
 
-
-
-    query = query + '
-                      where s.session_id_hash = $2 \
-                        and s.expires > now()';
+    for (var i = 0; i < indices.length; i++) {
+      req.db_query = req.db_query.splice(indices[i] + i, 0, i + 1);
+    }
     pg.connect(connectionString, function (err, client, done) {
-      client.query(query, [url_query.value,cookies["AuthToken"]], function (err, result) {
+      client.query(req.db_query, values, function (err, result) {
         done();
-        if (result.rows[0]) {
-          return res.json(result.rows[0]);
+        if (result) {
+          resp.status = OK;
+          resp.message = "User information updated.";
+          return res.json(resp);
         } else {
-          resp.status = ERROR;
-          resp.message = "Authentication required";
-          return res.status(401).json(resp);
+          if (err) {
+            console.log(err);
+            resp.status = ERROR;
+            resp.message = "Could not update user.";
+            res.status(500).json(resp);
+          }
         }
       });
     });

@@ -65,7 +65,7 @@ angular.module('stp.controllers', [])
 //   $scope.loggedIn = false;
   // Form data for the login modal
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, $http,$ionicSideMenuDelegate, accountService) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, $http,$ionicSideMenuDelegate,$ionicHistory, accountService) {
   accountService.registerLoggedInCallback(function(userInfo,status){
     $scope.loggedIn = status;
     $scope.userInfo = userInfo;
@@ -110,6 +110,12 @@ $ionicModal.fromTemplateUrl('templates/signup.html', {
   $scope.logOut = function() {
     accountService.logOut();
     $scope.loggedIn = false;
+    $ionicHistory.clearHistory();
+    $ionicHistory.clearCache();
+    $ionicHistory.nextViewOptions({
+      historyRoot: true,
+      disableBack: true
+    });
     $location.path('app/home');
     $ionicSideMenuDelegate.toggleLeft();
   }
@@ -139,13 +145,15 @@ $ionicModal.fromTemplateUrl('templates/signup.html', {
   // Perform the login action when the user submits the login form
   $scope.doLogin = function() {
     console.log('Doing login', $scope.loginData);
-    accountService.login($scope.loginData, function(loggedIn, userInfo){
-        $scope.userInfo = userInfo;
+    accountService.login($scope.loginData, function(loggedIn, data){
         $scope.loggedIn = loggedIn;
         if ($scope.loggedIn){
+          $scope.userInfo = data;
           $scope.signin_modal.hide();
+          $scope.loginData = {};
         } else {
           console.log("Failed!")
+          $scope.errorMessage = data.message;
         }
         console.log($scope.userInfo);
     })
@@ -211,15 +219,16 @@ $scope.hideSearch = function() {
   
   $scope.save = function(myTripsData) {
     console.log(myTripsData.title);
-    $http.post('http://picwo.com:3100/api/trip', $scope.myTripsData).
+    $http.post('http://picwo.com:3100/api/trip', myTripsData, {withCredentials:true}).
     success(function(data, status, headers, config){
       $scope.tripId = data.trip;
+      console.log($scope.tripId);
     })
 
   };
 
   $scope.addItinerary = function(tripId) {
-    $http.post('http://picwo.com:3100/api/trip/itinerary', $scope.tripId).
+    $http.post('http://picwo.com:3100/api/trip/itinerary', tripId, {withCredentials:true}).
     success(function(data, status, headers, config){
       $scope.itineraryId = data.itinerary;
     })
@@ -283,7 +292,7 @@ $scope.hideSearch = function() {
     $scope.shouldShowReorder = !$scope.shouldShowReorder;
   }
   $scope.addItinerary = function() {
-    $location.path("app/newtrip");
+    $location.path("app/placefinder/1");
   }
 
 
@@ -296,11 +305,38 @@ $scope.hideSearch = function() {
   }
 
 })
-.controller('chatroomCtrl', function($scope, $stateParams,$ionicScrollDelegate, accountService){
-  var fb = new Firebase('https://picwochat.firebaseio.com/'+$stateParams.chartroomId)
-  console.log(fb);
+.controller('chatroomCtrl', function($scope, $stateParams,$ionicScrollDelegate,$ionicLoading, accountService){
+  var fb = new Firebase('https://picwochat.firebaseio.com/'+$stateParams.chatroomId)
   var postsRef = fb.child("messages");
+  $scope.messages = [];
+// var n = 
   // $ionicScrollDelegate.scrollBottom(true);
+  
+  var first;
+  
+  $scope.init = function(){
+    $ionicLoading.show({
+      content:"loading",
+      animation:"fade-in",
+      showBackdrop: false,
+      maxWidth:200,
+      showDelay:300
+    })
+    postsRef.limitToLast(20).once("value", function(snapshot){
+        var vals = snapshot.val()
+        for (var i in vals){
+          first = first ||i;
+          $scope.messages.push(vals[i]);
+        }
+        // console.log(vals);
+        // console.log(first);
+        // console.log(snapshot.val());
+        $ionicLoading.hide();
+        $ionicScrollDelegate.scrollBottom(true);
+    })
+
+  }();
+
   $scope.sendMsg = function(){
     // postsRef = fb.child("messages");
     if (accountService.userInfo.username == undefined){
@@ -309,7 +345,7 @@ $scope.hideSearch = function() {
     }
     postsRef.push({
       author: accountService.userInfo.username,
-      content: $scope.message
+      content: $scope.message,
     }, function(error){
       console.log(error);
     });
@@ -319,18 +355,33 @@ $scope.hideSearch = function() {
   // postsRef.once("value", function(snapshot){
   //   console.log(snapshot.val());
   // });
-  $scope.messages = [];
-  postsRef.on("child_added", function(snapshot){
-    // console.log(snapshot.val());
-    $scope.messages.push(snapshot.val());
-    $ionicScrollDelegate.scrollBottom(true);
-  })
+  
 
   $scope.scrollBottom =  function(){
     $ionicScrollDelegate.scrollBottom(true);
     // console.log('scrol');
   }
-  
+  $scope.loadMore = function() {
+    var temp= []
+    // console.log(first);
+    postsRef.endAt(null, first).limitToLast(20).once("value", function(snapshot){
+    var vals = snapshot.val();
+    first =[];
+    // console.log(vals)
+    for (var i in vals){
+      first = first|| i
+      // console.log(vals[i])
+      temp.push(vals[i]);
+    }
+    console.log(first)
+    console.log($scope.messages);
+    $scope.messages = temp.concat($scope.messages)
+    // $ionicScrollDelegate.scrollBottom(true);
+    $scope.$broadcast('scroll.refreshComplete');
+    })
+    
+    
+  }
 
 
 

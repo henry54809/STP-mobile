@@ -1,8 +1,11 @@
 <ion-popover-view id="popoverr">
 <ion-content ng-model="items" >
     <div class="list" >
-        <a class="item" ng-repeat="item in items">{{item}}</a>
-        <a class="item" >{{itemData}}</a>
+        <a class="item" ng-repeat="item in itemData track by $index">
+        
+        <p ng-click="detailSearch(item)">{{item.description}}</p>
+            </a>
+        
     </div>
 </ion-content>
 

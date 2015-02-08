@@ -54,15 +54,15 @@ stp.service('accountService',['$location','$http','$window', function ($location
     var that = this;
     $http.post('http://picwo.com:3100/api/auth',loginData,{withCredentials: true}).
     success(function(data, status, headers, config){
-        if(status =="Error"){
-          console.log(data, status);
-          callback(false,{});
+        console.log(data)
+        if(data.status =="Error"){
+          // console.log(data, status);
+          callback(false,data);
         } else {
-          that.getAccount(function(status,data){
-          callback(true, data);
-          })
-        }
-        
+            that.getAccount(function(status,data){
+              callback(status, data);
+            })   
+        } 
     }).
     error(function(data, status, headers, config){
       callback({},false);

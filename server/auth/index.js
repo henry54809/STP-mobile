@@ -14,6 +14,9 @@ module.exports = function (app) {
 
             var callback = function (session_valid) {
                 if (session_valid) {
+                    res.clearCookie('AuthToken', {
+                        path: '/'
+                    });
                     pg.connect(connectionString, function (err, client, done) {
                         var query = 'update tb_session         \
                                         set expires = now()    \
@@ -97,7 +100,7 @@ module.exports = function (app) {
                             var session_id = result.rows[0].session_id;
                             if (session_id) {
                                 res.cookie('AuthToken', session_id, {
-                                    maxAge: 60 * 24 * 60
+                                    expires: new Date(Date.now() + 1000 * 60 * 60 * 24)
                                 });
                                 resp.status = OK;
                                 resp.message = "User authenticated.";
