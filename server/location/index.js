@@ -21,7 +21,7 @@ module.exports = function (app) {
           if (err) {
             resp.status = ERROR;
             resp.message = "Could not get countries list.";
-             res.status(500).json(resp);
+            res.status(500).json(resp);
           }
         }
       });
@@ -41,7 +41,8 @@ module.exports = function (app) {
       return next();
     }
 
-    var query = "select label        \
+    var query = "select region,      \
+                        label        \
                    from tb_region    \
                   where country = $1";
 
@@ -62,6 +63,41 @@ module.exports = function (app) {
       });
     });
 
+  });
+
+  router.get('/:region/cities', function (req, res) {
+    var resp = {};
+    if (!req.params.region) {
+      resp.status = ERROR;
+      resp.message = "Region id required.";
+      return res.status(400).json(resp);
+    }
+    var region = req.params.region;
+
+    if (isNaN(region)) {
+      return next();
+    }
+    var query = "select city,      \
+                        label      \
+                   from tb_city    \
+                  where region = $1";
+
+    pg.connect(connectionString, function (err, client, done) {
+      client.query(query, [region], function (err, result) {
+        done();
+        if (result && result.rows) {
+          resp.status = OK;
+          resp.cities = result.rows;
+          return res.json(resp);
+        } else {
+          if (err) {
+            resp.status = ERROR;
+            resp.message = "Could not get cities list.";
+            res.status(500).json(resp);
+          }
+        }
+      });
+});
   });
   app.use('/api/location', router);
 };
