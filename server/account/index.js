@@ -128,11 +128,7 @@ module.exports = function (app) {
         resp.message = "Authentication required.";
         return res.status(401).json(resp);
       }
-      var query = 'update tb_entity e \
-                       join tb_session s \
-                         on s.entity = e.entity \
-                  left join tb_entity_extra_info ee \
-                         on ee.entity_extra_info = e.entity_extra_info \
+      var query = 'update tb_entity_extra_info ee\
                         set';
       req.db_query = query;
       req.values = [];
@@ -150,7 +146,7 @@ module.exports = function (app) {
     if (!url_query.address_line_one) {
       return next();
     }
-    req.db_query = req.db_query + ' ee.address_line_one = $, ';
+    req.db_query = req.db_query + ' address_line_one = $, ';
     req.values.push(url_query.address_line_one);
     next();
   });
@@ -162,7 +158,7 @@ module.exports = function (app) {
     if (!url_query.address_line_two) {
       return next();
     }
-    req.db_query = req.db_query + ' ee.address_line_two = $, ';
+    req.db_query = req.db_query + ' address_line_two = $, ';
     req.values.push(url_query.address_line_two);
     next();
   });
@@ -174,7 +170,7 @@ module.exports = function (app) {
     if (!url_query.profession) {
       return next();
     }
-    req.db_query = req.db_query + ' ee.profession = $, ';
+    req.db_query = req.db_query + ' profession = $, ';
     req.values.push(url_query.profession);
     next();
   });
@@ -186,7 +182,7 @@ module.exports = function (app) {
     if (!url_query.age) {
       return next();
     }
-    req.db_query = req.db_query + ' ee.age = $, ';
+    req.db_query = req.db_query + ' age = $, ';
     req.values.push(url_query.age);
     next();
   });
@@ -198,7 +194,7 @@ module.exports = function (app) {
     if (!url_query.description) {
       return next();
     }
-    req.db_query = req.db_query + ' ee.description = $, ';
+    req.db_query = req.db_query + ' description = $, ';
     req.values.push(url_query.description);
     next();
   });
@@ -210,7 +206,7 @@ module.exports = function (app) {
     if (!url_query.first_name) {
       return next();
     }
-    req.db_query = req.db_query + ' ee.first_name = $, ';
+    req.db_query = req.db_query + ' first_name = $, ';
     req.values.push(url_query.first_name);
     next();
   });
@@ -222,7 +218,7 @@ module.exports = function (app) {
     if (!url_query.last_name) {
       return next();
     }
-    req.db_query = req.db_query + ' ee.last_name = $, ';
+    req.db_query = req.db_query + ' last_name = $, ';
     req.values.push(url_query.last_name);
     next();
   });
@@ -234,7 +230,7 @@ module.exports = function (app) {
     if (!url_query.city) {
       return next();
     }
-    req.db_query = req.db_query + ' ee.city = $, ';
+    req.db_query = req.db_query + ' city = $, ';
     req.values.push(url_query.city);
     next();
   });
@@ -248,21 +244,31 @@ module.exports = function (app) {
       resp.message = "No field to update.";
       return res.json(resp);
     }
+    
+    req.db_query = req.db_query.substring(0, req.db_query.length - 2);
+        
+    var cookies = req.cookies;
     values.push(cookies["AuthToken"]);
-
-    req.db_query = req.db_query + ' where s.session_id_hash = $ \
+    req.db_query = req.db_query + 
+                     " from tb_session s, \
+                            tb_entity e  \
+                      where s.entity = e.entity \
+                        and ee.entity_extra_info = e.entity_extra_info \
+                   ";
+     
+    req.db_query = req.db_query + ' and s.session_id_hash = $ \
                                 and s.expires > now()';
+    //Find where the $ are
     var indices = [];
     for (var i = 0; i < req.db_query.length; i++) {
       if (req.db_query[i] === "$") {
-        indices.push(i);
+        indices.push(i + 1);
       }
     }
 
     for (var i = 0; i < indices.length; i++) {
       req.db_query = req.db_query.splice(indices[i] + i, 0, i + 1);
     }
-    console.log(req.db_query);
     pg.connect(connectionString, function (err, client, done) {
       client.query(req.db_query, values, function (err, result) {
         done();
