@@ -134,7 +134,7 @@ module.exports = function (app) {
                   left join tb_entity_extra_info ee \
                          on ee.entity_extra_info = e.entity_extra_info \
                         set';
-      req.query = query;
+      req.db_query = query;
       req.values = [];
       return next();
     };
@@ -150,7 +150,7 @@ module.exports = function (app) {
     if (!url_query.address_line_one) {
       return next();
     }
-    req.query = req.query + ' ee.address_line_one = $, ';
+    req.db_query = req.db_query + ' ee.address_line_one = $, ';
     req.values.push(url_query.address_line_one);
     next();
   });
@@ -162,7 +162,7 @@ module.exports = function (app) {
     if (!url_query.address_line_two) {
       return next();
     }
-    req.query = req.query + ' ee.address_line_two = $, ';
+    req.db_query = req.db_query + ' ee.address_line_two = $, ';
     req.values.push(url_query.address_line_two);
     next();
   });
@@ -174,7 +174,7 @@ module.exports = function (app) {
     if (!url_query.profession) {
       return next();
     }
-    req.query = req.query + ' ee.profession = $, ';
+    req.db_query = req.db_query + ' ee.profession = $, ';
     req.values.push(url_query.profession);
     next();
   });
@@ -186,7 +186,7 @@ module.exports = function (app) {
     if (!url_query.age) {
       return next();
     }
-    req.query = req.query + ' ee.age = $, ';
+    req.db_query = req.db_query + ' ee.age = $, ';
     req.values.push(url_query.age);
     next();
   });
@@ -198,7 +198,7 @@ module.exports = function (app) {
     if (!url_query.description) {
       return next();
     }
-    req.query = req.query + ' ee.description = $, ';
+    req.db_query = req.db_query + ' ee.description = $, ';
     req.values.push(url_query.description);
     next();
   });
@@ -210,7 +210,7 @@ module.exports = function (app) {
     if (!url_query.first_name) {
       return next();
     }
-    req.query = req.query + ' ee.first_name = $, ';
+    req.db_query = req.db_query + ' ee.first_name = $, ';
     req.values.push(url_query.first_name);
     next();
   });
@@ -222,7 +222,7 @@ module.exports = function (app) {
     if (!url_query.last_name) {
       return next();
     }
-    req.query = req.query + ' ee.last_name = $, ';
+    req.db_query = req.db_query + ' ee.last_name = $, ';
     req.values.push(url_query.last_name);
     next();
   });
@@ -234,7 +234,7 @@ module.exports = function (app) {
     if (!url_query.city) {
       return next();
     }
-    req.query = req.query + ' ee.city = $, ';
+    req.db_query = req.db_query + ' ee.city = $, ';
     req.values.push(url_query.city);
     next();
   });
@@ -250,7 +250,7 @@ module.exports = function (app) {
     }
     values.push(cookies["AuthToken"]);
 
-    req.query = req.query + ' where s.session_id_hash = $ \
+    req.db_query = req.db_query + ' where s.session_id_hash = $ \
                                 and s.expires > now()';
     var indices = [];
     for (var i = 0; i < req.query.length; i++) {
@@ -269,6 +269,9 @@ module.exports = function (app) {
         if (result.rows[0]) {
           return res.json(result.rows[0]);
         } else {
+          if (err) {
+            console.log(err);
+          }
           resp.status = ERROR;
           resp.message = "Authentication required";
           return res.status(401).json(resp);
