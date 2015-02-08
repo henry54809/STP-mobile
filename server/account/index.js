@@ -241,7 +241,7 @@ module.exports = function (app) {
 
   router.put('/', function (req, res, next) {
     var query = req.query;
-
+    var resp = {};
     var values = req.values;
     if (values.length === 0) {
       resp.status = ERROR;
