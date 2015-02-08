@@ -13,6 +13,13 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(cookieParser());
+app.use(multer({ 
+                 dest: '../www/uploads/',
+                 rename: function (fieldname, filename) {
+                         return filename.replace(/\W+/g, '-').toLowerCase() + Date.now()
+                         }
+              })
+);
 
 //Connection string for postgres
 global.connectionString = "pg://webuser:8rucShn3t3pew4db@10.0.1.126/stp?ssl=true";
@@ -56,6 +63,7 @@ require("./user/index")(app);
 require("./user/friend_actions")(app);
 require("./trip/index")(app);
 require("./location/index")(app);
+require("./upload/index")(app);
 
 //Create the server
 var server = app.listen(app.get('port'), function () {
