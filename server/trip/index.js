@@ -8,7 +8,6 @@ module.exports = function (app) {
     var resp = {};
     var msg = req.body;
     var cookies = req.cookies;
-    console.log(msg);
     if (!msg || !msg.title || !msg.description) {
       resp.status = ERROR;
       resp.message = "Missing title or description.";
@@ -34,15 +33,15 @@ module.exports = function (app) {
                                        ) as trip   \
                     from tb_session                \
                    where session_id_hash = $7';
-      client.query(query, [  
-                             start_date,
-                             duration_days,
-                             proposed_start_date,
-                             proposed_duration_days,
-                             description,
-                             title,
-                             cookies['AuthToken']
-                          ], function (err, result) {
+      client.query(query, [
+        start_date,
+        duration_days,
+        proposed_start_date,
+        proposed_duration_days,
+        description,
+        title,
+        cookies['AuthToken']
+      ], function (err, result) {
         done();
         if (result && result.rows[0]) {
           resp.status = OK;

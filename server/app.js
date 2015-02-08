@@ -3,6 +3,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var cors = require('cors');
+var multer = require('multer');
 var pg = require('pg');
 var app = express();
 
@@ -36,6 +37,10 @@ var cors_options = {
   }
 };
 
+//Util functions
+require('./util/functions');
+
+//Server settings
 app.use(res_headers);
 app.all('/api/*', cors(cors_options));
 app.set('port', 3000);

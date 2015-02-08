@@ -119,46 +119,152 @@ module.exports = function (app) {
     });
   });
 
-router.put('/', function (req, res) {
+  router.put('/', function (req, res, next) {
     var resp = {};
-    var msg = req.body;
-    var url_query = req.query;
 
-    if( !url_query.field || !url_query.value ){
-      resp.status = ERROR;
-      resp.message = "Missing something";
-      return res.json(resp);
-    }
-    var query = 'update tb_entity e \
+    var callback = function (session_valid) {
+      if (!session_valid) {
+        resp.status = ERROR;
+        resp.message = "Authentication required.";
+        return res.status(401).json(resp);
+      }
+      var query = 'update tb_entity e \
                        join tb_session s \
                          on s.entity = e.entity \
                   left join tb_entity_extra_info ee \
-                         on ee.entity_extra_info = e.entity_extra_info ';
-    var cookies = req.cookies;
-    switch( url_query.field ){
-      case 'city':
-        query = query + 'set city = $1';
-        break;
-      case 'avatar_url':
-        query = query + 'set avatar_url = $1';
-        break;
-      case 'gender':
-        query = query + 'set gender = $1';
-        break;
-      case 'description':
-        query = query + 'set description = $1';
-        break;
-      default:
-        break;
+                         on ee.entity_extra_info = e.entity_extra_info \
+                        set';
+      req.query = query;
+      req.values = [];
+      return next();
+    };
+
+    var auth_functions = require('../auth/functions');
+    auth_functions.is_session_valid(req.cookies, callback);
+  });
+
+  router.put('/', function (req, res, next) {
+    var resp = {};
+    var url_query = req.query;
+
+    if (!url_query.address_line_one) {
+      return next();
+    }
+    req.query = req.query + ' ee.address_line_one = $, ';
+    req.values.push(url_query.address_line_one);
+    next();
+  });
+
+  router.put('/', function (req, res, next) {
+    var resp = {};
+    var url_query = req.query;
+
+    if (!url_query.address_line_two) {
+      return next();
+    }
+    req.query = req.query + ' ee.address_line_two = $, ';
+    req.values.push(url_query.address_line_two);
+    next();
+  });
+
+  router.put('/', function (req, res, next) {
+    var resp = {};
+    var url_query = req.query;
+
+    if (!url_query.profession) {
+      return next();
+    }
+    req.query = req.query + ' ee.profession = $, ';
+    req.values.push(url_query.profession);
+    next();
+  });
+
+  router.put('/', function (req, res, next) {
+    var resp = {};
+    var url_query = req.query;
+
+    if (!url_query.age) {
+      return next();
+    }
+    req.query = req.query + ' ee.age = $, ';
+    req.values.push(url_query.age);
+    next();
+  });
+
+  router.put('/', function (req, res, next) {
+    var resp = {};
+    var url_query = req.query;
+
+    if (!url_query.description) {
+      return next();
+    }
+    req.query = req.query + ' ee.description = $, ';
+    req.values.push(url_query.description);
+    next();
+  });
+
+  router.put('/', function (req, res, next) {
+    var resp = {};
+    var url_query = req.query;
+
+    if (!url_query.first_name) {
+      return next();
+    }
+    req.query = req.query + ' ee.first_name = $, ';
+    req.values.push(url_query.first_name);
+    next();
+  });
+
+  router.put('/', function (req, res, next) {
+    var resp = {};
+    var url_query = req.query;
+
+    if (!url_query.last_name) {
+      return next();
+    }
+    req.query = req.query + ' ee.last_name = $, ';
+    req.values.push(url_query.last_name);
+    next();
+  });
+
+  router.put('/', function (req, res, next) {
+    var resp = {};
+    var url_query = req.query;
+
+    if (!url_query.city) {
+      return next();
+    }
+    req.query = req.query + ' ee.city = $, ';
+    req.values.push(url_query.city);
+    next();
+  });
+
+  router.put('/', function (req, res, next) {
+    var query = req.query;
+
+    var values = req.values;
+    if (values.length === 0) {
+      resp.status = ERROR;
+      resp.message = "No field to update.";
+      return res.json(resp);
+    }
+    values.push(cookies["AuthToken"]);
+
+    req.query = req.query + ' where s.session_id_hash = $ \
+                                and s.expires > now()';
+    var indices = [];
+    for (var i = 0; i < req.query.length; i++) {
+      if (req.query[i] === "$") {
+        indices.push(i);
+      }
     }
 
-
-
-    query = query + '
-                      where s.session_id_hash = $2 \
-                        and s.expires > now()';
+    for (var i = 0; i < indices.length; i++) {
+      req.query = req.query.splice(indices[i] + i, 0, i + 1);
+    }
+    console.log(req.query);
     pg.connect(connectionString, function (err, client, done) {
-      client.query(query, [url_query.value,cookies["AuthToken"]], function (err, result) {
+      client.query(query, values, function (err, result) {
         done();
         if (result.rows[0]) {
           return res.json(result.rows[0]);
