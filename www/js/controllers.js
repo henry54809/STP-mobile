@@ -524,10 +524,10 @@ $scope.hideSearch = function() {
     }
 })
 
-.controller('countryCtrl',function($scope,$http,accountService) {
+.controller('countryCtrl',function($scope,$http,$location,accountService) {
   accountService.getCountries(function(status,data) {
     if (status) {
-      $scope.Countries = data.countries;
+      $scope.locations = data.countries;
     }
   })
 
@@ -542,6 +542,29 @@ $scope.hideSearch = function() {
     $scope.searchQuery= undefined;
     $scope.showHeader = false;
   };
+
+  $scope.getupdateRegions = function(value) {
+    if(value != null && value != "") {
+      if(value.country != null){
+        accountService.getRegions(value.country,function(status,data) {
+            if (status) {
+              $scope.locations = data.countries;
+            }
+        })
+      } else if(value.region != null) {
+          accountService.update('city',value.region,function(status,data) {
+            if (status) {
+              accountService.getAccount(function(status,data) {
+                if (status) {
+                  $location.path('app/profile');
+                  console.log(data);
+                }
+              })
+            }
+          })
+      }
+    }
+  }
 
 })
 
