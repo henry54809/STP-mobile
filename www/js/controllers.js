@@ -528,9 +528,20 @@ $scope.hideSearch = function() {
   accountService.getCountries(function(status,data) {
     if (status) {
       $scope.Countries = data.countries;
-      console.log(data);
     }
   })
+
+  $scope.showHeader = false;
+  $scope.toggleSearch = function() {
+    $scope.showHeader = !$scope.showHeader;
+
+    // $scope.$broadcast('showHeader', $scope.showHeader);
+  };
+
+  $scope.cancelSearch = function() {
+    $scope.searchQuery= undefined;
+    $scope.showHeader = false;
+  };
 
 })
 
