@@ -1,4 +1,4 @@
-<ion-view view-title="Country">
+<ion-view view-title="Regions">
     <ion-nav-buttons side="right">
         <a class="button button-icon icon ion-search" ng-click="toggleSearch()"></a>
     </ion-nav-buttons>
@@ -16,8 +16,8 @@
 </ion-nav-view>
 <ion-content ng-class="{'has-subheader': showHeader}">
 	<ion-list>
-      <ion-item class="item-avatar" ng-repeat="location in locations | filter: searchQuery" type="item-text-wrap" href="#" ng-click='getNext(location);'>
-        <h2>{{location.label}}</h2>
+      <ion-item class="item-avatar" ng-repeat="city in cities | filter: searchQuery" type="item-text-wrap" href="#" ng-click='updateCity("city",city.city);'>
+        <h2>{{city.label}}</h2>
 
       </ion-item>
     </ion-list>

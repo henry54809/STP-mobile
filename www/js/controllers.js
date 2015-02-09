@@ -543,7 +543,7 @@ $scope.hideSearch = function() {
     $scope.showHeader = false;
   };
 
-  $scope.getupdateRegions = function(value) {
+  $scope.getNext = function(value) {
     if(value != null && value != "") {
       if(value.country != null){
         accountService.getRegions(value.country,function(status,data) {
@@ -552,16 +552,22 @@ $scope.hideSearch = function() {
             }
         })
       } else if(value.region != null) {
-          accountService.update('city',value.region,function(status,data) {
+        accountService.getCities(value.region,function(status,data) {
             if (status) {
-              accountService.getAccount(function(status,data) {
-                if (status) {
-                  $location.path('app/profile');
-                  console.log(data);
-                }
-              })
+              $scope.locations = data.cities;
             }
-          })
+        })
+      } else if (value.city != null) {
+          accountService.update('city',value.city,function(status,data) {
+          if (status) {
+            accountService.getAccount(function(status,data) {
+              if (status) {
+                $location.path('app/profile');
+                console.log(data);
+              }
+            })
+          }
+      })
       }
     }
   }
