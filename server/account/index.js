@@ -7,30 +7,41 @@ module.exports = function (app) {
   router.get('/', function (req, res) {
     var resp = {};
     var cookies = req.cookies;
-    var query = 'select e.username, \
-                            e.email_address,\
+    var query = 'select     e.username,         \
+                            e.email_address,    \
                             ee.address_line_one,\
                             ee.address_line_two,\
-                            ee.profession, \
-                            ee.age, \
-                            ee.description, \
-                            ee.first_name, \
-                            ee.last_name, \
-                            ee.city, \
-                            avatar_url \
-                       from tb_entity e \
-                       join tb_session s \
-                         on s.entity = e.entity \
-                  left join tb_entity_extra_info ee \
-                         on ee.entity_extra_info = e.entity_extra_info \
-                      where s.session_id_hash = $1 \
+                            ee.profession,      \
+                            ee.age,             \
+                            ee.description,     \
+                            ee.first_name,      \
+                            ee.last_name,       \
+                            ci.label as city,   \
+                            ee.avatar_url,      \
+                            r.label as region,  \
+                            c.label as country  \
+                       from tb_entity e                                 \
+                       join tb_session s                                \
+                         on s.entity = e.entity                         \
+                  left join tb_entity_extra_info ee                     \
+                         on ee.entity_extra_info = e.entity_extra_info  \
+                  left join tb_city ci                                  \
+                         on ee.city = ci.city                           \
+                  left join tb_region r                                 \
+                         on ci.region = r.region                        \
+                  left join tb_country c                                \
+                         on r.country = c.country                       \
+                      where s.session_id_hash = $1                      \
                         and s.expires > now()';
     pg.connect(connectionString, function (err, client, done) {
       client.query(query, [cookies["AuthToken"]], function (err, result) {
         done();
-        if (result.rows[0]) {
+        if (result && result.rows[0]) {
           return res.json(result.rows[0]);
         } else {
+          if (err){
+             console.log(err); 
+          }
           resp.status = ERROR;
           resp.message = "Authentication required";
           return res.status(401).json(resp);
@@ -244,18 +255,18 @@ module.exports = function (app) {
       resp.message = "No field to update.";
       return res.json(resp);
     }
-    
+
     req.db_query = req.db_query.substring(0, req.db_query.length - 2);
-        
+
     var cookies = req.cookies;
     values.push(cookies["AuthToken"]);
-    req.db_query = req.db_query + 
-                     " from tb_session s, \
+    req.db_query = req.db_query +
+      " from tb_session s, \
                             tb_entity e  \
                       where s.entity = e.entity \
                         and ee.entity_extra_info = e.entity_extra_info \
                    ";
-     
+
     req.db_query = req.db_query + ' and s.session_id_hash = $ \
                                 and s.expires > now()';
     //Find where the $ are
