@@ -13,13 +13,12 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(cookieParser());
-app.use(multer({ 
-                 dest: '../www/uploads/',
-                 rename: function (fieldname, filename) {
-                         return filename.replace(/\W+/g, '-').toLowerCase() + Date.now()
-                         }
-              })
-);
+app.use(multer({
+  dest: '../www/uploads/',
+  rename: function (fieldname, filename) {
+    return filename.replace(/\W+/g, '-').toLowerCase() + Date.now();
+  }
+}));
 
 //Connection string for postgres
 global.connectionString = "pg://webuser:8rucShn3t3pew4db@10.0.1.126/stp?ssl=true";
@@ -45,7 +44,7 @@ var cors_options = {
 };
 
 //Util functions
-require('./util/functions');
+var util = require('./util/functions');
 
 //Server settings
 app.use(res_headers);
@@ -77,4 +76,26 @@ app.use(function (req, res) {
   res.status(404).json({
     "message": "Not supported."
   });
+});
+
+//Catch all interrupted signals.
+process.on('SIGINT', function () {
+  console.log('Got SIGINT.  Sending email.');
+
+  var data = {};
+  var date = new Date();
+  data.to = 'hdu35@gatech.edu';
+  data.subject = 'Node.js terminated at ' + date.toString();
+  data.html = '<b>Hello world!</b>';
+  var callback = function (err, info) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("Mail sent.");
+      console.log(info);
+    }
+  };
+  util.sendmail(data, callback);
+
+  process.exit(1);
 });
