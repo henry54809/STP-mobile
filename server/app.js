@@ -58,6 +58,7 @@ app.all('/api/*', auth_functions.require_authentication);
 
 //Routes
 require("./account/index")(app);
+require("./account/reset_password")(app);
 require("./user/index")(app);
 require("./user/friend_actions")(app);
 require("./trip/index")(app);

@@ -249,6 +249,9 @@ module.exports = function (app) {
 
   router.put('/', function (req, res, next) {
     var query = req.query;
+    if (req.body) {
+      return next();
+    }
     var resp = {};
     var values = req.values;
     if (values.length === 0) {

@@ -70,13 +70,13 @@ module.exports = function (app) {
 	router.put('/', function (req, res, next) {
 		var resp = {};
 		var msg = req.body;
-
+		var cookies = req.cookies;
 		if (!msg || !msg.current_password || !msg.new_password) {
 			return next();
 		}
 
 		var callback = function (session_valid) {
-			if (session_valid) {
+			if (!session_valid) {
 				resp.status = ERROR;
 				resp.message = "Authentication required.";
 				return res.status(401).json(resp);
@@ -93,7 +93,7 @@ module.exports = function (app) {
 					cookies["AuthToken"]
 				], function (err, result) {
 					done();
-					if (result) {
+					if (result && result.rowCount > 0) {
 						resp.status = OK;
 						resp.message = "Password updated.";
 						return res.json(resp);
