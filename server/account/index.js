@@ -39,8 +39,8 @@ module.exports = function (app) {
         if (result && result.rows[0]) {
           return res.json(result.rows[0]);
         } else {
-          if (err){
-             console.log(err); 
+          if (err) {
+            console.log(err);
           }
           resp.status = ERROR;
           resp.message = "Authentication required";
@@ -130,6 +130,7 @@ module.exports = function (app) {
     });
   });
 
+  //Update entity information
   router.put('/', function (req, res, next) {
     var resp = {};
 
@@ -290,11 +291,12 @@ module.exports = function (app) {
         } else {
           if (err) {
             console.log(err);
-            resp.status = ERROR;
-            resp.message = "Could not update user.";
-            res.status(500).json(resp);
           }
+          resp.status = ERROR;
+          resp.message = "Could not update user.";
+          return res.status(500).json(resp);
         }
+
       });
     });
   });

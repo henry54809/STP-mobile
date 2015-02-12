@@ -84,18 +84,16 @@ process.on('SIGINT', function () {
 
   var data = {};
   var date = new Date();
-  data.to = 'hdu35@gatech.edu';
+  data.to = 'henry54809@gmail.com';
   data.subject = 'Node.js terminated at ' + date.toString();
-  data.html = '<b>Hello world!</b>';
+  data.html = '<b></b>';
   var callback = function (err, info) {
     if (err) {
       console.log(err);
     } else {
       console.log("Mail sent.");
-      console.log(info);
     }
+    process.exit(1);
   };
   util.sendmail(data, callback);
-
-  process.exit(1);
 });
