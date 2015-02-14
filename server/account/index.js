@@ -78,7 +78,6 @@ module.exports = function (app) {
                                             $1,                             \
                                             $2,                             \
                                             crypt( $3, gen_salt(\'bf\') ),  \
-                                            null,                           \
                                             $4,                             \
                                             $5,                             \
                                             fn_new_entity_extra_info(       \
@@ -249,7 +248,7 @@ module.exports = function (app) {
 
   router.put('/', function (req, res, next) {
     var query = req.query;
-    if (req.body) {
+    if (req.body && req.values.length === 0) {
       return next();
     }
     var resp = {};
