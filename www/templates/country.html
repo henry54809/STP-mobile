@@ -1,0 +1,25 @@
+<ion-view view-title="Country">
+    <ion-nav-buttons side="right">
+        <a class="button button-icon icon ion-search" ng-click="toggleSearch()"></a>
+    </ion-nav-buttons>
+<ion-nav-view>
+    <div class="bar bar-subheader item-input-inset" ng-show="showHeader" >
+                          <label class="item-input-wrapper">
+                            <i class="icon ion-ios7-search placeholder-icon"></i>
+                            <input type="search" placeholder="Search" ng-model="searchQuery">
+                          </label>
+                          <button class="button button-clear" ng-click="cancelSearch()">
+                            Cancel
+                          </button>
+                          
+    </div>
+</ion-nav-view>
+<ion-content ng-class="{'has-subheader': showHeader}">
+	<ion-list>
+      <ion-item class="item-avatar" ng-repeat="location in locations | filter: searchQuery" type="item-text-wrap" href="#" ng-click='getupdateRegions(location);'>
+        <h2>{{location.label}}</h2>
+
+      </ion-item>
+    </ion-list>
+</ion-content>
+</ion-view>

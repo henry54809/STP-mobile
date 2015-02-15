@@ -20,43 +20,91 @@
     <span style='float:right;'>{{profile.email_address}}</span>
   </a>
 
-  <a class="item item-icon-left item-icon-right" href="#">
+  <a class="item item-icon-left" href="#">
     <i class="icon ion-at"></i>
     UserName
     <span style='float:right;'>{{profile.username}}</span>
-    <i class='icon ion-ios-arrow-right'></i>
   </a>
 <div class="item item-divider">
     
 </div>
-  <a class="item item-icon-left item-icon-right" href="#">
-    <i class="icon ion-transgender"></i>
-    Gender
-    <span style='float:right;'>{{profile.username}}</span>
-    <i class='icon ion-ios-arrow-right'></i>
-  </a>
 
-  <a class="item item-icon-left item-icon-right" href="#">
-    <i class="icon ion-location"></i>
-    City
-    <span style='float:right;'>{{profile.username}}</span>
+  <div class="item item-icon-left item-icon-right" >
+  <i class="icon ion-edit"></i>
+  <div style="float:left;width:30%;">
+    First Name
+  </div>
+  <div style="float:left;width:70%;">
+    <input type='text' style="float:right;text-align:right;border:none;height:21px;" ng-class="{disable: !enableEdit}" ng-focus='enableEdit = true;' ng-blur='update("first_name",profile.first_name)'  ng-model='profile.first_name'></input>
     <i class='icon ion-ios-arrow-right'></i>
-  </a>
-
+  </div>
+  </div>
 
   <div class="item item-icon-left item-icon-right" >
   <i class="icon ion-edit"></i>
   <div style="float:left;width:30%;">
     
+    Last Name
+  </div>
+  <div style="float:left;width:70%;">
+    <input type='text' style="float:right;text-align:right;border:none;height:21px;" ng-class="{disable: !enableEdit}" ng-focus='enableEdit = true;' ng-blur='update("last_name",profile.last_name)'  ng-model='profile.last_name'></input>
+    <i class='icon ion-ios-arrow-right'></i>
+  </div>
+  </div>
+
+<div class="item item-icon-left item-icon-right" >
+  <i class="icon ion-calendar"></i>
+  <div style="float:left;width:30%;">
+    
+    Age
+  </div>
+  <div style="float:left;width:70%;">
+    <input type='number' style="float:right;text-align:right;border:none;height:21px;" ng-class="{disable: !enableEdit}" ng-focus='enableEdit = true;' ng-blur='update("age",profile.age)'  ng-model='profile.age'></input>
+    <i class='icon ion-ios-arrow-right'></i>
+  </div>
+</div>
+
+  <a class="item item-icon-left item-icon-right" href="#/app/country">
+    <i class="icon ion-location"></i>
+    Country
+    <span style='float:right;'>{{profile.country}}</span>
+    <i class='icon ion-ios-arrow-right'></i>
+  </a>
+  <a class="item item-icon-left item-icon-right" href="#">
+    <i class="icon ion-location"></i>
+    Region
+    <span style='float:right;'>{{profile.region}}</span>
+    <i class='icon ion-ios-arrow-right'></i>
+  </a>
+  <a class="item item-icon-left item-icon-right" href="#">
+    <i class="icon ion-location"></i>
+    City
+    <span style='float:right;'>{{profile.city}}</span>
+    <i class='icon ion-ios-arrow-right'></i>
+  </a>
+<div class="item item-icon-left item-icon-right" >
+  <i class="icon ion-briefcase"></i>
+  <div style="float:left;width:30%;">
+    
+    Profession
+  </div>
+  <div style="float:left;width:70%;">
+    <input style="float:right;text-align:right;border:none;" ng-class="{disable: !enableEdit}" ng-focus='enableEdit = true;' ng-blur='update("profession",profile.profession)'  ng-model='profile.profession'></input>
+    <i class='icon ion-ios-arrow-right'></i>
+  </div>
+</div>
+
+<div class="item item-icon-left item-icon-right" >
+  <i class="icon ion-beer"></i>
+  <div style="float:left;width:30%;">
+    
     What's up
   </div>
   <div style="float:left;width:70%;">
-    <input style="float:right;text-align:right;border:none;" ng-class="{disable: !enableEdit}" ng-focus='enableEdit = true;' ng-blur='enableEdit = false;' placeholder="Not set"></input>
+    <input style="float:right;text-align:right;border:none;" ng-class="{disable: !enableEdit}" ng-focus='enableEdit = true;' ng-blur='update("description",profile.description)'  ng-model='profile.description'></input>
     <i class='icon ion-ios-arrow-right'></i>
   </div>
-    
-    
-  </div>
+</div>
 
 
 </div>

@@ -6,9 +6,9 @@
   <ion-content>
     <div class="item item-divider">
     Friend requests
-  </div>
+    </div>
     <ion-list>
-      <ion-item class="item-avatar" ng-repeat="friend in friendReqs" type="item-text-wrap" href="#">
+      <ion-item class="item-avatar" ng-repeat="friend in friends | filter:{friend_status: 'Friend request sent'}" type="item-text-wrap" href="#">
 
         <img ng-src="{{friend.avatar_url}}">
         <a class=" button-icon icon ion-ios-close " style="float:right" ng-click="declineRequest(friend)"></a>
@@ -29,7 +29,7 @@
     Current friends
   </div>
     <ion-list>
-      <ion-item class="item-avatar" ng-repeat="friend in friends" type="item-text-wrap" href="#">
+      <ion-item class="item-avatar" ng-repeat="friend in friends | filter:{friend_status: 'friend'}:true" type="item-text-wrap" href="#">
         <img ng-src="{{friend.avatar_url}}">
         <h2>{{friend.username}}</h2>
       </ion-item>

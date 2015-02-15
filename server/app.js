@@ -3,6 +3,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var cors = require('cors');
+var multer = require('multer');
 var pg = require('pg');
 var app = express();
 
@@ -12,6 +13,12 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(cookieParser());
+app.use(multer({
+  dest: '../www/uploads/',
+  rename: function (fieldname, filename) {
+    return filename.replace(/\W+/g, '-').toLowerCase() + Date.now();
+  }
+}));
 
 //Connection string for postgres
 global.connectionString = "pg://webuser:8rucShn3t3pew4db@10.0.1.126/stp?ssl=true";
@@ -36,6 +43,10 @@ var cors_options = {
   }
 };
 
+//Util functions
+var util = require('./util/functions');
+
+//Server settings
 app.use(res_headers);
 app.all('/api/*', cors(cors_options));
 app.set('port', 3000);
@@ -47,9 +58,12 @@ app.all('/api/*', auth_functions.require_authentication);
 
 //Routes
 require("./account/index")(app);
+require("./account/reset_password")(app);
 require("./user/index")(app);
 require("./user/friend_actions")(app);
 require("./trip/index")(app);
+require("./location/index")(app);
+require("./upload/index")(app);
 
 //Create the server
 var server = app.listen(app.get('port'), function () {
@@ -63,4 +77,24 @@ app.use(function (req, res) {
   res.status(404).json({
     "message": "Not supported."
   });
+});
+
+//Catch all interrupted signals.
+process.on('SIGINT', function () {
+  console.log('Got SIGINT.  Sending email.');
+
+  var data = {};
+  var date = new Date();
+  data.to = 'henry54809@gmail.com';
+  data.subject = 'Node.js terminated at ' + date.toString();
+  data.html = '<b></b>';
+  var callback = function (err, info) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("Mail sent.");
+    }
+    process.exit(1);
+  };
+  util.sendmail(data, callback);
 });
