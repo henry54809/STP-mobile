@@ -102,18 +102,10 @@ stp.controller('placeFinderCtrl', function($scope,$location, $ionicPopover, goog
       var request = {
         placeId: place.place_id
       };
-      google.maps.event.addListener(marker, 'click', function(innerRequest,innerMarker) {
-        return function(){
-
-        var infowindow = new google.maps.InfoWindow();
-        $scope.PlacesService.getDetails(innerRequest, function(place, status) {
-          if (status == google.maps.places.PlacesServiceStatus.OK) {
-              infowindow.setContent(place.name);
-              infowindow.open($scope.map, innerMarker);
-         }
-        });
-        }
-      }(request,marker));
+      var currentOpenInfowindow;
+      google.maps.event.addListener(marker, 'click', infowindowListener(request,marker,currentOpenInfowindow, function(curWin){
+        currentOpenInfowindow = curWin;
+      }));
     }
     $scope.map.fitBounds(bounds);
 
@@ -122,6 +114,41 @@ stp.controller('placeFinderCtrl', function($scope,$location, $ionicPopover, goog
     }
       // console.log(query);
   }
+
+  var infowindowListener = function(innerRequest,innerMarker) {
+        return function(){
+          if (innerMarker.infowindow){
+            if (innerMarker.infowindow.isOpen){
+              innerMarker.infowindow.close();
+              innerMarker.infowindow.isOpen = false;
+              currentOpenInfowindow = undefined;
+            } else {
+              innerMarker.infowindow.open($scope.map, innerMarker);
+              innerMarker.infowindow.isOpen = true;
+              if(currentOpenInfowindow){
+                currentOpenInfowindow.close();
+                currentOpenInfowindow.isOpen = false
+              } 
+              currentOpenInfowindow = innerMarker.infowindow;
+            }
+          } else{
+            var infowindow = new google.maps.InfoWindow();
+            $scope.PlacesService.getDetails(innerRequest, function(place, status) {
+              if (status == google.maps.places.PlacesServiceStatus.OK) {
+                  infowindow.setContent(place.name);
+                  infowindow.open($scope.map, innerMarker);
+             }
+            });
+            infowindow.isOpen=true;
+            innerMarker.infowindow = infowindow;
+            if(currentOpenInfowindow){
+              currentOpenInfowindow.close();
+              currentOpenInfowindow.isOpen=false;
+            } 
+            currentOpenInfowindow = innerMarker.infowindow;
+          }
+        }
+  };
   $scope.detailSearch =function(place) {
       // console.log(place);
     for (var i = 0, marker; marker = markers[i]; i++) {
