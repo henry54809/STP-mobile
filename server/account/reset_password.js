@@ -223,26 +223,30 @@ module.exports = function (app) {
 	//Reset password
 	router.put('/reset_password', function (req, res, next) {
 		var resp = {};
-		var msg = res.body;
+		var msg = req.body;
 		if (!msg || !msg.email_address || !msg.token || !msg.new_password) {
 			return next();
 		}
-		var email_address = url_query.email_address;
-		var token = url_query.token;
+		var email_address = msg.email_address;
+		var token = msg.token;
 		var new_password = msg.new_password;
 
 		var query = "update tb_entity e										\
 		 			    set password_hash = crypt($1, gen_salt('bf'))		\
 		 			   from tb_reset_password r                  			\
 		 			  where r.token = $2  				 					\
-		 			    and e.email_address = $3";
+		 			    and e.email_address = $3                            \
+                        and r.consumed is null                              \
+                        and r.valid_until > now()";
 
 		pg.connect(connectionString, function (err, client, done) {
-			client.query(query, [token, email_address, new_password], function (err, result) {
+			client.query(query, [new_password, token, email_address], function (err, result) {
 				done();
 				if (result) {
 					if (result.rowCount > 0) {
-						callback();
+						resp.status = OK;
+						resp.message = 'Password updated.';
+						return res.json(resp);
 					} else {
 						resp.status = ERROR;
 						resp.message = 'Reset password token not valid.';
