@@ -108,7 +108,7 @@ module.exports = function (app) {
 						<span style="font-family: arial, helvetica, sans-serif; font-size: small;">								\
 							We received a request to reset your password. Please use this link									\
 							<a href="http://m.picwo.com/account/ResetPassword?' + querystring.stringify(reset_data) +
-				'"">http://m.picwo.com/account/ResetPassword</a> 																	\
+				'">http://m.picwo.com/account/ResetPassword</a> 																	\
 							to enter your new password.																			\
 						< /span> 																								\
 						< br / > 																								\
@@ -223,13 +223,13 @@ module.exports = function (app) {
 	//Reset password
 	router.put('/reset_password', function (req, res, next) {
 		var resp = {};
-		var url_query = req.query;
-		if (!url_query.email_address || !url_query.token || !url_query.new_password) {
+		var msg = res.body;
+		if (!msg || !msg.email_address || !msg.token || !msg.new_password) {
 			return next();
 		}
 		var email_address = url_query.email_address;
 		var token = url_query.token;
-		var new_password = url_query.new_password;
+		var new_password = msg.new_password;
 
 		var query = "update tb_entity e										\
 		 			    set password_hash = crypt($1, gen_salt('bf'))		\
@@ -238,7 +238,7 @@ module.exports = function (app) {
 		 			    and e.email_address = $3";
 
 		pg.connect(connectionString, function (err, client, done) {
-			client.query(query, [token, email_address], function (err, result) {
+			client.query(query, [token, email_address, new_password], function (err, result) {
 				done();
 				if (result) {
 					if (result.rowCount > 0) {

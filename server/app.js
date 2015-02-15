@@ -79,15 +79,15 @@ app.use(function (req, res) {
   });
 });
 
-//Catch all interrupted signals.
-process.on('SIGINT', function () {
-  console.log('Got SIGINT.  Sending email.');
 
+//Catch all uncaught exceptions signals.
+process.on('uncaughtException', function (err) {
+  console.log('Got exceptions.  Sending email.');
   var data = {};
   var date = new Date();
   data.to = 'henry54809@gmail.com';
   data.subject = 'Node.js terminated at ' + date.toString();
-  data.html = '<b></b>';
+  data.html = '<b>' + err + '</b>';
   var callback = function (err, info) {
     if (err) {
       console.log(err);
