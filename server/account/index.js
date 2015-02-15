@@ -4,8 +4,13 @@ module.exports = function (app) {
   var express = require('express');
   var router = express.Router();
 
-  router.get('/', function (req, res) {
+  router.get('/', function (req, res, next) {
     var resp = {};
+
+    //next if url param contains keys.
+    if (Object.getOwnPropertyNames(req.query).length > 0) {
+      return next();
+    }
     var cookies = req.cookies;
     var query = 'select     e.username,         \
                             e.email_address,    \
@@ -39,8 +44,8 @@ module.exports = function (app) {
         if (result && result.rows[0]) {
           return res.json(result.rows[0]);
         } else {
-          if (err){
-             console.log(err); 
+          if (err) {
+            console.log(err);
           }
           resp.status = ERROR;
           resp.message = "Authentication required";
@@ -78,7 +83,6 @@ module.exports = function (app) {
                                             $1,                             \
                                             $2,                             \
                                             crypt( $3, gen_salt(\'bf\') ),  \
-                                            null,                           \
                                             $4,                             \
                                             $5,                             \
                                             fn_new_entity_extra_info(       \
@@ -130,6 +134,7 @@ module.exports = function (app) {
     });
   });
 
+  //Update entity information
   router.put('/', function (req, res, next) {
     var resp = {};
 
@@ -248,6 +253,9 @@ module.exports = function (app) {
 
   router.put('/', function (req, res, next) {
     var query = req.query;
+    if (req.body && req.values.length === 0) {
+      return next();
+    }
     var resp = {};
     var values = req.values;
     if (values.length === 0) {
@@ -290,11 +298,12 @@ module.exports = function (app) {
         } else {
           if (err) {
             console.log(err);
-            resp.status = ERROR;
-            resp.message = "Could not update user.";
-            res.status(500).json(resp);
           }
+          resp.status = ERROR;
+          resp.message = "Could not update user.";
+          return res.status(500).json(resp);
         }
+
       });
     });
   });
