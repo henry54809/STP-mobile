@@ -89,8 +89,8 @@ module.exports = function (app) {
   //and check if entity is associated with this event
   router.all('/:trip_id', function (req, res, next) {
     var resp = {};
-    var trip_id = req.trip_id;
-    var cookies = req.cookes;
+    var trip_id = req.params.trip_id;
+    var cookies = req.cookies;
     if (isNaN(trip_id)) {
       return next();
     }
@@ -129,10 +129,10 @@ module.exports = function (app) {
   });
 
   router.post('/:trip_id/itinerary', function (req, res, next) {
-    var trip_id = req.trip_id;
+    var trip_id = req.params.trip_id;
     var cookies = req.cookies;
     var resp = {};
-    if (isNaN(trip_id)) {
+    if (!req.event) {
       return next();
     }
     var create_new_itinerary = function () {
