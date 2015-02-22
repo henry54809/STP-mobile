@@ -31,12 +31,12 @@ module.exports = function (app) {
     var resp = {};
     var msg = req.body;
     var cookies = req.cookies;
-    if (!msg || !msg.title || !msg.description) {
+    if (!msg || !msg.title || !msg.description || !msg.trip) {
       resp.status = ERROR;
-      resp.message = "Missing title or description.";
+      resp.message = "Missing title or description or trip.";
       return res.json(resp);
     }
-
+    var event_pk = msg.trip; 
     var start_date = msg.start_date;
     var duration_days = msg.duration_days;
     var proposed_start_date = msg.proposed_start_date;
@@ -45,14 +45,15 @@ module.exports = function (app) {
     var description = msg.description;
 
     pg.connect(connectionString, function (err, client, done) {
-      var query = 'Select  fn_new_event(           \
+      var query = 'select fn_new_event(            \
                                           $1,      \
                                           $2,      \
                                           $3,      \
                                           $4,      \
                                           entity,  \
                                           $5,      \
-                                          $6       \
+                                          $6,      \
+                                          $7       \
                                        ) as trip   \
                     from tb_session                \
                    where session_id_hash = $7';
@@ -63,7 +64,8 @@ module.exports = function (app) {
         proposed_duration_days,
         description,
         title,
-        cookies['AuthToken']
+        cookies['AuthToken'],
+        event_pk
       ], function (err, result) {
         done();
         if (result && result.rows[0]) {

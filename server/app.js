@@ -13,6 +13,12 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(cookieParser());
+app.use(multer({
+  dest: '../www/uploads/',
+  rename: function (fieldname, filename) {
+    return filename.replace(/\W+/g, '-').toLowerCase() + Date.now();
+  }
+}));
 
 //Connection string for postgres
 global.connectionString = "pg://webuser:8rucShn3t3pew4db@10.0.1.126/stp?ssl=true";
@@ -38,7 +44,7 @@ var cors_options = {
 };
 
 //Util functions
-require('./util/functions');
+var util = require('./util/functions');
 
 //Server settings
 app.use(res_headers);
@@ -52,9 +58,12 @@ app.all('/api/*', auth_functions.require_authentication);
 
 //Routes
 require("./account/index")(app);
+require("./account/reset_password")(app);
 require("./user/index")(app);
 require("./user/friend_actions")(app);
 require("./trip/index")(app);
+require("./location/index")(app);
+require("./upload/index")(app);
 
 //Create the server
 var server = app.listen(app.get('port'), function () {
@@ -68,4 +77,24 @@ app.use(function (req, res) {
   res.status(404).json({
     "message": "Not supported."
   });
+});
+
+
+//Catch all uncaught exceptions signals.
+process.on('uncaughtException', function (err) {
+  console.log('Got exceptions.  Sending email.');
+  var data = {};
+  var date = new Date();
+  data.to = 'henry54809@gmail.com';
+  data.subject = 'Node.js terminated at ' + date.toString();
+  data.html = '<b>' + err + '</b>';
+  var callback = function (err, info) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("Mail sent.");
+    }
+    process.exit(1);
+  };
+  util.sendmail(data, callback);
 });

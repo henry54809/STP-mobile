@@ -558,6 +558,56 @@ $scope.hideSearch = function() {
     }
 })
 
+.controller('countryCtrl',function($scope,$http,$location,accountService) {
+  accountService.getCountries(function(status,data) {
+    if (status) {
+      $scope.locations = data.countries;
+    }
+  })
+
+  $scope.showHeader = false;
+  $scope.toggleSearch = function() {
+    $scope.showHeader = !$scope.showHeader;
+
+    // $scope.$broadcast('showHeader', $scope.showHeader);
+  };
+
+  $scope.cancelSearch = function() {
+    $scope.searchQuery= undefined;
+    $scope.showHeader = false;
+  };
+
+  $scope.getNext = function(value) {
+    if(value != null && value != "") {
+      if(value.country != null){
+        accountService.getRegions(value.country,function(status,data) {
+            if (status) {
+              $scope.locations = data.countries;
+            }
+        })
+      } else if(value.region != null) {
+        accountService.getCities(value.region,function(status,data) {
+            if (status) {
+              $scope.locations = data.cities;
+            }
+        })
+      } else if (value.city != null) {
+          accountService.update('city',value.city,function(status,data) {
+          if (status) {
+            accountService.getAccount(function(status,data) {
+              if (status) {
+                $location.path('app/profile');
+                console.log(data);
+              }
+            })
+          }
+      })
+      }
+    }
+  }
+
+})
+
 
 
 .controller('profileCtrl', function($scope, $stateParams, $http,accountService) {
@@ -567,4 +617,18 @@ $scope.hideSearch = function() {
       console.log(data);
     }
   })
+  $scope.update = function(field,value) {
+    if(value != null && value != "") {
+      accountService.update(field,value,function(status,data) {
+          if (status) {
+            accountService.getAccount(function(status,data) {
+              if (status) {
+                $scope.profile = data;
+                console.log(data);
+              }
+            })
+          }
+      })
+    }
+  }
 });
