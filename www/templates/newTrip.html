@@ -34,37 +34,24 @@
           <label for="file" class="item item-icon-left fileContainer">
               <i class="icon ion-ios7-camera"></i>
               
-              <!-- <input id="file"  type="file" ng-file-select="onFileSelect($files)" onchange="angular.element(this).scope().uploadFile(this.files)"/> -->
-          
-              <!--<style>
-                  .thumb {
-                  height: 75px;
-                  border: 1px solid #000;
-                  margin: 10px 5px 0 0;
-                  }
-              </style>
-
-              <input type="file" id="files" name="files[]" multiple ng-file-select="onFileSelect($files)"/>
-              <output id="list"></output>
-
-              <script>
-
-              </script>-->
+           
 
               <input id="file" type="file" ng-file-select ng-model="files" ng-accept="'*.jpg,*.png'" multiple onchange="angular.element(this).scope().uploadFile(this.files)"/>
 
               
-              <!-- <imput ng-file-select  onchange="angular.element(this).scope().uploadFile(this.files)">Upload photos!</input> -->
-          
-              <!-- <div ng-file-drop ng-file-select ng-model="files" drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" class="drop-box" ng-multiple="true" allow-dir="true" ng-accept="'image/* ">
-                  Drop Images or PDFs<div>or click to select</div>
-          </div>
-          <div ng-no-file-drop class="drop-box">File Farg&Drop not supported on your browser</div> -->
+                <img 
+                    ng-repeat="photo in photos"
+                    ng-src= "{{photo}}"
+                    style="width: 100px ; margin-right: 10px;"
+                />
+            
+              
+              
             </label>
         </div>
 
 
-        <div class="card" ng-show="hasPhotos">
+        <!-- <div class="card" ng-show="hasPhotos">
 
             <p >
                 <img 
@@ -73,7 +60,7 @@
                     style="width: 100px ; margin-right: 10px ;"
                     />
             </p>
-        </div>
+        </div> -->
       </div>
     </form>
 

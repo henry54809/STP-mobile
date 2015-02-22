@@ -6,7 +6,6 @@
     "angular-cookie": "~4.0.6"
   },
   "dependencies": {
-    "angular-elastic": "~2.4.2",
-   
+    "angular-elastic": "~2.4.2"
   }
 }

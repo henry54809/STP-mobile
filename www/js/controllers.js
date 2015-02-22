@@ -238,20 +238,22 @@ $scope.hideSearch = function() {
     // $location.path('app/itinerary/' + $scope.itineraryId);
     $location.path('app/itinerary/1');
   }
-  
-  $scope.photos = [];
-  $scope.hasPhotos = false;
 
+  $scope.photos = [];
   $scope.uploadFile = function(files) {
     var fd = new FormData();
+    $scope.photos = [];
     //Take the first selected file
     // fd.append("file", files[0]);
     // fd.append("file", files[1]);
     // fd.append("file", files[2]);
     fd = files;
-    photos = fd;
-    hasPhotos = true;
     console.log(fd[0]);
+    for (i = 0; i < Object.keys(files).length; i++) {
+      $scope.photos.push(URL.createObjectURL(files[i]));
+    }
+
+    console.log($scope.photos[0]);
 
     $http.post('http://picwo.com:3100/api/trip/photos', fd, {
         withCredentials: true,
@@ -272,7 +274,6 @@ $scope.hideSearch = function() {
       });
 
 };
-
 
 })
 
