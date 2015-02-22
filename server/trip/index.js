@@ -87,7 +87,7 @@ module.exports = function (app) {
 
   //checking event id validity 
   //and check if entity is associated with this event
-  router.all('/:trip_id', function (req, res, next) {
+  router.all('/:trip_id/*', function (req, res, next) {
     var resp = {};
     var trip_id = req.params.trip_id;
     var cookies = req.cookies;
@@ -147,8 +147,8 @@ module.exports = function (app) {
                                                        s.entity,      \
                                                        s.entity       \
                                                   from tb_event e,   \
-                                                       tb_session s,  \
-                                                 where e.event = $1, \
+                                                       tb_session s  \
+                                                 where e.event = $1 \
                                                    and s.session_id_hash = $2 \
                                               ) returning itinerary";
 
@@ -156,7 +156,7 @@ module.exports = function (app) {
           done();
           if (result && result.rows[0]) {
             resp.status = OK;
-            resp.message = "New itinerary.";
+            resp.existing = true;
             resp.itinerary = result.rows[0].itinerary;
             return res.json(resp);
           } else {
@@ -181,7 +181,7 @@ module.exports = function (app) {
         if (result) {
           if (result.rows[0]) {
             resp.status = OK;
-            resp.message = "Existing itinerary.";
+            resp.existing = false;
             resp.itinerary = result.rows[0].itinerary;
             return res.json(resp);
           } else {
