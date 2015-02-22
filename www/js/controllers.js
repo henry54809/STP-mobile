@@ -238,6 +238,40 @@ $scope.hideSearch = function() {
     // $location.path('app/itinerary/' + $scope.itineraryId);
     $location.path('app/itinerary/1');
   }
+  
+  $scope.photos = [];
+  $scope.hasPhotos = false;
+
+  $scope.uploadFile = function(files) {
+    var fd = new FormData();
+    //Take the first selected file
+    // fd.append("file", files[0]);
+    // fd.append("file", files[1]);
+    // fd.append("file", files[2]);
+    fd = files;
+    photos = fd;
+    hasPhotos = true;
+    console.log(fd[0]);
+
+    $http.post('http://picwo.com:3100/api/trip/photos', fd, {
+        withCredentials: true,
+        headers: {'Content-Type': undefined },
+        transformRequest: angular.identity
+    }).success(function(data, status, headers, config) {
+        // this callback will be called asynchronously
+        // when the response is available
+        console.log(data);
+        alert("test upload photos!");
+       $scope.isDisable = true;
+      }).
+      error(function(data, status, headers, config) {
+        // called asynchronously if an error occurs
+        // or server returns response with an error status.
+        alert("fail!");
+        console.log(data);
+      });
+
+};
 
 
 })
