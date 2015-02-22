@@ -38,29 +38,41 @@
 
               <input id="file" type="file" ng-file-select ng-model="files" ng-accept="'*.jpg,*.png'" multiple onchange="angular.element(this).scope().uploadFile(this.files)"/>
 
-              
-                <img 
-                    ng-repeat="photo in photos"
-                    ng-src= "{{photo}}"
-                    style="width: 100px ; margin-right: 10px;"
-                />
-            
-              
-              
+            </label>
+            <ion-toggle 
+                    ng-model="autoUpload" 
+                    ng-checked="autoUpload">
+                 Auto upload
+            </ion-toggle>
+        </div>
+
+        <div class="card" ng-show="autoUpload">
+
+            <label class="item item-input">
+            <span class="input-label">Start Date</span>
+            <input  type="date" ng-model="startDate" />
+            </label>
+
+            <label class="item item-input">
+            <span class="input-label">End Date</span>
+            <input  type="date" ng-model="endDate" />
             </label>
         </div>
 
 
-        <!-- <div class="card" ng-show="hasPhotos">
+
+        <div class="card" ng-show="hasPhotos">
 
             <p >
                 <img 
                     ng-repeat="photo in photos"
-                    ng-src="photo"
+                    ng-src="{{photo}}"
                     style="width: 100px ; margin-right: 10px ;"
                     />
             </p>
-        </div> -->
+        </div>
+
+
       </div>
     </form>
 
