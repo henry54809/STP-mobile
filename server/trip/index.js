@@ -89,6 +89,8 @@ module.exports = function (app) {
   //and check if entity is associated with this event
   router.all('/:trip_id', function (req, res, next) {
     var resp = {};
+    var trip_id = req.trip_id;
+    var cookies = req.cookes;
     if (isNaN(trip_id)) {
       return next();
     }
@@ -100,7 +102,7 @@ module.exports = function (app) {
                       and s.session_id_hash = $2  \
                       and s.entity = any( fn_get_event_related_entity($1) )";
 
-      client.query(query, [trip_id], function (err, result) {
+      client.query(query, [trip_id, cookies['AuthToken']], function (err, result) {
         done();
         if (result) {
           if (result.rows[0]) {
@@ -128,8 +130,11 @@ module.exports = function (app) {
 
   router.post('/:trip_id/itinerary', function (req, res, next) {
     var trip_id = req.trip_id;
+    var cookies = req.cookies;
     var resp = {};
-
+    if (isNaN(trip_id)) {
+      return next();
+    }
     var create_new_itinerary = function () {
       pg.connect(connectionString, function (err, client, done) {
         var query = "insert into tb_itinerary(            \
@@ -147,7 +152,7 @@ module.exports = function (app) {
                                                    and s.session_id_hash = $2 \
                                               ) returning itinerary";
 
-        client.query(query, [trip_id, session_id_hash], function (err, result) {
+        client.query(query, [trip_id, cookies['AuthToken']], function (err, result) {
           done();
           if (result && result.rows[0]) {
             resp.status = OK;
