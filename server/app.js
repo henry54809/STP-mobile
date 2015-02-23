@@ -64,6 +64,7 @@ require("./user/friend_actions")(app);
 require("./trip/index")(app);
 require("./location/index")(app);
 require("./upload/index")(app);
+require("./itinerary/index")(app);
 
 //Create the server
 var server = app.listen(app.get('port'), function () {
@@ -74,9 +75,7 @@ app.use(function (req, res) {
   var resp = {};
   resp.status = ERROR;
   resp.message = "Not Supported.";
-  res.status(404).json({
-    "message": "Not supported."
-  });
+  res.status(404).json(resp);
 });
 
 

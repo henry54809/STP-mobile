@@ -156,7 +156,7 @@ module.exports = function (app) {
           done();
           if (result && result.rows[0]) {
             resp.status = OK;
-            resp.existing = true;
+            resp.existing = false;
             resp.itinerary = result.rows[0].itinerary;
             return res.json(resp);
           } else {
@@ -181,7 +181,7 @@ module.exports = function (app) {
         if (result) {
           if (result.rows[0]) {
             resp.status = OK;
-            resp.existing = false;
+            resp.existing = true;
             resp.itinerary = result.rows[0].itinerary;
             return res.json(resp);
           } else {
