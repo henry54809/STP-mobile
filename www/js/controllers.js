@@ -240,8 +240,13 @@ $scope.hideSearch = function() {
   }
 
   $scope.photos = [];
+  $scope.autoUpload = false;
+  $scope.hasPhotos = false;
+
   $scope.uploadFile = function(files) {
+    
     var fd = new FormData();
+    $scope.hasPhotos = true;
     $scope.photos = [];
     //Take the first selected file
     // fd.append("file", files[0]);
