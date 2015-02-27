@@ -243,12 +243,24 @@ $scope.hideSearch = function() {
 })
 
 
-.controller('itineraryCtrl', function($scope,$stateParams,$location) {
-  $scope.items = [];
+.controller('itineraryCtrl', function($scope,$stateParams,$location, itinerary,itineraryService) {
+  // if (itinerary.content.length>0){
+  //   console.log(itinerary.content);
+  //   // $scope.items = [];
+  //   for(var i in itinerary.content){
+  //     console.log(itinerary.content[i]);
+  //   }
+  // };
+  $scope.$on( "$stateChangeSuccess",function(){
+    $scope.itinerary = itinerary;
+    $scope.items = itineraryService.toDayItinerary($scope.itinerary);
+  });
+  // console.log($scope.itinerary);
+  
+
   $scope.shouldShowDelete = false;
   $scope.shouldShowReorder = false;
   $scope.listCanSwipe = true;
-  // $scope.todo = todo;
   
   $scope.edit = function(item) {
     alert('Edit Item: ' + item.id);
@@ -261,23 +273,37 @@ $scope.hideSearch = function() {
     $scope.items.splice(fromIndex, 1);
     $scope.items.splice(toIndex, 0, item);
   };
-
-  $scope.getDuration = function(startDate, endDate) {
-    var dur = endDate - startDate;
-    dur = parseInt(dur / 86400000, 10) + 1;
-    $scope.duration = dur;
-    for (i = 1; i <= dur; i++) {
-      $scope.items.push({data: "Day" + i, isDay: true});
-      $scope.items.push({data: "Add activity", isDay: false});
+  $scope.changeStartDate = function(startDate,endDate) {
+    console.log(startDate);
+    console.log(endDate);
+    if (endDate != undefined){
+      $scope.endDate = startDate + ($scope.itinerary.endDate - $scope.itinerary.startDate);
+      console.log($scope.endDate);
     }
     
+  }
+  $scope.getDuration = function(startDate, endDate) {
+    if (startDate == undefined){
+      return;
+    } else {
+      console.log(startDate, endDate);
+      var dur = endDate - startDate;
+      dur = parseInt(dur / 86400000, 10) + 1;
+      $scope.duration = dur;
+      // for (i = 1; i <= dur; i++) {
+      //   $scope.items.push({data: "Day" + i, isDay: true});
+      //   $scope.items.push({data: "Add activity", isDay: false});
+      // }
+      $scope.itinerary = itineraryService.initItinerary(startDate, endDate, dur);
+      $scope.items = itineraryService.toDayItinerary($scope.itinerary);
+    }
+    
+    // console.log($scope.items);
   };
 
-  $scope.addActivity = function(item) {
-    if (item.data == "Add activity") {
-      alert("asf");
-    }
-    
+  $scope.addPlace = function(day) {
+    console.log(day);
+    $location.path("app/placefinder/1/"+day);
   }
   
   $scope.onItemDelete = function(item) {
@@ -292,13 +318,10 @@ $scope.hideSearch = function() {
     $scope.shouldShowReorder = !$scope.shouldShowReorder;
   }
   $scope.addItinerary = function() {
-    $location.path("app/placefinder/1");
+    $location.path("app/placefinder/1/1");
   }
 
-
-
   $scope.fileHandler = function($event){
-
     var files = $event.target.files; // FileList object
     console.log(files);
     console.log($scope.file);

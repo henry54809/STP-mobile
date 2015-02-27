@@ -14,27 +14,28 @@
         <!-- <label class="item">
           <button class="button button-block button-positive" ng-click="addItems()">OK</button>
         </label> -->
-        <label class="item">
-          <button class="button button-block button-positive" type="submit" ng-click="showme=true;save(myTripsData)">Save</button>
-        </label>
 
-        <div class="card" ng-show="showme" ng-click="addItinerary()">
+        <!-- <label class="item">
+          <button class="button button-block button-positive" type="submit" ng-click="showme=true;save(myTripsData)">Save</button>
+        </label> -->
+        <div class="item item-divider">Options</div>
+        <div class="card" ng-click="addItinerary()">
           <a class="item item-text-wrap item-icon-left" style="color: #444 ;">
             <li class="ion-clipboard icon" data-pack="default" data-tags="write"></li>
               Itinerary
           </a>
         </div>
-        <div class="card" ng-show="showme">
+        <div class="card" >
           <a class="item item-text-wrap item-icon-left" href="/#/app/chatroom/24" style="color: #444 ;">
             <li class="ion-chatboxes icon" data-pack="default" data-tags="talk"></li>
               Chat Room
           </a>
         </div>
-        <div class="card" ng-show="showme">
+        <div class="card">
           <label for="file" class="item item-icon-left fileContainer">
               <i class="icon ion-ios7-camera"></i>
               Upload a photo
-              <input id="file"  type="file" ng-model="file" ng-change="fileHandler($event)" />
+              <input id="file" multiple type="file" ng-model="file" ng-change="fileHandler($event)" />
             </label>
         </div>
         

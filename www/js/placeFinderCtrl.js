@@ -1,9 +1,10 @@
-stp.controller('placeFinderCtrl', function($scope,$location, $ionicPopover, googleMapService) {
+stp.controller('placeFinderCtrl', function($scope,$location,$stateParams, $ionicPopover,$compile, googleMapService, itineraryService) {
+  // console.log($stateParams);
   $scope.map = googleMapService.getMapInstance("map-canvas");
   $scope.PlacesService = new google.maps.places.PlacesService($scope.map);
   // var marker = new google.maps.Marker();
   var infowindow = new google.maps.InfoWindow();
-
+  
   // $scope.map.controls[google.maps.ControlPosition.TOP_LEFT].push($scope.input);
   $scope.autocompleteService = new google.maps.places.AutocompleteService($scope.input);
 
@@ -24,7 +25,6 @@ stp.controller('placeFinderCtrl', function($scope,$location, $ionicPopover, goog
 
   $scope.autoFill = function($event) {
     if ($event.keyCode == 13){
-      console.log($event);
       if($scope.searchQuery!=""){
         $scope.querySearch($scope.searchQuery);
         $scope.popover.hide();
@@ -42,29 +42,28 @@ stp.controller('placeFinderCtrl', function($scope,$location, $ionicPopover, goog
           input:$scope.searchQuery
         }, function(list, status){
           if (list != null){
-            $scope.itemData=[];
+            $scope.itemData = [];
             $scope.itemData = list;
-            console.log(list[0]);
-            console.log(status);
           } else {
             return false;
-          }
-          
+          }          
         });
-        // $scope.itemData = $scope.searchQuery;
         $scope.popover.show($event);
       },300,$event)
     }
   }
+
+  
+
+
   var markers = [];
   $scope.querySearch = function(query) {
     if (query!="") {
       $scope.PlacesService.textSearch({
         query: query
       }, function(places, state){
-
-    // var places = $scope.searchBox.getPlaces();
-
+        console.log(places);
+        console.log(state);
     if (places.length == 0) {
       return;
     }
@@ -77,19 +76,8 @@ stp.controller('placeFinderCtrl', function($scope,$location, $ionicPopover, goog
     var bounds = new google.maps.LatLngBounds();
 
     for (var i = 0, place; place = places[i]; i++) {
-      // console.log(place);
-      // var image = {
-      //   url: place.icon,
-      //   size: new google.maps.Size(71, 71),
-      //   origin: new google.maps.Point(0, 0),
-      //   anchor: new google.maps.Point(0, 0),
-      //   scaledSize: new google.maps.Size(25, 25)
-      // };
-
-      // Create a marker for each place.
       var marker = new google.maps.Marker({
         map: $scope.map,
-        // icon: image,
         title: place.name,
         position: place.geometry.location,
         animation: google.maps.Animation.DROP
@@ -103,54 +91,111 @@ stp.controller('placeFinderCtrl', function($scope,$location, $ionicPopover, goog
         placeId: place.place_id
       };
       var currentOpenInfowindow;
-      google.maps.event.addListener(marker, 'click', infowindowListener(request,marker,currentOpenInfowindow, function(curWin){
-        currentOpenInfowindow = curWin;
-      }));
+
+      google.maps.event.addListener(marker, 'click', 
+        function(innerRequest,innerMarker){
+          return function(){
+            if (innerMarker.infowindow){
+              if (innerMarker.infowindow.isOpen){
+                innerMarker.infowindow.close();
+                innerMarker.infowindow.isOpen = false;
+                currentOpenInfowindow = undefined;
+              } else {
+                innerMarker.infowindow.open($scope.map, innerMarker);
+                innerMarker.infowindow.isOpen = true;
+                if(currentOpenInfowindow){
+                  currentOpenInfowindow.close();
+                  currentOpenInfowindow.isOpen = false
+                } 
+                currentOpenInfowindow = innerMarker.infowindow;
+              }
+            } else{
+              $scope.PlacesService.getDetails(innerRequest, function(place, status) {
+                if (status == google.maps.places.PlacesServiceStatus.OK) {
+                  var infowindow = new google.maps.InfoWindow({
+                      content: "<div id='infoWin' >\
+                      This is "+place.name+" <a class='button \
+                      button-icon icon button-small ion-settings' \
+                      ng-click='addPlace("+"\""+place.place_id+"\""+")'></a></div>"
+                  }); 
+
+                  
+                    console.log(place);
+                    // infowindow.setContent(place.name);
+                    infowindow.open($scope.map, innerMarker);
+                    infowindow.isOpen=true;
+                    innerMarker.infowindow = infowindow;
+                    if(currentOpenInfowindow){
+                      currentOpenInfowindow.close();
+                      currentOpenInfowindow.isOpen=false;
+                    } 
+                    currentOpenInfowindow = innerMarker.infowindow;
+                    $compile($("#infoWin"))($scope);
+               }
+              });
+              
+            }
+          }
+        }(request,marker));
     }
     $scope.map.fitBounds(bounds);
-
-
       })
     }
-      // console.log(query);
   }
 
-  var infowindowListener = function(innerRequest,innerMarker) {
-        return function(){
-          if (innerMarker.infowindow){
-            if (innerMarker.infowindow.isOpen){
-              innerMarker.infowindow.close();
-              innerMarker.infowindow.isOpen = false;
-              currentOpenInfowindow = undefined;
-            } else {
-              innerMarker.infowindow.open($scope.map, innerMarker);
-              innerMarker.infowindow.isOpen = true;
-              if(currentOpenInfowindow){
-                currentOpenInfowindow.close();
-                currentOpenInfowindow.isOpen = false
-              } 
-              currentOpenInfowindow = innerMarker.infowindow;
-            }
-          } else{
-            var infowindow = new google.maps.InfoWindow();
-            $scope.PlacesService.getDetails(innerRequest, function(place, status) {
-              if (status == google.maps.places.PlacesServiceStatus.OK) {
-                  infowindow.setContent(place.name);
-                  infowindow.open($scope.map, innerMarker);
-             }
-            });
-            infowindow.isOpen=true;
-            innerMarker.infowindow = infowindow;
-            if(currentOpenInfowindow){
-              currentOpenInfowindow.close();
-              currentOpenInfowindow.isOpen=false;
-            } 
-            currentOpenInfowindow = innerMarker.infowindow;
-          }
-        }
-  };
+  $scope.addPlace = function(placeId){
+    var request = {placeId: placeId};
+    $scope.PlacesService.getDetails(request, function(place, status) {
+      itineraryService.addPlaceToItinerary($stateParams.itineraryID, //itineraryId
+            $stateParams.dayID, //day
+            place.name, 
+            place, 
+            place.geometry.location);
+       console.log(itineraryService.tempItineray);
+       $scope.$apply(function(){$location.path('app/itinerary/1')});
+       
+    });
+   
+    
+  }
+  // var infowindowListener = function(innerRequest,innerMarker) {
+  //       return function(){
+  //         if (innerMarker.infowindow){
+  //           if (innerMarker.infowindow.isOpen){
+  //             innerMarker.infowindow.close();
+  //             innerMarker.infowindow.isOpen = false;
+  //             currentOpenInfowindow = undefined;
+  //           } else {
+  //             innerMarker.infowindow.open($scope.map, innerMarker);
+  //             innerMarker.infowindow.isOpen = true;
+  //             if(currentOpenInfowindow){
+  //               currentOpenInfowindow.close();
+  //               currentOpenInfowindow.isOpen = false
+  //             } 
+  //             currentOpenInfowindow = innerMarker.infowindow;
+  //           }
+  //         } else{
+  //           var infowindow = new google.maps.InfoWindow();
+  //           $scope.PlacesService.getDetails(innerRequest, function(place, status) {
+  //             if (status == google.maps.places.PlacesServiceStatus.OK) {
+  //                 infowindow.setContent(place.name);
+  //                 infowindow.open($scope.map, innerMarker);
+  //            }
+  //           });
+  //           infowindow.isOpen=true;
+  //           innerMarker.infowindow = infowindow;
+  //           if(currentOpenInfowindow){
+  //             currentOpenInfowindow.close();
+  //             currentOpenInfowindow.isOpen=false;
+  //           } 
+  //           currentOpenInfowindow = innerMarker.infowindow;
+  //         }
+  //       }
+  // };
+
   $scope.detailSearch =function(place) {
       // console.log(place);
+    $scope.popover.hide();
     for (var i = 0, marker; marker = markers[i]; i++) {
       marker.setMap(null);
     }
@@ -179,6 +224,31 @@ stp.controller('placeFinderCtrl', function($scope,$location, $ionicPopover, goog
       // }));
       marker.setPosition(place.geometry.location);
       marker.setVisible(true);
+      google.maps.event.addListener(marker,'click',function(){
+        if(marker.infowindow){
+          if (marker.infowindow.isOpen){
+            marker.infowindow.close();
+            marker.infowindow.isOpen=false;
+          } else {
+            marker.infowindow.open($scope.map,marker);
+            marker.infowindow.isOpen=true;
+          }
+        } else {
+          var infowindow = new google.maps.InfoWindow();
+          var request = {
+            placeId: place.place_id
+          };
+          $scope.PlacesService.getDetails(request, function(place, status) {
+            if (status == google.maps.places.PlacesServiceStatus.OK) {
+                infowindow.setContent(place.name);
+                infowindow.open($scope.map, marker);
+                infowindow.isOpen=true;
+                marker.infowindow = infowindow;
+           }
+          });
+        }
+        
+      })
     }
   });
 

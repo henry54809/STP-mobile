@@ -110,21 +110,22 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ])
     // }
   })
   .state('app.itinerary',{
+    resolve:{
+      itinerary: function(itineraryService){
+        console.log("resolve");
+        return itineraryService.tempItineray;
+      }
+    },
     url: "/itinerary/:itineraryID",
     views: {
       'menuContent': {
         templateUrl: "templates/itinerary.html",
         controller: 'itineraryCtrl'
       }
-    },
-    // resolve: {
-    //   todo: function($stateParams, IteneraryService) {
-    //     return 1
-    //   }
-    // }
+    }
   })
   .state('app.placeFinder',{
-    url: "/placefinder/:itineraryID",
+    url: "/placefinder/:itineraryID/:dayID",
     views: {
       'menuContent': {
         templateUrl: "templates/placeFinder.html",

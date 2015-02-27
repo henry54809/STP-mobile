@@ -43,11 +43,15 @@ input.ng-valid.ng-touched {
   width: 100% !important;
 }
 
-.item-divider-day {
-  margin:auto;
+.item-divider,.item-divider-day {
+  color:#472013 !important;
+  padding: 0px 0px 0px 10px !important;
+  background-color: #505800 !important;
 }
 
 .button-block-add {
    z-index: 100;
 
 }
+
+

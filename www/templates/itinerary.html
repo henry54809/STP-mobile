@@ -5,30 +5,34 @@
     <a class="button button-icon icon ion-plus " ng-click="addItinerary()"></a>
     </ion-nav-buttons>
 
-<ion-content >
+<ion-content class="has-footer">
 
 <label class="item item-input">
   <span class="input-label">Start Date</span>
-  <input  type="date" ng-model="startDate" />
+  <input  type="date" ng-model="startDate" ng-change="changeStartDate(startDate, endDate)"/>
 </label>
 
 <label class="item item-input">
   <span class="input-label">End Date</span>
-  <input  type="date" ng-model="endDate" />
+  <input  type="date" ng-model="endDate" ng-change="getDuration(startDate, endDate)" />
 </label>
 
 <div>
-  <button class="button   pull-right button-positive" type="submit" ng-click="getDuration(startDate, endDate)">Confirm Dates</button>{{duration}}
+  <button class="button pull-right button-positive" type="submit" ng-click="getDuration(startDate, endDate)">Confirm Dates</button>{{duration}}
 </div>
 
 
-<ion-list  show-delete="shouldShowDelete" show-reorder="shouldShowReorder" can-swipe="listCanSwipe">
-  <ion-item ng-repeat="item in items" class=" item-remove-animate" ng-class="{'item-divider item-divider-day': item.isDay, 'card': !item.isDay}" ng-click="addActivity(item)">
-
+<ion-list show-delete="shouldShowDelete" show-reorder="shouldShowReorder" can-swipe="listCanSwipe">
+  <div class="item item-divider" ng-repeat-start="item in items">{{item.day}}</div>
+  <ion-item ng-repeat="place in item.places"  >
+  <h1>{{place.name}}</h1>
+  <p>{{place.day}} {{place.place}}</p>
+  <!-- <a >item.day</a> -->
     <!-- <img ng-src="{{item.img}}">
     <h2>{{item.title}}+{{shouldShowReorder}}+{{shouldShowDelete}}+{{listCanSwipe}}</h2>
     <p>{{item.description}}</p> -->
-    {{item.data}}
+    <!-- <h2>{{item.day}}</h2>
+    <h2>{{item.name}}</h2> -->
 
     <ion-delete-button class="ion-minus-circled" ng-click="onItemDelete(item)"></ion-delete-button>
 
@@ -48,6 +52,11 @@
     </ion-reorder-button>
 
   </ion-item>
+  <ion-item ng-click="addPlace(item.day)"> 
+    Add places
+  </ion-item>
+  <div ng-repeat-end></div>
+
 </ion-list>
 
 </ion-content>
