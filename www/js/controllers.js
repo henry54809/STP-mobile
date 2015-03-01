@@ -183,10 +183,15 @@ $scope.hideSearch = function() {
   };
   
 })
-.controller('mytripCtrl', function($scope, myTrips,$filter) {
-  $scope.items = myTrips;
-})
-.controller('tripCtrl', function($scope) {
+.controller('mytripCtrl', function($scope, myTrips,$filter,$http) {
+  $http.get('http://picwo.com:3100/api/trip/mytrips',{withCredentials:true})
+  .success(function (data, status, headers, config) {
+    $scope.items = data.trips;
+  }).
+  error(function(data, status, headers, config) {
+    console.log('error' + data);
+  });
+
   $scope.showHeader = false;
   $scope.toggleSearch = function() {
     $scope.showHeader = !$scope.showHeader;
@@ -199,6 +204,7 @@ $scope.hideSearch = function() {
     $scope.showHeader = false;
   };
 })
+
 
 
 .controller('NewTripCtrl', function($scope, $ionicModal, $timeout, $http, $location, $upload) {
@@ -215,7 +221,7 @@ $scope.hideSearch = function() {
     // })
   }).
   error(function(data, status, headers, config) {
-    $scope.itinernaryId = 1;
+    // $scope.itinernaryId = 1;
   })
 
    $scope.upload = function(files) {

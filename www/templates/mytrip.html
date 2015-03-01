@@ -1,4 +1,4 @@
-<ion-view view-title="My Trip" ng-controller="tripCtrl">
+<ion-view view-title="My Trip">
     <ion-nav-buttons side="right">
         <a class="button button-icon icon ion-search" ng-click="toggleSearch()"></a>
         <a class="button button-icon icon ion-plus " href="#/app/newtrip"></a>
@@ -21,14 +21,14 @@
                 <ion-content ng-class="{'has-subheader': showHeader}">
                 <div class="list card" ng-repeat="item in items|filter:searchQuery">
                   <div class="item item-avatar">
-                    <img  ng-src="{{item.img}}">
+                    <img  ng-src="">
                     <h2>{{item.title}}</h2>
                     <p>{{item.description}}</p>
                   </div>
 
                   <div class="item item-image">
                     <div style="height:200px;width:100% overflow:hidden" >
-                    <img style="position:relative; top:-25%" src="{{item.img}}">
+                    <img style="position:relative; top:-25%" src="">
                     </div>
                   </div>
 <!-- 
@@ -67,7 +67,7 @@
                     <ion-list>
                     <ion-item ng-repeat="item in items| filter:searchQuery"
                     class="item-thumbnail-left" >
-                        <img ng-src="{{item.img}}">
+                        <img ng-src="">
                         <h2>{{item.title}}</h2>
                         <p>{{item.description}}</p>
                     </ion-item>

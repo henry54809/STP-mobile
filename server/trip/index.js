@@ -57,6 +57,7 @@ router.get('/trips', function (req, res, next) {
         }
     });
   });
+  });
 
   router.post('/', function (req, res, next) {
     var resp = {};
