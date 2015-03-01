@@ -48,7 +48,7 @@ module.exports = function (app) {
 		 					                      		   tt.name,				\
 		 					                      	  	   s.entity				\
 		 					                      	  from tb_session s,		\
-			tt_file tt\
+														   tt_file tt           \
 		 					                      	 where session_id_hash = $1 \
 		 					                      )\
 							 returning path, name";

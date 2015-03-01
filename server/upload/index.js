@@ -4,14 +4,14 @@ module.exports = function (app) {
 	var express = require('express');
 	var router = express.Router();
 
-	router.all('/', function (req, res, next) {
+	router.all('/*', function (req, res, next) {
 		var resp = {};
 		var msg = req.body;
 		var files = msg.files;
 		if (!files) {
 			resp.status = ERROR;
 			resp.message = "Files metadata is required.";
-			res.status(400).json(resp);
+			return res.status(400).json(resp);
 		}
 		for (var i = 0; i < files.length; i++) {
 			var file = files[i];
@@ -43,7 +43,7 @@ module.exports = function (app) {
 			});
 		};
 		pg.connect(connectionString, function (err, client, done) {
-			var query = 'create temp table tt_file( name, type varchar(64), size integer)';
+			var query = 'create temp table tt_file( name varchar(256), type varchar(64), size integer)';
 			client.query(query, function (err, result) {
 				done();
 				if (result) {
