@@ -23,7 +23,8 @@ module.exports = function (app) {
 
 		var get_url_callback = function (name, url) {
 			urls.push({
-				name: url
+				name: name,
+				url: url
 			});
 			console.log(urls);
 			if (urls.length === msg.files.length) {
