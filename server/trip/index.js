@@ -56,7 +56,7 @@ module.exports = function (app) {
                                           $7       \
                                        ) as trip   \
                     from tb_session                \
-                   where session_id_hash = $7';
+                   where session_id_hash = $8';
       client.query(query, [
         start_date,
         duration_days,
@@ -64,8 +64,8 @@ module.exports = function (app) {
         proposed_duration_days,
         description,
         title,
-        cookies['AuthToken'],
-        event_pk
+        event_pk,
+        cookies['AuthToken']
       ], function (err, result) {
         done();
         if (result && result.rows[0]) {
