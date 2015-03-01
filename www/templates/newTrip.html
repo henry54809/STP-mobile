@@ -1,5 +1,7 @@
 <ion-view view-title="Add a trip">
-
+  <ion-nav-buttons side="right">
+      <a class="button button-icon ion-ios-download-outline" ng-click="save(myTripsData)"> Save</a>
+  </ion-nav-buttons>
   <ion-content>
     <form >
       <div class="list">
@@ -9,7 +11,7 @@
         </label>
         <label  class="item item-input item-stacked-label">
           <span class="input-label">Description</span>
-          <textarea style="height:60px" type="text" ng-model="myTripsData.description"></textarea>
+          <textarea style="height:60px" type="text"  ng-model='myTripsData.description' placeholder="Your trip's description"></textarea>
         </label>
         <!-- <label class="item">
           <button class="button button-block button-positive" ng-click="addItems()">OK</button>
