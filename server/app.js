@@ -64,6 +64,7 @@ require("./user/friend_actions")(app);
 require("./trip/index")(app);
 require("./location/index")(app);
 require("./upload/index")(app);
+require("./upload/trip")(app);
 require("./itinerary/index")(app);
 
 //Create the server
