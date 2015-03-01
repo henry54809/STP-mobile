@@ -202,20 +202,22 @@ $scope.hideSearch = function() {
 
 
 .controller('NewTripCtrl', function($scope, $ionicModal, $timeout, $http, $location, $upload) {
+  $scope.myTripsData = {};
+  $scope.myTripsData.title = 'untitled';
+  //Form data for the login modal
+  $http.get('http://picwo.com:3100/api/trip', {withCredentials: true}).
+  success(function (data, status, headers, config) {
+    $scope.myTripsData.trip = data.trip;
+    console.log('tripData: ' + $scope.myTripsData);
+    // $http.post('http://picwo.com:3100/api/trip', $scope.myTripsData).
+    // success(function(data, status, headers, config){
+    //   $scope.itinernaryId = data.itinernaryId;
+    // })
+  }).
+  error(function(data, status, headers, config) {
+    $scope.itinernaryId = 1;
+  })
 
-  // Form data for the login modal
-  // $http.get('http://picwo.com:3100/api/account', {withCredentials: true}).
-  // success(function (data, status, headers, config) {
-  //   $scope.myTripsData.tripId = data.trip;
-
-  //   $http.post('http://picwo.com:3100/api/account', $scope.myTripsData).
-  //   success(function(data, status, headers, config){
-  //     $scope.itinernaryId = data.itinernaryId;
-  //   })
-  // }).
-  // error(function(data, status, headers, config) {
-  //   $scope.itinernaryId = 1;
-  // })
    $scope.upload = function(files) {
         console.log(files);
         $scope.hasPhotos = true;
@@ -227,11 +229,11 @@ $scope.hideSearch = function() {
 
 
   $scope.save = function(myTripsData) {
-    console.log(myTripsData.title);
+    console.log($scope.myTripsData);
     $http.post('http://picwo.com:3100/api/trip', myTripsData, {withCredentials:true}).
     success(function(data, status, headers, config){
-      $scope.tripId = data.trip;
-      console.log($scope.tripId);
+      // $scope.tripId = data.trip;
+      console.log(data);
     })
 
   };
@@ -285,6 +287,8 @@ $scope.hideSearch = function() {
       });
 
 };
+
+
 
 })
 
