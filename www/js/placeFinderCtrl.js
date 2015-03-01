@@ -96,6 +96,7 @@ stp.controller('placeFinderCtrl', function($scope,$location,$stateParams, $ionic
         function(innerRequest,innerMarker){
           return function(){
             if (innerMarker.infowindow){
+              console.log("dasgas");
               if (innerMarker.infowindow.isOpen){
                 innerMarker.infowindow.close();
                 innerMarker.infowindow.isOpen = false;
@@ -148,11 +149,9 @@ stp.controller('placeFinderCtrl', function($scope,$location,$stateParams, $ionic
     $scope.PlacesService.getDetails(request, function(place, status) {
       itineraryService.addPlaceToItinerary($stateParams.itineraryID, //itineraryId
             $stateParams.dayID, //day
-            place.name, 
-            place, 
-            place.geometry.location);
-       console.log(itineraryService.tempItineray);
-       $scope.$apply(function(){$location.path('app/itinerary/1')});
+            place
+      );
+      $scope.$apply(function(){$location.path('app/itinerary/1')});
        
     });
    
