@@ -27,37 +27,37 @@ module.exports = function (app) {
     });
   });
 
-router.get('/trips', function (req, res, next) {
+  router.get('/mytrips', function (req, res, next) {
     var resp = {};
     var cookies = req.cookies;
     pg.connect(connectionString, function (err, client, done) {
-    var query = "select * from tb_event,tb_session s where event = any (fn_get_entity_related_event(s.entity)) and  s.session_id_hash = $1";
-
-     client.query(query, [cookies['AuthToken']], function (err, result) {
-        done();
-        if (result) {
-          if (result.rows[0]) {
-            req.event = result.rows[0];
-            return next();
-          } else {
-            resp.status = ERROR;
-            resp.message = "Could not find trip.";
-            if (err) {
-              console.log(err);
-            }
-            return res.status(400).json(resp);
-          }
-        } else {
-          resp.status = ERROR;
-          resp.message = "Error when finding trip.";
-          if (err) {
-            console.log(err);
-          }
-          return res.status(500).json(resp);
-        }
-    });
+        var query = "select * from tb_event,tb_session s where event = any (fn_get_entity_related_event(s.entity)) and  s.session_id_hash = $1";
+        client.query(query, [cookies['AuthToken']], function (err, result) {
+           done();
+           if (result) {
+             if (result.rows[0]) {
+                 resp.status = OK;
+                 resp.trips = result.rows;
+                 return res.json(resp);
+             } else {
+               resp.status = ERROR;
+               resp.message = "Could not find trip.";
+               if (err) {
+                 console.log(err);
+               }
+               return res.status(400).json(resp);
+             }
+           } else {
+             resp.status = ERROR;
+             resp.message = "Error when finding trip.";
+             if (err) {
+               console.log(err);
+             }
+             return res.status(500).json(resp);
+           }
+        });
+      });
   });
-
   router.post('/', function (req, res, next) {
     var resp = {};
     var msg = req.body;
