@@ -126,4 +126,19 @@ stp.service('accountService',['$location','$http','$window', function ($location
     })
   }
 
+    this.getCities = function(value,callback) {
+      var regionUrl = 'http://picwo.com:3100/api/location/' + value + '/cities';
+    $http.get(regionUrl,{withCredentials:true}).
+    success(function(data, status, headers, config) {
+        if(status != 'Error') {
+          callback(true,data);
+        } else {
+          callback(false,{});
+        }
+    }).
+    error(function(data, status, headers, config){
+      console.log(data, status);
+    })
+  }
+
 }]);

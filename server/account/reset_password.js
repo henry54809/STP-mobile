@@ -84,7 +84,7 @@ module.exports = function (app) {
 		auth_functions.is_session_valid(req.cookies, callback);
 	});
 
-	//Reset password
+	//Reset password request
 	router.put('/', function (req, res, next) {
 		var resp = {};
 		if (!req.entity) {
@@ -107,12 +107,13 @@ module.exports = function (app) {
 						<br /><br />																							\
 						<span style="font-family: arial, helvetica, sans-serif; font-size: small;">								\
 							We received a request to reset your password. Please use this link									\
-							<a href="http://m.picwo.com/account/ResetPassword?"' + querystring.stringify(reset_data) +
-				'>http://m.picwo.com/account/ResetPassword</a> 														\
+							<a href="http://m.picwo.com/account/ResetPassword?' + querystring.stringify(reset_data) +
+				'">http://m.picwo.com/account/ResetPassword</a> 																	\
 							to enter your new password.																			\
 						< /span> 																								\
 						< br / > 																								\
 					< /p>';
+
 			var mail_callback = function (err, info) {
 				if (err) {
 					console.log(err);
@@ -155,7 +156,7 @@ module.exports = function (app) {
 		var query = "select reset_password, token \
 				       from tb_reset_password     \
 				      where entity = $1    		  \
-				        and valid_until < now()   \
+				        and valid_until > now()   \
 				        and consumed is null";
 
 		pg.connect(connectionString, function (err, client, done) {
@@ -179,6 +180,88 @@ module.exports = function (app) {
 			});
 		});
 
+	});
+
+	//verify validity of reset password token
+	router.get('/reset_password', function (req, res, next) {
+		var resp = {};
+		var url_query = req.query;
+		if (!url_query.email_address || !url_query.token) {
+			return next();
+		}
+		var email_address = url_query.email_address;
+		var token = url_query.token;
+
+		var query = "select valid_until > now() as valid 	\
+		 			   from tb_reset_password as r			\
+		 			   join tb_entity as e                  \
+		 			     on e.entity = r.entity     		\
+		 			  where token = $1  				 	\
+		 			    and e.email_address = $2";
+
+		pg.connect(connectionString, function (err, client, done) {
+			client.query(query, [token, email_address], function (err, result) {
+				done();
+				if (result) {
+					if (result.rows[0] && result.rows[0].valid) {
+						resp.valid = true;
+					} else {
+						resp.valid = false;
+					}
+					return res.json(resp);
+				}
+				if (err) {
+					console.log(err);
+				}
+				resp.status = ERROR;
+				resp.message = "Could not check reset password token validity.";
+				return res.status(500).json(resp);
+			});
+		});
+	});
+
+	//Reset password
+	router.put('/reset_password', function (req, res, next) {
+		var resp = {};
+		var msg = req.body;
+		if (!msg || !msg.email_address || !msg.token || !msg.new_password) {
+			return next();
+		}
+		var email_address = msg.email_address;
+		var token = msg.token;
+		var new_password = msg.new_password;
+
+		var query = "update tb_entity e										\
+		 			    set password_hash = crypt($1, gen_salt('bf'))		\
+		 			   from tb_reset_password r                  			\
+		 			  where r.token = $2  				 					\
+		 			    and e.email_address = $3                            \
+                        and r.consumed is null                              \
+                        and r.valid_until > now()";
+
+		pg.connect(connectionString, function (err, client, done) {
+			client.query(query, [new_password, token, email_address], function (err, result) {
+				done();
+				if (result) {
+					if (result.rowCount > 0) {
+						resp.status = OK;
+						resp.message = 'Password updated.';
+						return res.json(resp);
+					} else {
+						resp.status = ERROR;
+						resp.message = 'Reset password token not valid.';
+						return res.json(resp);
+					}
+				} else {
+					if (err) {
+						console.log(err);
+					}
+					resp.status = ERROR;
+					resp.message = "Could not reset password.";
+					return res.status(500).json(resp);
+				}
+			});
+		});
 	});
 
 	app.use('/api/account', router);

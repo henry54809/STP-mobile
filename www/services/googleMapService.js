@@ -22,5 +22,5 @@ stp.service('googleMapService',['$window', function ($window) {
         
     this.AutocompleteService = new google.maps.places.AutocompleteService();
     
-    
+    this.credentials = "gaga";
 }]);

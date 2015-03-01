@@ -201,7 +201,7 @@ $scope.hideSearch = function() {
 })
 
 
-.controller('NewTripCtrl', function($scope, $ionicModal, $timeout, $http, $location) {
+.controller('NewTripCtrl', function($scope, $ionicModal, $timeout, $http, $location, $upload) {
 
   // Form data for the login modal
   // $http.get('http://picwo.com:3100/api/account', {withCredentials: true}).
@@ -216,7 +216,16 @@ $scope.hideSearch = function() {
   // error(function(data, status, headers, config) {
   //   $scope.itinernaryId = 1;
   // })
-  
+   $scope.upload = function(files) {
+        console.log(files);
+        $scope.hasPhotos = true;
+        $scope.photos=[];
+        for (i = 0; i < Object.keys(files).length; i++) {
+          $scope.photos.push(URL.createObjectURL(files[i]));
+        }
+    }
+
+
   $scope.save = function(myTripsData) {
     console.log(myTripsData.title);
     $http.post('http://picwo.com:3100/api/trip', myTripsData, {withCredentials:true}).
@@ -239,6 +248,43 @@ $scope.hideSearch = function() {
     $location.path('app/itinerary/1');
   }
 
+  $scope.photos = [];
+  $scope.autoUpload = false;
+  $scope.hasPhotos = false;
+
+
+  $scope.uploadFile = function(files) {
+    
+    var fd = new FormData();
+    $scope.hasPhotos = true;
+    $scope.photos = [];
+    fd = files;
+    console.log(fd[0]);
+    for (i = 0; i < Object.keys(files).length; i++) {
+      $scope.photos.push(URL.createObjectURL(files[i]));
+    }
+
+    console.log($scope.photos[0]);
+
+    $http.post('http://picwo.com:3100/api/trip/photos', fd, {
+        withCredentials: true,
+        headers: {'Content-Type': undefined },
+        transformRequest: angular.identity
+    }).success(function(data, status, headers, config) {
+        // this callback will be called asynchronously
+        // when the response is available
+        console.log(data);
+        alert("test upload photos!");
+       $scope.isDisable = true;
+      }).
+      error(function(data, status, headers, config) {
+        // called asynchronously if an error occurs
+        // or server returns response with an error status.
+        alert("fail!");
+        console.log(data);
+      });
+
+};
 
 })
 
@@ -566,7 +612,7 @@ $scope.hideSearch = function() {
     $scope.showHeader = false;
   };
 
-  $scope.getupdateRegions = function(value) {
+  $scope.getNext = function(value) {
     if(value != null && value != "") {
       if(value.country != null){
         accountService.getRegions(value.country,function(status,data) {
@@ -575,16 +621,22 @@ $scope.hideSearch = function() {
             }
         })
       } else if(value.region != null) {
-          accountService.update('city',value.region,function(status,data) {
+        accountService.getCities(value.region,function(status,data) {
             if (status) {
-              accountService.getAccount(function(status,data) {
-                if (status) {
-                  $location.path('app/profile');
-                  console.log(data);
-                }
-              })
+              $scope.locations = data.cities;
             }
-          })
+        })
+      } else if (value.city != null) {
+          accountService.update('city',value.city,function(status,data) {
+          if (status) {
+            accountService.getAccount(function(status,data) {
+              if (status) {
+                $location.path('app/profile');
+                console.log(data);
+              }
+            })
+          }
+      })
       }
     }
   }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="stp">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
@@ -9,16 +9,7 @@
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 
-    <script>
-         var script = "<script type =\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&key=";
-         if ( window.location.host === 'm.picwo.com'){
-             script = script + "AIzaSyBXiVdjkekq8V9iVHPk6NSIkyrn4__5s54"; 
-         } else {
-             script = script + "AIzaSyAKs2OgmI63MeA_S9mLU74ppCZKiI5hxo4";
-         }
-         script = script + "&libraries=places\"><\/script>";
-         document.write( script );
-    </script>
+
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
@@ -26,7 +17,7 @@
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
     <script src="lib/angular-cookie/angular-cookie.js"></script>
-
+    <script src="lib/ng-file-upload/angular-file-upload.min.js"></script>
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
 
@@ -43,9 +34,21 @@
 
     <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
 
+    <script>
+         var googleapiScript = "<script type =\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&key=";
+         var googleapi;
+         if ( window.location.host === 'm.picwo.com'){
+             googleapi =  "AIzaSyBXiVdjkekq8V9iVHPk6NSIkyrn4__5s54"; 
+         } else {
+             googleapi = "AIzaSyAKs2OgmI63MeA_S9mLU74ppCZKiI5hxo4";
+         }
+         googleapiScript = googleapiScript + googleapi + "&libraries=places\"><\/script>";
+         document.write( googleapiScript );
+    </script>
+
   </head>
 
-  <body ng-app="stp">
+  <body >
     <ion-nav-view></ion-nav-view>
   </body>
 </html>

@@ -4,8 +4,13 @@ module.exports = function (app) {
   var express = require('express');
   var router = express.Router();
 
-  router.get('/', function (req, res) {
+  router.get('/', function (req, res, next) {
     var resp = {};
+
+    //next if url param contains keys.
+    if (Object.getOwnPropertyNames(req.query).length > 0) {
+      return next();
+    }
     var cookies = req.cookies;
     var query = 'select     e.username,         \
                             e.email_address,    \

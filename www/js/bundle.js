@@ -10,6 +10,7 @@ bundle.friendService = 'services/friendService.js';
 bundle.googleMapService = 'services/googleMapService.js'
 // //Controllers
 bundle.placeFinderCtrl = 'js/placeFinderCtrl.js';
+
 // bundle.frontPageController = 'app/js/controllers/frontPageController.js';
 // bundle.homeController = 'app/js/controllers/homeController.js';
 // bundle.headerController = 'app/js/controllers/headerController.js';

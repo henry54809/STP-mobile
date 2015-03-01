@@ -64,6 +64,7 @@ require("./user/friend_actions")(app);
 require("./trip/index")(app);
 require("./location/index")(app);
 require("./upload/index")(app);
+require("./itinerary/index")(app);
 
 //Create the server
 var server = app.listen(app.get('port'), function () {
@@ -74,20 +75,18 @@ app.use(function (req, res) {
   var resp = {};
   resp.status = ERROR;
   resp.message = "Not Supported.";
-  res.status(404).json({
-    "message": "Not supported."
-  });
+  res.status(404).json(resp);
 });
 
-//Catch all interrupted signals.
-process.on('SIGINT', function () {
-  console.log('Got SIGINT.  Sending email.');
 
+//Catch all uncaught exceptions signals.
+process.on('uncaughtException', function (err) {
+  console.log('Got exceptions.  Sending email.');
   var data = {};
   var date = new Date();
   data.to = 'henry54809@gmail.com';
   data.subject = 'Node.js terminated at ' + date.toString();
-  data.html = '<b></b>';
+  data.html = '<b>' + err + '</b>';
   var callback = function (err, info) {
     if (err) {
       console.log(err);
