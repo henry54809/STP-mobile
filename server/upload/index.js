@@ -18,14 +18,14 @@ module.exports = function (app) {
 			if (!file.name || !file.type || file.size) {
 				resp.status = ERROR;
 				resp.message = "Files metadata missing required attributes.";
-				res.status(400).json(resp);
+				return res.status(400).json(resp);
 			}
 		}
 		var insert_temp_table_callback = function () {
 			var query = 'insert into tt_file( name, type, size ) values ';
 			for (var i = 0; i < files.length; i++) {
 				var file = files[i];
-				query = query + '( ' + file.name + ', ' + file.type + ', ' + file.size + ' ),';
+				query = query + '( \'' + file.name + '\', \'' + file.type + '\', ' + file.size + ' ),';
 			}
 
 			query = query.replace(/,$/g, '');
