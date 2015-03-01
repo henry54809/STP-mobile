@@ -27,19 +27,22 @@ module.exports = function (app) {
 				var file = files[i];
 				query = query + '( ' + file.name + ', ' + file.type + ', ' + file.size + ' ),';
 			}
+
 			query = query.replace(/,$/g, '');
-			client.query(query, function (err, result) {
-				done();
-				if (result) {
-					return next();
-				} else {
-					resp.status = ERROR;
-					resp.message = "Error when uploading files.";
-					if (err) {
-						console.log(err);
+			pg.connect(connectionString, function (err, client, done) {
+				client.query(query, function (err, result) {
+					done();
+					if (result) {
+						return next();
+					} else {
+						resp.status = ERROR;
+						resp.message = "Error when uploading files.";
+						if (err) {
+							console.log(err);
+						}
+						return res.status(500).json(resp);
 					}
-					return res.status(500).json(resp);
-				}
+				});
 			});
 		};
 		pg.connect(connectionString, function (err, client, done) {
