@@ -15,7 +15,7 @@ module.exports = function (app) {
 		}
 		for (var i = 0; i < files.length; i++) {
 			var file = files[i];
-			if (!file.name || !file.type || file.size) {
+			if (!file.name || !file.type || !file.size) {
 				resp.status = ERROR;
 				resp.message = "Files metadata missing required attributes.";
 				return res.status(400).json(resp);

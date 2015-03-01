@@ -41,7 +41,7 @@ module.exports = function (app) {
 													creator						\
 												  ) 							\
 		 					                      (								\
-		 					                      	select fn_get_or_create_file_type(tt.type),			\
+		 					                      	select fn_get_or_create_file_type(tt.type, null),			\
 		 					                      		   regexp_replace( random()::text, '^0.', '' ) 	\
 		 					                      		   || fn_random_text_md5(20)					\
 		 					                      		   || regexp_replace( tt.name, '\S*\.', '.' ), 	\
