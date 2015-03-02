@@ -249,18 +249,45 @@ $scope.hideSearch = function() {
 })
 
 .controller('NewTripCtrl', function($scope, $ionicModal, $timeout, $http, $location, $upload) {
+  $scope.myTripsData = {};
+  $scope.myTripsData.title = 'untitled';
+  //Form data for the login modal
+  $http.get('http://picwo.com:3100/api/trip', {withCredentials: true}).
+  success(function (data, status, headers, config) {
+    $scope.myTripsData.trip = data.trip;
+    console.log('tripData: ' + $scope.myTripsData);
+    // $http.post('http://picwo.com:3100/api/trip', $scope.myTripsData).
+    // success(function(data, status, headers, config){
+    //   $scope.itinernaryId = data.itinernaryId;
+    // })
+  }).
+  error(function(data, status, headers, config) {
+    $scope.itinernaryId = 1;
+  })
 
-  $scope.myTripsData ={};
+   $scope.upload = function(files) {
+        console.log(files);
+        $scope.hasPhotos = true;
+        $scope.photos=[];
+        for (i = 0; i < Object.keys(files).length; i++) {
+          $scope.photos.push(URL.createObjectURL(files[i]));
+        }
+    }
+
 
   $scope.save = function(myTripsData) {
-    console.log(myTripsData.title);
+    console.log($scope.myTripsData);
     $http.post('http://picwo.com:3100/api/trip', myTripsData, {withCredentials:true}).
     success(function(data, status, headers, config){
-      $scope.tripId = data.trip;
-      console.log($scope.tripId);
+      // $scope.tripId = data.trip;
+      console.log(data);
     })
 
   };
+
+  $scope.getImgSrc = function(place) {
+    return place.photos[0].getUrl({maxWidth:200, maxHeight:200});
+  }
 
   $scope.addItinerary = function(tripId) {
     $http.post('http://picwo.com:3100/api/trip/itinerary', tripId, {withCredentials:true}).
@@ -290,7 +317,6 @@ $scope.hideSearch = function() {
       $scope.photos.push(URL.createObjectURL(files[i]));
     }
 
-    console.log($scope.photos[0]);
 
     $http.post('http://picwo.com:3100/api/upload/trip', fd, {
         withCredentials: true,
@@ -311,6 +337,8 @@ $scope.hideSearch = function() {
       });
 
 };
+
+
 
 })
 
@@ -342,8 +370,39 @@ $scope.hideSearch = function() {
   };
   
   $scope.moveItem = function(item, fromIndex, toIndex) {
-    $scope.items.splice(fromIndex, 1);
-    $scope.items.splice(toIndex, 0, item);
+    var items = $scope.items;
+    console.log(fromIndex);
+    console.log(toIndex);
+    console.log($scope.items);
+
+    var i = 0;
+    var sum = 0;
+    console.log(items[0].places.length);
+    while (items[i].places.length + sum <= fromIndex) {
+      sum += items[i].places.length;
+      i++;
+    }
+
+    var sum2 = 0;
+    var j = 0;
+    while (items[j].places.length + sum2 <= toIndex) {
+      sum2 += items[j].places.length;
+      j++;
+    }
+
+    if (i == j) {
+      var ii = fromIndex - sum;
+      var jj = toIndex - sum2;
+      var temp = items[i].places[ii];
+      console.log(items[i].places[ii]);
+      console.log(items[j].places[jj]);
+
+      items[i].places[ii] = items[j].places[jj];
+      items[j].places[jj] = temp;
+    }
+
+
+   
   };
   $scope.changeStartDate = function(startDate,endDate) {
     console.log(startDate);
