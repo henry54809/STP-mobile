@@ -29,7 +29,7 @@ bundle.placeFinderCtrl = 'js/placeFinderCtrl.js';
 // bundle.accountService = 'app/js/services/accountService.js';
 
 // //Directives
-// bundle.header = 'app/js/directives/headerDirective.js';
+bundle.imageOnload = 'directives/imageOnload.js';
 // bundle.footer = 'app/js/directives/footerDirective.js';
 // bundle.tile = 'app/js/directives/tileDirective.js';
 // bundle.signin = 'app/js/directives/signinDirective.js';

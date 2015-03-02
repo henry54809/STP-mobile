@@ -52,10 +52,6 @@ stp.controller('placeFinderCtrl', function($scope,$location,$stateParams, $ionic
       },300,$event)
     }
   }
-
-  
-
-
   var markers = [];
   $scope.querySearch = function(query) {
     if (query!="") {
@@ -118,9 +114,6 @@ stp.controller('placeFinderCtrl', function($scope,$location,$stateParams, $ionic
                       button-icon icon button-small ion-settings' \
                       ng-click='addPlace("+"\""+place.place_id+"\""+")'></a></div>"
                   }); 
-
-                  
-                    console.log(place);
                     // infowindow.setContent(place.name);
                     infowindow.open($scope.map, innerMarker);
                     infowindow.isOpen=true;
@@ -214,39 +207,46 @@ stp.controller('placeFinderCtrl', function($scope,$location,$stateParams, $ionic
         $scope.map.setCenter(place.geometry.location);
         $scope.map.setZoom(17);  // Why 17? Because it looks good.
       }
-      // marker.setIcon(/** @type {google.maps.Icon} */({
-      //   url: place.icon,
-      //   size: new google.maps.Size(71, 71),
-      //   origin: new google.maps.Point(0, 0),
-      //   anchor: new google.maps.Point(0, 0),
-      //   scaledSize: new google.maps.Size(35, 35),
-
-      // }));
       marker.setPosition(place.geometry.location);
       marker.setVisible(true);
       google.maps.event.addListener(marker,'click',function(){
-        if(marker.infowindow){
-          if (marker.infowindow.isOpen){
-            marker.infowindow.close();
-            marker.infowindow.isOpen=false;
+          if (marker.infowindow){
+            if (marker.infowindow.isOpen){
+              marker.infowindow.close();
+              marker.infowindow.isOpen = false;
+              currentOpenInfowindow = undefined;
+            } else {
+              marker.infowindow.open($scope.map, marker);
+              marker.infowindow.isOpen = true;
+              if(currentOpenInfowindow){
+                currentOpenInfowindow.close();
+                currentOpenInfowindow.isOpen = false
+              } 
+              currentOpenInfowindow = marker.infowindow;
+            }
           } else {
-            marker.infowindow.open($scope.map,marker);
-            marker.infowindow.isOpen=true;
-          }
-        } else {
-          var infowindow = new google.maps.InfoWindow();
-          var request = {
-            placeId: place.place_id
-          };
-          $scope.PlacesService.getDetails(request, function(place, status) {
-            if (status == google.maps.places.PlacesServiceStatus.OK) {
-                infowindow.setContent(place.name);
-                infowindow.open($scope.map, marker);
-                infowindow.isOpen=true;
-                marker.infowindow = infowindow;
-           }
-          });
-        }
+            $scope.PlacesService.getDetails(request, function(place, status) {
+              if (status == google.maps.places.PlacesServiceStatus.OK) {
+                var infowindow = new google.maps.InfoWindow({
+                    content: "<div id='infoWin' >\
+                    This is "+place.name+" <a class='button \
+                    button-icon icon button-small ion-settings' \
+                    ng-click='addPlace("+"\""+place.place_id+"\""+")'></a></div>"
+                }); 
+                  // infowindow.setContent(place.name);
+                  infowindow.open($scope.map, marker);
+                  infowindow.isOpen=true;
+                  marker.infowindow = infowindow;
+                  if(currentOpenInfowindow){
+                    currentOpenInfowindow.close();
+                    currentOpenInfowindow.isOpen=false;
+                  } 
+                  currentOpenInfowindow = marker.infowindow;
+                  $compile($("#infoWin"))($scope);
+             }
+              });
+              
+            }
         
       })
     }

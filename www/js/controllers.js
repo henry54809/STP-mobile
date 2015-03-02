@@ -199,32 +199,58 @@ $scope.hideSearch = function() {
     $scope.showHeader = false;
   };
 })
-
+.controller('photoUploadCtrl', function($scope, $upload, $http){
+    $scope.upload = function(files) {
+      console.log(files);
+      $scope.hasPhotos = true;
+      $scope.photos=[];
+      var namemap = {};
+      files.forEach(function(d){
+        namemap[d.name] = d;
+        $scope.photos.push(URL.createObjectURL(d));
+      })
+      console.log(namemap);
+      var postData={
+        name: $scope.myTripsData.title,
+        trip: 1,
+        files: files
+      }
+      console.log(postData);
+      $http.post('http://picwo.com:3100/api/upload/trip', postData, {withCredentials:true}).
+      success(function(data, status, headers, config){
+        // data.urls.forEach(function(d){
+        //     $http.put(d.url, namemap[d.name]).
+        //     success(function(data, status, headers, config){
+        //     console.log(data,config);
+        //   }).error(function(data, status, headers, config){
+        //     console.log(data,config);
+        //   })
+        // })
+        
+        data.urls.forEach(function(d){
+            var upload = $upload.upload({
+            url: d.url, // upload.php script, node.js route, or servlet url
+            file: namemap[d.name],  // single file or an array of files (array is for html5 only)
+            method: 'PUT',
+            headers: {'x-amz-acl': "authenticated-read"},
+            // to modify the name of the file(s)
+          }).success(function(data, status, headers, config){
+            console.log(data,config);
+          }).error(function(data, status, headers, config){
+            console.log(data,config);
+          })
+        });
+        console.log(data, status);
+      }).
+      error(function(data, status, headers, config){
+        console.log(data, status);
+      })   
+  }
+})
 
 .controller('NewTripCtrl', function($scope, $ionicModal, $timeout, $http, $location, $upload) {
 
-  // Form data for the login modal
-  // $http.get('http://picwo.com:3100/api/account', {withCredentials: true}).
-  // success(function (data, status, headers, config) {
-  //   $scope.myTripsData.tripId = data.trip;
-
-  //   $http.post('http://picwo.com:3100/api/account', $scope.myTripsData).
-  //   success(function(data, status, headers, config){
-  //     $scope.itinernaryId = data.itinernaryId;
-  //   })
-  // }).
-  // error(function(data, status, headers, config) {
-  //   $scope.itinernaryId = 1;
-  // })
-   $scope.upload = function(files) {
-        console.log(files);
-        $scope.hasPhotos = true;
-        $scope.photos=[];
-        for (i = 0; i < Object.keys(files).length; i++) {
-          $scope.photos.push(URL.createObjectURL(files[i]));
-        }
-    }
-
+  $scope.myTripsData ={};
 
   $scope.save = function(myTripsData) {
     console.log(myTripsData.title);
@@ -266,7 +292,7 @@ $scope.hideSearch = function() {
 
     console.log($scope.photos[0]);
 
-    $http.post('http://picwo.com:3100/api/trip/photos', fd, {
+    $http.post('http://picwo.com:3100/api/upload/trip', fd, {
         withCredentials: true,
         headers: {'Content-Type': undefined },
         transformRequest: angular.identity
