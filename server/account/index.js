@@ -139,7 +139,7 @@ module.exports = function (app) {
     var resp = {};
 
     //next if url param contains keys.
-    if (req.query && req.query.reset_password > 0) {
+    if (req.query && req.query.reset_password) {
       return next();
     }
 
