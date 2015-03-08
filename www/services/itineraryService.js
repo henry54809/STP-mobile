@@ -9,15 +9,22 @@ return {
       content: new Array(),
       
     },
-    addPlaceToItinerary: function(itineraryId, day, placeName, place, location){
+    addPlaceToItinerary: function(itineraryId, day, place){
       //get itinerary first
       // use itineraryId to push content
+      var pictures = place.photos;
+      var imgSrc = "assets/noImage.jpg";
+      if (pictures != undefined) {
+        imgSrc = pictures[0].getUrl({maxWidth:100, maxHeight:100});
+      }
+      
       this.tempItineray.content.push({
         day: day,
         // index: this.tempItineray.content.length,
-        name: placeName,
-        place: place
-        })
+        name: place.name,
+        place: place,
+        imgUrl: imgSrc
+      })
 
     },
     initItinerary: function(startDate, endDate, days) {
