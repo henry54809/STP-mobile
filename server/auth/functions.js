@@ -33,7 +33,6 @@ var require_authentication = function (req, res, next) {
 
     var callback = function (session_valid, entity) {
         console.log("Session valid: " + session_valid);
-        requesting_url = requesting_url.replace(/\?\S*$/g, "");
 
         if (white_list.indexOf(requesting_url) === -1 && !session_valid) {
             resp.status = ERROR;
