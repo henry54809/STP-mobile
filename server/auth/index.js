@@ -84,8 +84,7 @@ module.exports = function (app) {
                         return;
                     }
 
-                    pg.connect(connectionString, function (err, client, done) {
-                        var query = 'insert into tb_session (                                               \
+                    var query = 'insert into tb_session (                                                       \
                                                                    entity,                                      \
                                                                    session_id_hash                              \
                                                                 )(                                              \
@@ -95,22 +94,21 @@ module.exports = function (app) {
                                                                    where  entity = $1                           \
                                                                  )                                              \
                                       returning session_id_hash as session_id';
-                        client.query(query, [pk_entity], function (err, result) {
-                            done();
-                            var session_id = result.rows[0].session_id;
-                            if (session_id) {
-                                res.cookie('AuthToken', session_id, {
-                                    expires: new Date(Date.now() + 1000 * 60 * 60 * 24)
-                                });
-                                resp.status = OK;
-                                resp.message = "User authenticated.";
-                                res.json(resp);
-                            } else {
-                                resp.status = ERROR;
-                                resp.message = "Error when establishing a session.";
-                                return res.status(500).json(resp);
-                            }
-                        });
+                    client.query(query, [pk_entity], function (err, result) {
+                        done();
+                        var session_id = result.rows[0].session_id;
+                        if (session_id) {
+                            res.cookie('AuthToken', session_id, {
+                                expires: new Date(Date.now() + 1000 * 60 * 60 * 24)
+                            });
+                            resp.status = OK;
+                            resp.message = "User authenticated.";
+                            res.json(resp);
+                        } else {
+                            resp.status = ERROR;
+                            resp.message = "Error when establishing a session.";
+                            return res.status(500).json(resp);
+                        }
                     });
                 });
             });
