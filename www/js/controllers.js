@@ -730,7 +730,7 @@ $scope.hideSearch = function() {
 
 
 
-.controller('profileCtrl', function($scope, $stateParams, $http,accountService) {
+.controller('profileCtrl', function($scope, $stateParams, $ionicModal, $http, accountService) {
   accountService.getAccount(function(status,data) {
     if (status) {
       $scope.profile = data;
@@ -751,4 +751,41 @@ $scope.hideSearch = function() {
       })
     }
   }
+
+
+  $scope.resetData = {};
+
+  $ionicModal.fromTemplateUrl('templates/updatePassword.html', {
+    scope: $scope
+  }).then(function(modal) {
+    id: 3,
+    $scope.resetPassword_modal = modal;
+  });
+
+  $scope.gotoReset = function() {
+    $scope.resetData = {};
+    $scope.errorMessage = "";
+    $scope.resetPassword_modal.show();
+  }
+
+  $scope.closeReset = function() {
+    $scope.resetPassword_modal.hide();
+  }
+
+  $scope.doReset = function() {
+    console.log($scope.resetData);
+    if ($scope.resetData.new_password == $scope.resetData.new_password2) {
+      accountService.updatePassword($scope.resetData, function(success, data){
+        if (success){
+          $scope.resetPassword_modal.hide();
+        } else {
+          $scope.errorMessage = "Incorrect old password";
+          console.log('something went wrong:',data);
+        }
+      })
+    } else {
+      $scope.errorMessage = "New password and repeat password don't match";
+    }
+  }
+
 });
