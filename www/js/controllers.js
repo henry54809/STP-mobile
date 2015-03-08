@@ -158,6 +158,79 @@ $ionicModal.fromTemplateUrl('templates/signup.html', {
         console.log($scope.userInfo);
     })
   };
+
+  $scope.forgotPwd = function() {
+    $scope.signin_modal.hide()
+  }
+})
+
+.controller('forgotPasswordCtrl', function($location,$scope, $state, $ionicLoading,$http) {
+    $scope.user = {};
+    $scope.error = {};
+    $scope.state = {
+        success: false
+    };
+    var searchObject = $location.search();
+    console.log(searchObject);
+    $scope.reset = function() {
+        $scope.loading = $ionicLoading.show({
+            content: 'Sending',
+            animation: 'fade-in',
+            showBackdrop: true,
+            maxWidth: 200,
+            showDelay: 0
+        });
+    $http.put('http://picwo.com:3100/api/account?reset_password=' + $scope.user.email, {
+        withCredentials: true,
+    }).success(function(data, status, headers, config) {
+        $scope.state.success = true;
+        $ionicLoading.hide();
+        console.log(data);
+      }).
+      error(function(data, status, headers, config) {
+        $ionicLoading.hide();
+        $scope.error.message = data;
+        
+      });
+        // Parse.User.requestPasswordReset($scope.user.email, {
+        //     success: function() {
+        //         // TODO: show success
+        //         $ionicLoading.hide();
+        //         $scope.state.success = true;
+        //         $scope.$apply();
+        //     },
+        //     error: function(err) {
+        //         $ionicLoading.hide();
+        //         if (err.code === 125) {
+        //             $scope.error.message = 'Email address does not exist';
+        //         } else {
+        //             $scope.error.message = 'An unknown error has occurred, ' +
+        //                 'please try again';
+        //         }
+        //         $scope.$apply();
+        //     }
+        // });
+    };
+
+})
+
+.controller('ResetPasswordCtrl',function($scope,$http,$location) {
+  var searchObject = $location.search();
+  $http.get('http://picwo.com:3100/api/account/reset_password?token=' + 
+                                                              searchObject.token + 
+                                                              '&email_address=' + 
+                                                              searchObject.email_address, {withCredentials:true})
+  .success(function (data, status, headers, config) {
+    if(data.valid) {
+
+    } else {
+      console.log('token not valid!');
+    }
+  }).
+  error(function(data, status, headers, config) {
+    console.log('error' + data);
+  });
+
 })
 
 .controller('PlaylistsCtrl', function($scope) {

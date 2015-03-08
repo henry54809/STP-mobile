@@ -31,11 +31,22 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ,'angularFileUpload
     controller: 'AppCtrl'
   })
 
-  .state('app.search', {
-    url: "/search",
+  .state('app.forgotPassword', {
+    url: "/forgotPassword",
     views: {
       'menuContent': {
-        templateUrl: "templates/search.html"
+        templateUrl: "templates/forgotPassword.html",
+        controller: 'forgotPasswordCtrl'
+      }
+    }
+  })
+
+  .state('app.ResetPassword', {
+    url: "/ResetPassword",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/ResetPassword.html",
+        controller: "ResetPasswordCtrl"
       }
     }
   })
@@ -53,7 +64,7 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ,'angularFileUpload
     views: {
       'menuContent': {
         templateUrl: 'templates/profile.html',
-        controller: 'profileCtrl'
+        
       }
     }
   })
