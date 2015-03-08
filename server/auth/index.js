@@ -4,7 +4,7 @@ module.exports = function (app) {
     var express = require('express');
     var router = express.Router();
 
-    router.post('/auth', function (req, res, next) {
+    router.post('/', function (req, res, next) {
         var query = req.query;
         var cookies = req.cookies;
         var resp = {};
@@ -46,7 +46,7 @@ module.exports = function (app) {
         }
     });
 
-    router.post('/auth', function (req, res, next) {
+    router.post('/', function (req, res, next) {
         var resp = {};
         var msg = req.body;
         var cookies = req.cookies;
@@ -120,5 +120,5 @@ module.exports = function (app) {
 
     });
 
-    app.use('/api', router);
+    app.use('/api/auth', router);
 };
