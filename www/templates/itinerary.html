@@ -24,9 +24,14 @@
 
 <ion-list show-delete="shouldShowDelete" show-reorder="shouldShowReorder" can-swipe="listCanSwipe">
   <div class="item item-divider" ng-repeat-start="item in items">{{item.day}}</div>
-  <ion-item ng-repeat="place in item.places"  >
-  <h1>{{place.name}}</h1>
-  <p>{{place.day}} {{place.place}}</p>
+  <ion-item ng-repeat="place in item.places" >
+
+      <img src="{{place.imgUrl}}" style="float:left; margin-top:0px; margin-left:0px; max-height:100px">
+      <div style="margin-top:0px; margin-left:117px; overflow:visible">
+        <h2 style="overflow:visible">{{place.name}}</h2>
+        <p>{{place.place.formatted_address}}</p>
+      </div>
+     
   <!-- <a >item.day</a> -->
     <!-- <img ng-src="{{item.img}}">
     <h2>{{item.title}}+{{shouldShowReorder}}+{{shouldShowDelete}}+{{listCanSwipe}}</h2>

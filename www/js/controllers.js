@@ -277,7 +277,54 @@ $scope.hideSearch = function() {
     $scope.showHeader = false;
   };
 })
-
+.controller('photoUploadCtrl', function($scope, $upload, $http){
+    $scope.upload = function(files) {
+      console.log(files);
+      $scope.hasPhotos = true;
+      $scope.photos=[];
+      var namemap = {};
+      files.forEach(function(d){
+        namemap[d.name] = d;
+        $scope.photos.push(URL.createObjectURL(d));
+      })
+      console.log(namemap);
+      var postData={
+        name: $scope.myTripsData.title,
+        trip: 1,
+        files: files
+      }
+      console.log(postData);
+      $http.post('http://picwo.com:3100/api/upload/trip', postData, {withCredentials:true}).
+      success(function(data, status, headers, config){
+        // data.urls.forEach(function(d){
+        //     $http.put(d.url, namemap[d.name]).
+        //     success(function(data, status, headers, config){
+        //     console.log(data,config);
+        //   }).error(function(data, status, headers, config){
+        //     console.log(data,config);
+        //   })
+        // })
+        
+        data.urls.forEach(function(d){
+            var upload = $upload.upload({
+            url: d.url, // upload.php script, node.js route, or servlet url
+            file: namemap[d.name],  // single file or an array of files (array is for html5 only)
+            method: 'PUT',
+            headers: {'x-amz-acl': "authenticated-read"},
+            // to modify the name of the file(s)
+          }).success(function(data, status, headers, config){
+            console.log(data,config);
+          }).error(function(data, status, headers, config){
+            console.log(data,config);
+          })
+        });
+        console.log(data, status);
+      }).
+      error(function(data, status, headers, config){
+        console.log(data, status);
+      })   
+  }
+})
 
 
 .controller('NewTripCtrl', function($scope, $ionicModal, $timeout, $http, $location, $upload) {
@@ -317,6 +364,10 @@ $scope.hideSearch = function() {
 
   };
 
+  $scope.getImgSrc = function(place) {
+    return place.photos[0].getUrl({maxWidth:200, maxHeight:200});
+  }
+
   $scope.addItinerary = function(tripId) {
     $http.post('http://picwo.com:3100/api/trip/itinerary', tripId, {withCredentials:true}).
     success(function(data, status, headers, config){
@@ -345,9 +396,8 @@ $scope.hideSearch = function() {
       $scope.photos.push(URL.createObjectURL(files[i]));
     }
 
-    console.log($scope.photos[0]);
 
-    $http.post('http://picwo.com:3100/api/trip/photos', fd, {
+    $http.post('http://picwo.com:3100/api/upload/trip', fd, {
         withCredentials: true,
         headers: {'Content-Type': undefined },
         transformRequest: angular.identity
@@ -399,8 +449,39 @@ $scope.hideSearch = function() {
   };
   
   $scope.moveItem = function(item, fromIndex, toIndex) {
-    $scope.items.splice(fromIndex, 1);
-    $scope.items.splice(toIndex, 0, item);
+    var items = $scope.items;
+    console.log(fromIndex);
+    console.log(toIndex);
+    console.log($scope.items);
+
+    var i = 0;
+    var sum = 0;
+    console.log(items[0].places.length);
+    while (items[i].places.length + sum <= fromIndex) {
+      sum += items[i].places.length;
+      i++;
+    }
+
+    var sum2 = 0;
+    var j = 0;
+    while (items[j].places.length + sum2 <= toIndex) {
+      sum2 += items[j].places.length;
+      j++;
+    }
+
+    if (i == j) {
+      var ii = fromIndex - sum;
+      var jj = toIndex - sum2;
+      var temp = items[i].places[ii];
+      console.log(items[i].places[ii]);
+      console.log(items[j].places[jj]);
+
+      items[i].places[ii] = items[j].places[jj];
+      items[j].places[jj] = temp;
+    }
+
+
+   
   };
   $scope.changeStartDate = function(startDate,endDate) {
     console.log(startDate);
@@ -728,7 +809,7 @@ $scope.hideSearch = function() {
 
 
 
-.controller('profileCtrl', function($scope, $stateParams, $http,accountService) {
+.controller('profileCtrl', function($scope, $stateParams, $ionicModal, $http, accountService) {
   accountService.getAccount(function(status,data) {
     if (status) {
       $scope.profile = data;
@@ -749,4 +830,41 @@ $scope.hideSearch = function() {
       })
     }
   }
+
+
+  $scope.resetData = {};
+
+  $ionicModal.fromTemplateUrl('templates/updatePassword.html', {
+    scope: $scope
+  }).then(function(modal) {
+    id: 3,
+    $scope.resetPassword_modal = modal;
+  });
+
+  $scope.gotoReset = function() {
+    $scope.resetData = {};
+    $scope.errorMessage = "";
+    $scope.resetPassword_modal.show();
+  }
+
+  $scope.closeReset = function() {
+    $scope.resetPassword_modal.hide();
+  }
+
+  $scope.doReset = function() {
+    console.log($scope.resetData);
+    if ($scope.resetData.new_password == $scope.resetData.new_password2) {
+      accountService.updatePassword($scope.resetData, function(success, data){
+        if (success){
+          $scope.resetPassword_modal.hide();
+        } else {
+          $scope.errorMessage = "Incorrect old password";
+          console.log('something went wrong:',data);
+        }
+      })
+    } else {
+      $scope.errorMessage = "New password and repeat password don't match";
+    }
+  }
+
 });
