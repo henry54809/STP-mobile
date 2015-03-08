@@ -1,6 +1,6 @@
 var pg = require('pg');
 
-var white_list = ["/api/account", "/api/upload/consumed", "/api/auth"];
+var white_list = ["/api/account", "/api/account/reset_password", "/api/upload/consumed", "/api/auth"];
 
 var is_session_valid = function (cookies, callback) {
     if ("AuthToken" in cookies) {

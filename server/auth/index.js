@@ -71,10 +71,12 @@ module.exports = function (app) {
             pg.connect(connectionString, function (err, client, done) {
                 client.query('select entity from tb_entity where ( username = $1 or email_address = $1 ) and password_hash = crypt( $2, password_hash ) ', [msg.username, msg.password], function (err, result) {
                     done();
-                    if (result.rows[0]) {
+                    if (result && result.rows[0]) {
                         if (result.rows[0].entity) {
                             pk_entity = result.rows[0].entity;
                         }
+                    } else {
+                        console.log(err);
                     }
 
                     if (!pk_entity) {
