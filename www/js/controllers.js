@@ -222,7 +222,7 @@ $ionicModal.fromTemplateUrl('templates/signup.html', {
                                                               searchObject.email_address, {withCredentials:true})
   .success(function (data, status, headers, config) {
     if(data.valid) {
-
+      console.log('token成功');
     } else {
       console.log('token not valid!');
     }

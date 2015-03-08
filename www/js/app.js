@@ -64,7 +64,7 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ,'angularFileUpload
     views: {
       'menuContent': {
         templateUrl: 'templates/profile.html',
-        
+        controller:'profileCtrl'
       }
     }
   })
