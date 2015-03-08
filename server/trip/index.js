@@ -62,11 +62,7 @@ module.exports = function (app) {
       });
     });
   });
-<<<<<<< HEAD
-  });
-
-=======
->>>>>>> 5d67ba567e8c4c64fed6cdee6de560e17feab410
+  
   router.post('/', function (req, res, next) {
     var resp = {};
     var msg = req.body;

@@ -23,7 +23,7 @@ module.exports = function (app) {
 		var updated_files = [];
 
 		var get_url_callback = function (file) {
-			uploading_files.push(file);
+			updated_files.push(file);
 			if (updated_files.length === msg.files.length) {
 				resp.status = OK;
 				resp.files = updated_files;
@@ -32,7 +32,7 @@ module.exports = function (app) {
 				return upload_functions.update_upload_requests(updated_files);
 			}
 		};
-
+        
 		pg.connect(connectionString, function (err, client, done) {
 			var query = "insert into tb_file (									\
 													file_type,					\
@@ -58,7 +58,8 @@ module.exports = function (app) {
 			query = query + "						)	\
 		 					                      ) 	\
 							 returning path, name, file_upload_request";
-			client.query(query, [req.entity], function (err, result) {
+			console.log(query);
+            client.query(query, [req.entity], function (err, result) {
 				done();
 				if (result && result.rows[0]) {
 					for (var i = 0; i < result.rows.length; i++) {
@@ -69,7 +70,7 @@ module.exports = function (app) {
 					resp.status = ERROR;
 					resp.message = "Error when uploading files.";
 					if (err) {
-						console.log(err);
+                        console.log(err);
 					}
 					return res.status(500).json(resp);
 				}
