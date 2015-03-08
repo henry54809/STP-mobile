@@ -215,8 +215,14 @@ $ionicModal.fromTemplateUrl('templates/signup.html', {
 })
 
 .controller('ResetPasswordCtrl',function($scope,$state,$http,$location) {
-  var resetPWd = {};
+  $scope.resetPwd = {
+    new_password:''
+    // token:'',
+    // email_address:''
+  };
+  $scope.confirmPwd = {};
   var searchObject = $location.search();
+  console.log(searchObject);
   $scope.error = {};
   $scope.state = {
         success: false
@@ -228,11 +234,11 @@ $ionicModal.fromTemplateUrl('templates/signup.html', {
   .success(function (data, status, headers, config) {
     if(data.valid) {
       console.log('token成功');
-      resetPwd.token = searchObject.token;
-      resetPwd.email_address = searchObject.email_address;
+      $scope.resetPwd.token = searchObject.token;
+      $scope.resetPwd.email_address = searchObject.email_address;
       $scope.state.success = true;
     } else {
-      $scope.error.message = 'token not valid!');
+      $scope.error.message = 'token not valid!';
     }
   }).
   error(function(data, status, headers, config) {
@@ -240,17 +246,22 @@ $ionicModal.fromTemplateUrl('templates/signup.html', {
     console.log('error' + data);
   });
 
-  $scope.resetPwd = function() {
-    if($scope.confirmPwd == $scope.resetPWd.newPwd) {
-      $http.put('http://picwo.com:3100/api/account/reset_password',resetPwd,{withCredentials:true})
+  $scope.resetPwdFunc = function() {
+    console.log($scope.confirmPwd.pwd);
+    console.log($scope.resetPwd.new_password);
+    if($scope.confirmPwd.pwd == $scope.resetPwd.new_password) {
+      console.log($scope.resetPwd);
+      $http.put('http://picwo.com:3100/api/account/reset_password',$scope.resetPwd,{withCredentials:true})
       .success(function(data, status, headers, config) {
         console.log(data);
+        // $location.path('app/home');
       }).
       error(function(data, status, headers, config) {
         $scope.error.message = data;
-        
+        console.log(data);
       }); 
     } else {
+      console.log('不一致');
       $scope.error.message = '两次密码必须一致';
     }
     
