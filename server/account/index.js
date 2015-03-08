@@ -137,10 +137,12 @@ module.exports = function (app) {
   //Update entity information
   router.put('/', function (req, res, next) {
     var resp = {};
+
     //next if url param contains keys.
     if (Object.getOwnPropertyNames(req.query).length > 0) {
       return next();
-    }
+    }    
+        
     var callback = function (session_valid) {
       if (!session_valid) {
         resp.status = ERROR;
@@ -256,7 +258,7 @@ module.exports = function (app) {
 
   router.put('/', function (req, res, next) {
     var query = req.query;
-    if (req.body && req.values.length === 0) {
+    if (req.body && ( !req.values || req.values.length === 0 ) ) {
       return next();
     }
     var resp = {};
