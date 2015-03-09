@@ -354,11 +354,15 @@ angular.module('stp.controllers', [])
             url: d.upload_url, // upload.php script, node.js route, or servlet url
             file: namemap[d.name], // single file or an array of files (array is for html5 only)
             method: 'PUT',
+            headers: {
+              'x-amz-acl': "authenticated-read",
+              'Content-Type': namemap[d.name].type
+            },
             // to modify the name of the file(s)
           }).success(function (data, status, headers, config) {
             console.log(data, config);
           }).error(function (data, status, headers, config) {
-            console.log('Status: ' + status);
+            console.log('Status:' + status);
             console.log(data, config);
           })
         });

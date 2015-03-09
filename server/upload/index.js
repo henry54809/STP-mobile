@@ -13,7 +13,7 @@ module.exports = function (app) {
 		var resp = {};
 		var msg = req.body;
 		var files = msg.files;
-		if (!files) {
+		if (!files || files.length == 0) {
 			resp.status = ERROR;
 			resp.message = "Files metadata is required.";
 			return res.status(400).json(resp);
