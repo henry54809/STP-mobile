@@ -350,21 +350,13 @@ angular.module('stp.controllers', [])
         // })
 
         data.files.forEach(function (d) {
-          var upload = $upload.upload({
-            url: d.upload_url, // upload.php script, node.js route, or servlet url
-            file: namemap[d.name], // single file or an array of files (array is for html5 only)
-            method: 'PUT',
-            headers: {
-              'x-amz-acl': "authenticated-read",
-              'Content-Type': namemap[d.name].type
-            },
-            // to modify the name of the file(s)
-          }).success(function (data, status, headers, config) {
-            console.log(data, config);
-          }).error(function (data, status, headers, config) {
-            console.log('Status:' + status);
-            console.log(data, config);
-          })
+          var upload = $http.put(d.upload_url, namemap[d.name])
+            .success(function (data, status, headers, config) {
+              console.log(data, config);
+            }).error(function (data, status, headers, config) {
+              console.log('Status:' + status);
+              console.log(data, config);
+            })
         });
         console.log(data, status);
       }).
