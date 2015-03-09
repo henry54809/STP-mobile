@@ -5,7 +5,6 @@ var update_upload_requests = function (updated_files) {
 
 	var client = new pg.Client(connectionString);
 	var query = "update tb_file_upload_request set upload_url = $1 where file_upload_request = $2";
-    console.log(updated_files);
 	for (var i = 0; i < updated_files.length; i++) {
 		var file = updated_files[i];
 		var result = client.query(query, [file.upload_url, file.file_upload_request]);
@@ -14,9 +13,7 @@ var update_upload_requests = function (updated_files) {
 		});
 	}
 	client.connect();
-	client.on('drain', function () {
-		console.log("Drained.");
-	});
+	console.log(updated_files);
 };
 
 module.exports.update_upload_requests = update_upload_requests;

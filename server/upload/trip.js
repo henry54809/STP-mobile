@@ -32,7 +32,7 @@ module.exports = function (app) {
 				return upload_functions.update_upload_requests(updated_files);
 			}
 		};
-        
+
 		pg.connect(connectionString, function (err, client, done) {
 			var query = "insert into tb_file (									\
 													file_type,					\
@@ -43,9 +43,9 @@ module.exports = function (app) {
 												  ) 							\
 		 					                      (								\
 		 					                      	select fn_get_or_create_file_type(fpr.file_metadata->>'type', null),		\
-		 					                      		   regexp_replace( random()::text, '^0\.', '' ) 	\
-		 					                      		   || '/' ||fn_random_text_md5(20)					\
-		 					                      		   || regexp_replace( fpr.file_metadata->>'name', '\S*\.', '.' ), 	\
+		 					                      		   regexp_replace( random()::text, '^0\\.', '' ) 	\
+		 					                      		   || '/' ||fn_random_text_md5(20)				\
+		 					                      		   || regexp_replace( fpr.file_metadata->>'name', '\\S*\\.', '.' ), 	\
 		 					                      		   fpr.file_metadata->>'name',						\
 		 					                      	  	   $1,							\
 		 					                      	  	   fpr.file_upload_request  	\
@@ -58,8 +58,7 @@ module.exports = function (app) {
 			query = query + "						)	\
 		 					                      ) 	\
 							 returning path, name, file_upload_request";
-			console.log(query);
-            client.query(query, [req.entity], function (err, result) {
+			client.query(query, [req.entity], function (err, result) {
 				done();
 				if (result && result.rows[0]) {
 					for (var i = 0; i < result.rows.length; i++) {
@@ -70,7 +69,7 @@ module.exports = function (app) {
 					resp.status = ERROR;
 					resp.message = "Error when uploading files.";
 					if (err) {
-                        console.log(err);
+						console.log(err);
 					}
 					return res.status(500).json(resp);
 				}
