@@ -350,7 +350,12 @@ angular.module('stp.controllers', [])
         // })
 
         data.files.forEach(function (d) {
-          var upload = $http.put(d.upload_url, namemap[d.name])
+          var upload = $http.put(d.upload_url, namemap[d.name], {
+              headers: {
+                "x-amz-acl": "authenticated-read",
+                "Content-Type": namemap[d.name].type
+              }
+            })
             .success(function (data, status, headers, config) {
               console.log(data, config);
             }).error(function (data, status, headers, config) {
@@ -360,9 +365,7 @@ angular.module('stp.controllers', [])
         });
         console.log(data, status);
       }).
-      error(function (data, status, headers, config) {
-        console.log(data, status);
-      })
+      error(function (data, status, headers, config) {})
     };
   })
 
