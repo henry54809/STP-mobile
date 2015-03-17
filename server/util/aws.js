@@ -21,7 +21,7 @@ var get_upload_url = function (bucket, file, callback) {
 	var params = {
 		Bucket: bucket,
 		Key: file.path,
-		ContentMD5: "",
+		ContentType: file.content_type,
 		ACL: 'authenticated-read'
 	};
 

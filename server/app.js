@@ -7,7 +7,7 @@ var multer = require('multer');
 var pg = require('pg');
 var app = express();
 
-app.use(logger('dev'));
+app.use(logger('[:date[clf]] :method :url :status :response-time ms - :res[content-length]'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
@@ -62,6 +62,7 @@ require("./account/reset_password")(app);
 require("./user/index")(app);
 require("./user/friend_actions")(app);
 require("./trip/index")(app);
+require("./trip/details")(app);
 require("./location/index")(app);
 require("./upload/index")(app);
 require("./upload/trip")(app);

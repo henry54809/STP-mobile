@@ -38,6 +38,7 @@ module.exports = function (app) {
 													file_type,					\
 													path,						\
 													name,						\
+													content_type, 				\
 													creator,					\
 													file_upload_request       	\
 												  ) 							\
@@ -46,7 +47,8 @@ module.exports = function (app) {
 		 					                      		   regexp_replace( random()::text, '^0\\.', '' ) 	\
 		 					                      		   || '/' ||fn_random_text_md5(20)				\
 		 					                      		   || regexp_replace( fpr.file_metadata->>'name', '\\S*\\.', '.' ), 	\
-		 					                      		   fpr.file_metadata->>'name',						\
+		 					                      		   fpr.file_metadata->>'name',	\
+		 					                      		   fpr.file_metadata->>'type',	\
 		 					                      	  	   $1,							\
 		 					                      	  	   fpr.file_upload_request  	\
 		 					                      	  from tb_file_upload_request fpr 	\
@@ -57,7 +59,7 @@ module.exports = function (app) {
 			query = query.replace(/,\s*$/g, "");
 			query = query + "						)	\
 		 					                      ) 	\
-							 returning path, name, file_upload_request";
+							 returning path, name, file_upload_request, content_type";
 			client.query(query, [req.entity], function (err, result) {
 				done();
 				if (result && result.rows[0]) {

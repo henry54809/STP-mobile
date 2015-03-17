@@ -7,6 +7,34 @@ module.exports = function (app) {
 	router.put('/consumed', function (req, res) {
 		var resp = {};
 		var msg = req.body;
+		var name = msg.name;
+		if (!name) {
+			resp.status = ERROR;
+			resp.message = "Files name is required.";
+			return res.status(400).json(resp);
+		}
+		var query = 'update tb_file_upload_request fpr  \
+						set uploaded = now()	   		\
+					   from tb_file f 					\
+					  where f.file_upload_request = fpr.file_upload_request \
+					    and f.path  = $1';
+		pg.connect(connectionString, function (err, client, done) {
+			client.query(query, [name], function (err, result) {
+				done();
+				if (result) {
+					resp.status = OK;
+					resp.message = "File consumed.";
+					return res.json(resp);
+				} else {
+					resp.status = ERROR;
+					resp.message = "File not found.";
+					if (err) {
+						console.log(err);
+					}
+					return res.status(404).json(resp);
+				}
+			});
+		});
 	});
 
 	router.all('/*', function (req, res, next) {
