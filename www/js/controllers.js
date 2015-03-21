@@ -201,21 +201,25 @@ $scope.hideSearch = function() {
 })
 .controller('photoUploadCtrl', function($scope, $upload, $http){
     $scope.upload = function(files) {
-      console.log(files);
+      if (files.length==0){
+        return;
+      }
       $scope.hasPhotos = true;
+      console.log($("#photos-containter").outerWidth())
+      $scope.photoWidth = Math.floor(($("#photos-containter").outerWidth()-15-16*2)/3);
       $scope.photos=[];
       var namemap = {};
       files.forEach(function(d){
         namemap[d.name] = d;
         $scope.photos.push(URL.createObjectURL(d));
       })
-      console.log(namemap);
+      $scope.photos.push("assets/plus.ico");
+
       var postData={
         name: $scope.myTripsData.title,
         trip: 1,
         files: files
       }
-      console.log(postData);
       $http.post('http://picwo.com:3100/api/upload/trip', postData, {withCredentials:true}).
       success(function(data, status, headers, config){
         // data.urls.forEach(function(d){
@@ -228,17 +232,27 @@ $scope.hideSearch = function() {
         // })
         
         data.urls.forEach(function(d){
-            var upload = $upload.upload({
-            url: d.url, // upload.php script, node.js route, or servlet url
-            file: namemap[d.name],  // single file or an array of files (array is for html5 only)
-            method: 'PUT',
-            headers: {'x-amz-acl': "authenticated-read"},
-            // to modify the name of the file(s)
-          }).success(function(data, status, headers, config){
-            console.log(data,config);
+          console.log(namemap[d.name]);
+          $http.put(d.url,namemap[d.name],{withCredentials:true,
+            headers: {
+              'x-amz-acl': "authenticated-read", 
+              'Content-Type': namemap[d.name].type} }
+            ).success(function(data, status, headers, config){
+            console.log(data,config,headers,status);
           }).error(function(data, status, headers, config){
-            console.log(data,config);
+            console.log(data,config,headers,status);
           })
+          //   var upload = $upload.upload({
+          //   url: d.url, // upload.php script, node.js route, or servlet url
+          //   file: namemap[d.name],  // single file or an array of files (array is for html5 only)
+          //   method: 'PUT',
+          //   headers: {'x-amz-acl': "authenticated-read"},
+          //   // to modify the name of the file(s)
+          // }).success(function(data, status, headers, config){
+          //   console.log(data,config,headers,status);
+          // }).error(function(data, status, headers, config){
+          //   console.log(data,config,headers,status);
+          // })
         });
         console.log(data, status);
       }).
@@ -264,16 +278,6 @@ $scope.hideSearch = function() {
   error(function(data, status, headers, config) {
     $scope.itinernaryId = 1;
   })
-
-   $scope.upload = function(files) {
-        console.log(files);
-        $scope.hasPhotos = true;
-        $scope.photos=[];
-        for (i = 0; i < Object.keys(files).length; i++) {
-          $scope.photos.push(URL.createObjectURL(files[i]));
-        }
-    }
-
 
   $scope.save = function(myTripsData) {
     console.log($scope.myTripsData);
