@@ -216,5 +216,46 @@ module.exports = function (app) {
 
 	});
 
+	//Get itinerary nodes' content
+	router.get('/:itinerary', function (req, res, next) {
+		var resp = {};
+		var msg = req.body;
+
+		if (!req.itinerary || !msg) {
+			return next();
+		}
+
+		pg.connect(connectionString, function (err, client, done) {
+			var query = "select inc.*, in.day, in.oredering_number     \
+	                       from tb_itinerary_node in \
+	                       join tb_itinerary_node_content inc \
+	                         on inc.itinerary_node = in.itinerary_node \
+	                      where in.itinerary = $1";
+
+			client.query(query, [itinerary], function (err, result) {
+				done();
+				if (result) {
+					if (result.rows) {
+						resp.status = OK;
+						resp.nodes = result.rows;
+						return res.json(resp);
+					} else {
+						resp.status = ERROR;
+						resp.message = "Empty itinerary.";
+						return res.status(400).json(resp);
+					}
+				} else {
+					resp.status = ERROR;
+					resp.message = "Error finding itinerary contents.";
+					if (err) {
+						console.log(err);
+					}
+					return res.status(500).json(resp);
+				}
+			});
+		});
+
+	});
+
 	app.use('/api/itinerary', router);
 };

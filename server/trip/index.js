@@ -156,7 +156,7 @@ module.exports = function (app) {
                               title = $6                  \
                               modifier = $7               \
                         where event = $8                  ';
-          client.query(query, [
+       client.query(query, [
             start_date,
             duration_days,
             proposed_start_date,
@@ -181,6 +181,7 @@ module.exports = function (app) {
           return res.status(500).json(resp);
         }
       });
+    }); 
   });
 
   app.use('/api/trip', router);

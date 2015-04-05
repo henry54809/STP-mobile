@@ -52,6 +52,7 @@ module.exports = function (app) {
     var cookies = req.cookies;
     pg.connect(connectionString, function (err, client, done) {
       var query = "select start_date,             \
+                          event as trip_id,       \
                           duration_days,          \
                           proposed_start_date,    \
                           proposed_duration_days, \
