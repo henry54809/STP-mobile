@@ -299,7 +299,9 @@ angular.module('stp.controllers', [])
   })
   .controller('mytripCtrl', function ($scope, myTrips, $filter, $http) {
     // console.log(myTrips);
-    $scope.items = myTrips.data.trips;
+    $scope.items = myTrips.data.trips.reverse();
+
+    console.log(myTrips.data);
     $scope.showHeader = false;
     $scope.toggleSearch = function () {
       $scope.showHeader = !$scope.showHeader;
@@ -312,11 +314,12 @@ angular.module('stp.controllers', [])
       $scope.showHeader = false;
     };
 
+  })
+
     // onRouteChangeOff = $scope.$on('$locationChangeStart', function(){
     //   console.log("routeChanged!");
     // });
 
-  })
   .controller('photoUploadCtrl', function ($scope, $upload, $http) {
       
 
@@ -432,7 +435,7 @@ angular.module('stp.controllers', [])
 
   $scope.addItinerary = function () {
 
-    $http.post('http://picwo.com:3100/api/trip/'+$scope.myTripsData.trip +'/itinerary' , {
+    $http.post('http://picwo.com:3100/api/trip/'+$scope.myTripsData.trip +'/itinerary' , {}, {
       withCredentials: true
     }).
     success(function (data, status, headers, config) {
