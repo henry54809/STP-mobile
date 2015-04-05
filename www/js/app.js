@@ -96,21 +96,10 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ,'angularFileUpload
       }
     }
   })
-
   .state('app.mytrip',{
     resolve:{
       myTrips : function($http){
          return $http({method: 'GET', url: 'http://picwo.com:3100/api/trip/mytrips',withCredentials:true});
-    //     $http.get('http://picwo.com:3100/api/trip/mytrips', {
-        
-    //   })
-    //   .success(function (data, status, headers, config) {
-    //     $scope.items = data.trips;
-    //   }).
-    // error(function (data, status, headers, config) {
-    //   console.log('error' + data);
-    // });
-
       }
     },
     url: "/mytrip",
@@ -118,6 +107,21 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ,'angularFileUpload
       'menuContent': {
         templateUrl: "templates/mytrip.html",
         controller: 'mytripCtrl'
+      }
+    }
+  })
+  .state('app.tripDetail',{
+    resolve:{
+      myTrip : function($http,$stateParams){
+        console.log($stateParams.tripID);
+         return {tripID:$stateParams.tripID} //$http({method: 'GET', url: 'http://picwo.com:3100/api/trip/mytrips',withCredentials:true});
+      }
+    },
+    url: "/tripdetails/:tripID",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/newTrip.html",
+        controller: 'NewTripCtrl'
       }
     }
   })
