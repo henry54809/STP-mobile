@@ -141,4 +141,22 @@ stp.service('accountService',['$location','$http','$window', function ($location
     })
   }
 
+  this.updatePassword = function(resetData, callback){
+    $http.put('http://picwo.com:3100/api/account',resetData,{withCredentials: true}).
+    success(function(data, status, headers, config){
+        console.log(data)
+        if(data.status =="Error"){
+          // console.log(data, status);
+          callback(false, data);
+        } else {
+          callback(true, data);   
+        } 
+    }).
+    error(function(data, status, headers, config){
+      console.log(data, status);
+      callback(false, data);
+    })
+
+  }
+
 }]);

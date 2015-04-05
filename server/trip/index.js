@@ -62,6 +62,7 @@ module.exports = function (app) {
       });
     });
   });
+  
   router.post('/', function (req, res, next) {
     var resp = {};
     var msg = req.body;
@@ -111,120 +112,6 @@ module.exports = function (app) {
         } else {
           resp.status = ERROR;
           resp.message = "Error when creating trip.";
-          if (err) {
-            console.log(err);
-          }
-          return res.status(500).json(resp);
-        }
-      });
-    });
-  });
-
-  //checking event id validity 
-  //and check if entity is associated with this event
-  router.all('/:trip_id/*', function (req, res, next) {
-    var resp = {};
-    var trip_id = req.params.trip_id;
-    var cookies = req.cookies;
-    if (isNaN(trip_id)) {
-      return next();
-    }
-    pg.connect(connectionString, function (err, client, done) {
-      var query = "select e.*             \
-                     from tb_event e,     \
-                          tb_session s    \
-                    where event = $1      \
-                      and s.session_id_hash = $2  \
-                      and s.entity = any( fn_get_event_related_entity($1) )";
-
-      client.query(query, [trip_id, cookies['AuthToken']], function (err, result) {
-        done();
-        if (result) {
-          if (result.rows[0]) {
-            req.event = result.rows[0];
-            return next();
-          } else {
-            resp.status = ERROR;
-            resp.message = "Could not find trip.";
-            if (err) {
-              console.log(err);
-            }
-            return res.status(400).json(resp);
-          }
-        } else {
-          resp.status = ERROR;
-          resp.message = "Error when finding trip.";
-          if (err) {
-            console.log(err);
-          }
-          return res.status(500).json(resp);
-        }
-      });
-    });
-  });
-
-  router.post('/:trip_id/itinerary', function (req, res, next) {
-    var trip_id = req.params.trip_id;
-    var cookies = req.cookies;
-    var resp = {};
-    if (!req.event) {
-      return next();
-    }
-    var create_new_itinerary = function () {
-      pg.connect(connectionString, function (err, client, done) {
-        var query = "insert into tb_itinerary(            \
-                                              event,      \
-                                              creator,    \
-                                              modifier    \
-                                              )           \
-                                              (           \
-                                                select event,         \
-                                                       s.entity,      \
-                                                       s.entity       \
-                                                  from tb_event e,   \
-                                                       tb_session s  \
-                                                 where e.event = $1 \
-                                                   and s.session_id_hash = $2 \
-                                              ) returning itinerary";
-
-        client.query(query, [trip_id, cookies['AuthToken']], function (err, result) {
-          done();
-          if (result && result.rows[0]) {
-            resp.status = OK;
-            resp.existing = false;
-            resp.itinerary = result.rows[0].itinerary;
-            return res.json(resp);
-          } else {
-            resp.status = ERROR;
-            resp.message = "Error when creating itinerary.";
-            if (err) {
-              console.log(err);
-            }
-            return res.status(500).json(resp);
-          }
-        });
-      });
-    };
-
-    pg.connect(connectionString, function (err, client, done) {
-      var query = "select itinerary \
-                     from tb_itinerary  \
-                    where event = $1";
-
-      client.query(query, [trip_id], function (err, result) {
-        done();
-        if (result) {
-          if (result.rows[0]) {
-            resp.status = OK;
-            resp.existing = true;
-            resp.itinerary = result.rows[0].itinerary;
-            return res.json(resp);
-          } else {
-            return create_new_itinerary();
-          }
-        } else {
-          resp.status = ERROR;
-          resp.message = "Error when creating itinerary.";
           if (err) {
             console.log(err);
           }

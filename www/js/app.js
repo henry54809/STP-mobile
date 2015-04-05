@@ -31,11 +31,22 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ,'angularFileUpload
     controller: 'AppCtrl'
   })
 
-  .state('app.search', {
-    url: "/search",
+  .state('app.forgotPassword', {
+    url: "/forgotPassword",
     views: {
       'menuContent': {
-        templateUrl: "templates/search.html"
+        templateUrl: "templates/forgotPassword.html",
+        controller: 'forgotPasswordCtrl'
+      }
+    }
+  })
+
+  .state('app.ResetPassword', {
+    url: "/ResetPassword",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/ResetPassword.html",
+        controller: "ResetPasswordCtrl"
       }
     }
   })
@@ -53,7 +64,7 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ,'angularFileUpload
     views: {
       'menuContent': {
         templateUrl: 'templates/profile.html',
-        controller: 'profileCtrl'
+        controller:'profileCtrl'
       }
     }
   })
@@ -87,6 +98,21 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ,'angularFileUpload
   })
 
   .state('app.mytrip',{
+    resolve:{
+      myTrips : function($http){
+         return $http({method: 'GET', url: 'http://picwo.com:3100/api/trip/mytrips',withCredentials:true});
+    //     $http.get('http://picwo.com:3100/api/trip/mytrips', {
+        
+    //   })
+    //   .success(function (data, status, headers, config) {
+    //     $scope.items = data.trips;
+    //   }).
+    // error(function (data, status, headers, config) {
+    //   console.log('error' + data);
+    // });
+
+      }
+    },
     url: "/mytrip",
     views: {
       'menuContent': {
@@ -96,6 +122,7 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ,'angularFileUpload
     }
   })
   .state('app.newtrip',{
+
     url: "/newtrip",
     views: {
       'menuContent': {

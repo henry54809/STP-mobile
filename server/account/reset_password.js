@@ -107,12 +107,12 @@ module.exports = function (app) {
 						<br /><br />																							\
 						<span style="font-family: arial, helvetica, sans-serif; font-size: small;">								\
 							We received a request to reset your password. Please use this link									\
-							<a href="http://m.picwo.com/account/ResetPassword?' + querystring.stringify(reset_data) +
-				'">http://m.picwo.com/account/ResetPassword</a> 																	\
+							<a href="http://m.picwo.com/#/app/ResetPassword?' + querystring.stringify(reset_data) +
+				'">http://m.picwo.com/account/ResetPassword</a> 																\
 							to enter your new password.																			\
-						< /span> 																								\
-						< br / > 																								\
-					< /p>';
+						</span> 																								\
+						<br /> 																									\
+						</p>';
 
 			var mail_callback = function (err, info) {
 				if (err) {

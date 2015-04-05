@@ -17,10 +17,11 @@ var get_url = function (bucket, path, callback) {
 	});
 };
 
-var get_upload_url = function (bucket, name, path, callback) {
+var get_upload_url = function (bucket, file, callback) {
 	var params = {
 		Bucket: bucket,
-		Key: path,
+		Key: file.path,
+		ContentType: file.content_type,
 		ACL: 'authenticated-read'
 	};
 
@@ -28,7 +29,8 @@ var get_upload_url = function (bucket, name, path, callback) {
 		if (err) {
 			console.log(err);
 		}
-		callback(name, url);
+		file.upload_url = url;
+		callback(file);
 	});
 };
 
