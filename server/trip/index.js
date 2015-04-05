@@ -63,7 +63,7 @@ module.exports = function (app) {
     });
   });
   
-  router.post('/', function (req, res, next) {
+  router.put('/', function (req, res, next) {
     var resp = {};
     var msg = req.body;
     var cookies = req.cookies;
@@ -81,7 +81,7 @@ module.exports = function (app) {
     var description = msg.description;
 
     pg.connect(connectionString, function (err, client, done) {
-      var query = 'insert into tb_event(
+      var query = 'insert into tb_event(         \
                       event,                     \
                       start_date,                \
                       duration_days,             \
@@ -117,9 +117,7 @@ module.exports = function (app) {
           resp.trip = result.rows[0].trip;
           return res.json(resp);
         } else if ( result.rowCount == 0 ){
-          resp.status = ERROR;
-          resp.message = "Trip exists.";
-          return res.status(400).json(resp);         
+          next();     
         } else {
           resp.status = ERROR;
           resp.message = "Error when creating trip.";
@@ -130,6 +128,59 @@ module.exports = function (app) {
         }
       });
     });
+  });
+
+  router.put('/', function (req, res, next) {
+    var resp = {};
+    var msg = req.body;
+    var cookies = req.cookies;
+    if (!msg || !msg.title || !msg.description || !msg.trip) {
+      resp.status = ERROR;
+      resp.message = "Missing title or description or trip.";
+      return res.status(400).json(resp);
+    }
+    var event_pk = msg.trip;
+    var start_date = msg.start_date;
+    var duration_days = msg.duration_days;
+    var proposed_start_date = msg.proposed_start_date;
+    var proposed_duration_days = msg.proposed_duration_days;
+    var title = msg.title;
+    var description = msg.description;
+    pg.connect(connectionString, function (err, client, done) {
+          var query = 'update tb_event                    \
+                          set start_date = $1,            \
+                              duration_days = $2,         \
+                              proposed_start_date = $3    \
+                              proposed_duration_days = $4 \
+                              description = $5            \
+                              title = $6                  \
+                              modifier = $7               \
+                        where event = $8                  ';
+          client.query(query, [
+            start_date,
+            duration_days,
+            proposed_start_date,
+            proposed_duration_days,
+            description,
+            title,
+            req.entity,
+            event_pk
+          ], function (err, result) {
+        done();
+        if (result && result.rowCount ) {
+          resp.status = OK;
+          resp.message = "Trip updated.";
+          resp.trip = result.rows[0].trip;
+          return res.json(resp);
+        } else {
+          resp.status = ERROR;
+          resp.message = "Error when updating trip.";
+          if (err) {
+            console.log(err);
+          }
+          return res.status(500).json(resp);
+        }
+      });
   });
 
   app.use('/api/trip', router);

@@ -59,8 +59,8 @@ module.exports = function (app) {
                           modifier,               \
                           description,            \
                           title                   \
-                     from tb_event
-                    where a.event = $1";
+                     from tb_event                \
+                    where event = $1";
 
       client.query(query, [trip_id], function (err, result) {
         done();
