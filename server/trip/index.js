@@ -70,7 +70,7 @@ module.exports = function (app) {
     if (!msg || !msg.title || !msg.description || !msg.trip) {
       resp.status = ERROR;
       resp.message = "Missing title or description or trip.";
-      return res.json(resp);
+      return res.status(400).json(resp);
     }
     var event_pk = msg.trip;
     var start_date = msg.start_date;
@@ -81,34 +81,45 @@ module.exports = function (app) {
     var description = msg.description;
 
     pg.connect(connectionString, function (err, client, done) {
-      var query = 'select fn_new_event(            \
-                                          $1,      \
-                                          $2,      \
-                                          $3,      \
-                                          $4,      \
-                                          entity,  \
-                                          $5,      \
-                                          $6,      \
-                                          $7       \
-                                       ) as trip   \
-                    from tb_session                \
-                   where session_id_hash = $8';
+      var query = 'insert into tb_event(
+                      event,                     \
+                      start_date,                \
+                      duration_days,             \
+                      proposed_start_date,       \
+                      proposed_duration_days,    \
+                      description,               \
+                      title,                     \
+                      creator,                   \
+                      modifier                   \
+                    ) ( select                   \
+                      $1, $2, $3, $4,            \
+                      $5, $6, $7, $8, $8         \
+                      where not exists(                   \
+                                        select *          \
+                                          from tb_event   \
+                                         where event = $1 \
+                                      )                   \
+                      );';
       client.query(query, [
+        event_pk,
         start_date,
         duration_days,
         proposed_start_date,
         proposed_duration_days,
         description,
         title,
-        event_pk,
-        cookies['AuthToken']
+        req.entity
       ], function (err, result) {
         done();
-        if (result && result.rows[0]) {
+        if (result && result.rowCount ) {
           resp.status = OK;
           resp.message = "Trip created.";
           resp.trip = result.rows[0].trip;
           return res.json(resp);
+        } else if ( result.rowCount == 0 ){
+          resp.status = ERROR;
+          resp.message = "Trip exists.";
+          return res.status(400).json(resp);         
         } else {
           resp.status = ERROR;
           resp.message = "Error when creating trip.";
