@@ -107,13 +107,18 @@ stp.controller('placeFinderCtrl', function($scope,$location,$stateParams, $ionic
                 currentOpenInfowindow = innerMarker.infowindow;
               }
             } else{
+              // $compile($("#infoWinTmpl"))($scope);
+              $compile($("#infoWinTmpl"))($scope);
+              console.log($("#infoWinTmpl").text());
+
               $scope.PlacesService.getDetails(innerRequest, function(place, status) {
                 if (status == google.maps.places.PlacesServiceStatus.OK) {
                   var infowindow = new google.maps.InfoWindow({
-                      content: "<div id='infoWin' >\
-                      This is "+place.name+" <a class='button \
-                      button-icon icon button-small ion-settings' \
-                      ng-click='addPlace("+"\""+place.place_id+"\""+")'></a></div>"
+                      content: $("#infoWinTmpl").text()
+                      // "<div id='infoWin' >\
+                      // This is "+place.name+" <a class='button \
+                      // button-icon icon button-small ion-plus' \
+                      // ng-click='addPlace("+"\""+place.place_id+"\""+")'></a></div>"
                   }); 
                     // infowindow.setContent(place.name);
                     infowindow.open($scope.map, innerMarker);

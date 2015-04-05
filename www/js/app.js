@@ -98,6 +98,21 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ,'angularFileUpload
   })
 
   .state('app.mytrip',{
+    resolve:{
+      myTrips : function($http){
+         return $http({method: 'GET', url: 'http://picwo.com:3100/api/trip/mytrips',withCredentials:true});
+    //     $http.get('http://picwo.com:3100/api/trip/mytrips', {
+        
+    //   })
+    //   .success(function (data, status, headers, config) {
+    //     $scope.items = data.trips;
+    //   }).
+    // error(function (data, status, headers, config) {
+    //   console.log('error' + data);
+    // });
+
+      }
+    },
     url: "/mytrip",
     views: {
       'menuContent': {
@@ -107,6 +122,7 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ,'angularFileUpload
     }
   })
   .state('app.newtrip',{
+
     url: "/newtrip",
     views: {
       'menuContent': {

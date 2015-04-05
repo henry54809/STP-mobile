@@ -1,53 +1,53 @@
 angular.module('stp.controllers', [])
 
-.factory('myTrips', function ($rootScope) {
-  if (myTrips == undefined) {
-    var myTrips = [{
-      title: "blank trip",
-      description: "no date",
-      // img: "assets/pic13.jpg"
-    }, {
-      title: "My trip to HK",
-      description: "Start at Jan",
-      img: "assets/pic13.jpg"
-    }, {
-      title: "My trip to Japan",
-      description: "Start at Feb",
-      img: "assets/pic10.jpg"
-    }, {
-      title: "My trip to Japan",
-      description: "Start at Feb",
-      img: "assets/pic10.jpg"
-    }, {
-      title: "My trip to Japan",
-      description: "Start at Feb",
-      img: "assets/pic10.jpg"
-    }, {
-      title: "My trip to Japan",
-      description: "Start at Feb",
-      img: "assets/pic10.jpg"
-    }, {
-      title: "My trip to Japan",
-      description: "Start at Feb",
-      img: "assets/pic10.jpg"
-    }, {
-      title: "My trip to Japan",
-      description: "Start at Feb",
-      img: "assets/pic10.jpg"
-    }, {
-      title: "My trip to Japan",
-      description: "Start at Feb",
-      img: "assets/pic10.jpg"
-    }, {
-      title: "My trip to Japan",
-      description: "Start at Feb",
-      img: "assets/pic10.jpg"
-    }];
-  }
+// .factory('myTrips', function ($rootScope) {
+//   if (myTrips == undefined) {
+//     var myTrips = [{
+//       title: "blank trip",
+//       description: "no date",
+//       // img: "assets/pic13.jpg"
+//     }, {
+//       title: "My trip to HK",
+//       description: "Start at Jan",
+//       img: "assets/pic13.jpg"
+//     }, {
+//       title: "My trip to Japan",
+//       description: "Start at Feb",
+//       img: "assets/pic10.jpg"
+//     }, {
+//       title: "My trip to Japan",
+//       description: "Start at Feb",
+//       img: "assets/pic10.jpg"
+//     }, {
+//       title: "My trip to Japan",
+//       description: "Start at Feb",
+//       img: "assets/pic10.jpg"
+//     }, {
+//       title: "My trip to Japan",
+//       description: "Start at Feb",
+//       img: "assets/pic10.jpg"
+//     }, {
+//       title: "My trip to Japan",
+//       description: "Start at Feb",
+//       img: "assets/pic10.jpg"
+//     }, {
+//       title: "My trip to Japan",
+//       description: "Start at Feb",
+//       img: "assets/pic10.jpg"
+//     }, {
+//       title: "My trip to Japan",
+//       description: "Start at Feb",
+//       img: "assets/pic10.jpg"
+//     }, {
+//       title: "My trip to Japan",
+//       description: "Start at Feb",
+//       img: "assets/pic10.jpg"
+//     }];
+//   }
 
 
-  return myTrips;
-})
+//   return myTrips;
+// })
 
 
 // .controller('AppCtrl', function($scope, $ionicModal, $timeout, $location, $http, accountService, iteneraryService) {
@@ -262,6 +262,7 @@ angular.module('stp.controllers', [])
 
 })
 
+
 .controller('PlaylistsCtrl', function ($scope) {
     $scope.playlists = [{
       title: 'Reggae',
@@ -297,16 +298,8 @@ angular.module('stp.controllers', [])
 
   })
   .controller('mytripCtrl', function ($scope, myTrips, $filter, $http) {
-    $http.get('http://picwo.com:3100/api/trip/mytrips', {
-        withCredentials: true
-      })
-      .success(function (data, status, headers, config) {
-        $scope.items = data.trips;
-      }).
-    error(function (data, status, headers, config) {
-      console.log('error' + data);
-    });
-
+    // console.log(myTrips);
+    $scope.items = myTrips.data.trips;
     $scope.showHeader = false;
     $scope.toggleSearch = function () {
       $scope.showHeader = !$scope.showHeader;
@@ -318,10 +311,25 @@ angular.module('stp.controllers', [])
       $scope.searchQuery = undefined;
       $scope.showHeader = false;
     };
+
+    // onRouteChangeOff = $scope.$on('$locationChangeStart', function(){
+    //   console.log("routeChanged!");
+    // });
+
   })
   .controller('photoUploadCtrl', function ($scope, $upload, $http) {
+      
+
     $scope.upload = function (files) {
-      console.log(files);
+      if (files.length==0){
+        return;
+      }
+      // $scope.hasPhotos = true;
+      // console.log($("#photos-containter").outerWidth())
+      $scope.photoWidth = Math.floor(($("#photos-containter").outerWidth()-15-16*2)/3);
+      // $scope.photos=[];
+
+      // console.log(files);
       $scope.hasPhotos = true;
       $scope.photos = [];
       var namemap = {};
@@ -329,12 +337,14 @@ angular.module('stp.controllers', [])
         namemap[d.name] = d;
         $scope.photos.push(URL.createObjectURL(d));
       })
-      console.log(namemap);
+      $scope.photos.push("assets/plus.ico");
+
       var postData = {
         name: $scope.myTripsData.title,
         trip: 1,
         files: files
       }
+
       console.log(postData);
       $http.post('http://picwo.com:3100/api/upload/trip', postData, {
         withCredentials: true
@@ -348,7 +358,6 @@ angular.module('stp.controllers', [])
         //     console.log(data,config);
         //   })
         // })
-
         data.files.forEach(function (d) {
           var upload = $http.put(d.upload_url, namemap[d.name], {
               headers: {
@@ -370,7 +379,7 @@ angular.module('stp.controllers', [])
   })
 
 
-.controller('NewTripCtrl', function ($scope, $ionicModal, $timeout, $http, $location, $upload) {
+.controller('NewTripCtrl', function ($scope, $ionicModal, $timeout, $http, $location, $upload, $window) {
   $scope.myTripsData = {};
   $scope.myTripsData.title = 'untitled';
   //Form data for the login modal
@@ -379,7 +388,7 @@ angular.module('stp.controllers', [])
   }).
   success(function (data, status, headers, config) {
     $scope.myTripsData.trip = data.trip;
-    console.log('tripData: ' + $scope.myTripsData);
+    console.log($scope.myTripsData);
     // $http.post('http://picwo.com:3100/api/trip', $scope.myTripsData).
     // success(function(data, status, headers, config){
     //   $scope.itinernaryId = data.itinernaryId;
@@ -388,6 +397,7 @@ angular.module('stp.controllers', [])
   error(function (data, status, headers, config) {
     // $scope.itinernaryId = 1;
   })
+
 
   $scope.upload = function (files) {
     console.log(files);
@@ -407,6 +417,8 @@ angular.module('stp.controllers', [])
     success(function (data, status, headers, config) {
       // $scope.tripId = data.trip;
       console.log(data);
+      // $window.location.href = '#/app/mytrip';
+      // $location.path('/app/mytrip');
     })
 
   };
@@ -418,18 +430,20 @@ angular.module('stp.controllers', [])
     });
   }
 
-  $scope.addItinerary = function (tripId) {
-    $http.post('http://picwo.com:3100/api/trip/itinerary', tripId, {
+  $scope.addItinerary = function () {
+
+    $http.post('http://picwo.com:3100/api/trip/'+$scope.myTripsData.trip +'/itinerary' , {
       withCredentials: true
     }).
     success(function (data, status, headers, config) {
         $scope.itineraryId = data.itinerary;
+        $location.path('app/itinerary/'+$scope.itineraryId);
       })
       .error(function (data, status, headers, config) {
         console.log("fail to call server");
       })
       // $location.path('app/itinerary/' + $scope.itineraryId);
-    $location.path('app/itinerary/1');
+   
   }
 
   $scope.photos = [];

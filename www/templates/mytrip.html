@@ -5,7 +5,7 @@
     </ion-nav-buttons>
     
     <ion-tabs class=" tabs-top tabs-icon-only tabs-color-active-positive" >
-        <!-- Dashboard Tab -->
+        <!-- My trips Tab -->
         <ion-tab title="My Trip" icon-off="ion-android-car" icon-on="ion-android-car" on-select="cancelSearch()">
             <ion-nav-view name="tab-dash">
                  <div class="bar bar-subheader item-input-inset" style="margin-bottom:10px"></div>
@@ -50,7 +50,7 @@
             </ion-nav-view>
         </ion-tab>
 
-        <!-- Friends Tab -->
+        <!-- My favorite Tab -->
         <ion-tab title="My Favorites" icon-off="ion-ios7-heart-outline" icon-on="ion-ios7-heart" on-select="cancelSearch()" >
             <ion-nav-view name="tab-friends" ng-controller="friendtripCtrl">
             <div class="bar bar-subheader item-input-inset" style="margin-bottom:10px"></div>
@@ -77,7 +77,7 @@
         </ion-tab>
 
 
-        <!-- Account Tab -->
+        <!-- My shared trips Tab -->
         <ion-tab title="My Shares" icon-off="ion-android-share-alt" icon-on="ion-android-share-alt" on-select="cancelSearch()">
             <ion-nav-view name="tab-account">
             </ion-nav-view>
