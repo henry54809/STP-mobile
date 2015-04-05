@@ -153,6 +153,15 @@ var stp = angular.module('stp', [ 'ionic', 'stp.controllers' ,'angularFileUpload
         }
     }
   })
+  .state('app.comments', {
+    url: "/comments",
+    views: {
+        'menuContent': {
+          // templateUrl: "templates/chatroom.html",
+          controller: "chatroomCtrl"
+        }
+    }
+  })
 
     .state('app.playlists', {
       url: "/playlists",
