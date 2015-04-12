@@ -67,11 +67,10 @@ module.exports = function (app) {
                                 ee.city,                                         \
                                 avatar_url,                                      \
                                 ft.label as friend_status                        \
-                           from tb_session as s                                  \
-                      left join tb_entity_friend ef                              \
+                          from tb_entity_friend ef                               \
                              on (                                                \
-                                    s.entity = ef.entity                         \
-                                 or s.entity = ef.friend                         \
+                                    $1 = ef.entity                               \
+                                 or $1 = ef.friend                               \
                                 )                                                \
                       left join tb_entity e                                      \
                              on (                                                \
@@ -82,10 +81,8 @@ module.exports = function (app) {
                              on e.entity_extra_info = ee.entity_extra_info       \
                       left join tb_friend_type as ft                             \
                              on ft.friend_type = ef.friend_type                  \
-                          where s.session_id_hash = $1                           \
-                            and ef.friend_type in ( 1, 3, 4 )                    \
-                            and e.entity != s.entity';
-      client.query(query, [cookies['AuthToken']], function (err, result) {
+                          where e.entity != $1';
+      client.query(query, [req.entity], function (err, result) {
         done();
         if (result) {
           if (result.rows) {
@@ -100,6 +97,22 @@ module.exports = function (app) {
     });
   });
 
+  router.get('/friendRequests', function (req, res, next) {
+    var resp = {};
+    var user_functions = require('./functions');
+    var callback = function(data){
+      if( !data ){
+        resp.status = ERROR;
+        resp.message = 'Friend requests not found.';
+        return res.json(resp);
+      }
+      resp.status = OK;
+      resp.friend_requests = data;
+      return res.json(resp);
+    }
+    user_functions.get_friend_requests(req.entity);
+  });
+
   //Check if entity is a number
   router.all('/:entity', function (req, res, next) {
     var resp = {};
@@ -112,7 +125,6 @@ module.exports = function (app) {
 
     //Try to match it with some other route.
     if (!isNaN(entity)) {
-      req.entity = entity;
       next();
     } else {
       resp.status = ERROR;
@@ -143,7 +155,7 @@ module.exports = function (app) {
                            left join tb_country c                                \
                                   on c.country = r.country                       \
                                where e.entity = $1';
-      client.query(query, [req.entity], function (err, result) {
+      client.query(query, [req.params.entity], function (err, result) {
         done();
         if (result && result.rows[0]) {
           return res.json(result.rows[0]);
@@ -157,36 +169,6 @@ module.exports = function (app) {
         }
       });
     });
-  });
-
-  router.post('/:entity', function (req, res, next) {
-    var resp = {};
-    var req_query = req.query;
-    var cookies = req.cookies;
-    var user_functions = require('./functions');
-
-    var my_entity_callback = function (my_entity) {
-      req.my_entity = my_entity;
-      next();
-    };
-
-    var callback = function (exists) {
-      if (exists) {
-        if (!req_query.action) {
-          resp.status = ERROR;
-          resp.message = "User action not found.";
-          res.status(400).json(resp);
-        } else {
-          user_functions.get_my_entity(cookies, my_entity_callback);
-        }
-      } else {
-        resp.status = ERROR;
-        resp.message = "User not found.";
-        res.status(400).json(resp);
-      }
-    };
-
-    user_functions.if_entity_exists(req.entity, callback);
   });
 
   app.use('/api/user', router);

@@ -165,7 +165,7 @@ module.exports = function (app) {
     };
 
     pg.connect(connectionString, function (err, client, done) {
-      var query = "select itinerary \
+      var query = "select itinerary     \
                      from tb_itinerary  \
                     where event = $1";
 
