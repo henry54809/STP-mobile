@@ -1,7 +1,7 @@
 <ion-view view-title="My Trip">
     <ion-nav-buttons side="right">
         <a class="button button-icon icon ion-search" ng-click="toggleSearch()"></a>
-        <a class="button button-icon icon ion-plus " href="#/app/newtrip"></a>
+        <a class="button button-icon icon ion-plus " ng-click="addNewTrip()"></a>
     </ion-nav-buttons>
     
     <ion-tabs class=" tabs-top tabs-icon-only tabs-color-active-positive" >
@@ -20,7 +20,7 @@
                 </div>
                 <ion-content ng-class="{'has-subheader': showHeader}">
                 <div class="list card" ng-repeat="item in items|filter:searchQuery">
-                  <div class="item item-avatar">
+                  <div class="item item-avatar" style="cursor:pointer" ng-click="openTripDetail(item)">
                     <img  ng-src="">
                     <h2>{{item.title}}</h2>
                     <p>{{item.description}}</p>

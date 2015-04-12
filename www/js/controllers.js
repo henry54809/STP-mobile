@@ -297,7 +297,7 @@ angular.module('stp.controllers', [])
     };
 
   })
-  .controller('mytripCtrl', function ($scope, myTrips, $filter, $http) {
+  .controller('mytripCtrl', function ($scope, myTrips, $filter, $http,$location) {
     // console.log(myTrips);
     $scope.items = myTrips.data.trips.reverse();
 
@@ -305,13 +305,20 @@ angular.module('stp.controllers', [])
     $scope.showHeader = false;
     $scope.toggleSearch = function () {
       $scope.showHeader = !$scope.showHeader;
-
-      // $scope.$broadcast('showHeader', $scope.showHeader);
     };
 
     $scope.cancelSearch = function () {
       $scope.searchQuery = undefined;
       $scope.showHeader = false;
+    };
+
+    $scope.openTripDetail = function(item){
+      console.log(item);
+      $location.path('app/tripdetails/'+item.event);
+    };
+
+    $scope.addNewTrip = function() {
+      $location.path('app/newtrip');
     };
 
   })
@@ -320,6 +327,7 @@ angular.module('stp.controllers', [])
     //   console.log("routeChanged!");
     // });
 
+
   .controller('photoUploadCtrl', function ($scope, $upload, $http) {
       
 
@@ -327,8 +335,7 @@ angular.module('stp.controllers', [])
       if (files.length==0){
         return;
       }
-      // $scope.hasPhotos = true;
-      // console.log($("#photos-containter").outerWidth())
+
       $scope.photoWidth = Math.floor(($("#photos-containter").outerWidth()-15-16*2)/3);
       // $scope.photos=[];
 
@@ -353,14 +360,6 @@ angular.module('stp.controllers', [])
         withCredentials: true
       }).
       success(function (data, status, headers, config) {
-        // data.urls.forEach(function(d){
-        //     $http.put(d.url, namemap[d.name]).
-        //     success(function(data, status, headers, config){
-        //     console.log(data,config);
-        //   }).error(function(data, status, headers, config){
-        //     console.log(data,config);
-        //   })
-        // })
         data.files.forEach(function (d) {
           var upload = $http.put(d.upload_url, namemap[d.name], {
               headers: {
@@ -382,24 +381,34 @@ angular.module('stp.controllers', [])
   })
 
 
-.controller('NewTripCtrl', function ($scope, $ionicModal, $timeout, $http, $location, $upload, $window) {
+.controller('NewTripCtrl', function (myTrip, $scope, $ionicModal, $timeout, $http, $location, $upload, $window) {
   $scope.myTripsData = {};
   $scope.myTripsData.title = 'untitled';
-  //Form data for the login modal
-  $http.get('http://picwo.com:3100/api/trip', {
-    withCredentials: true
-  }).
-  success(function (data, status, headers, config) {
-    $scope.myTripsData.trip = data.trip;
-    console.log($scope.myTripsData);
-    // $http.post('http://picwo.com:3100/api/trip', $scope.myTripsData).
-    // success(function(data, status, headers, config){
-    //   $scope.itinernaryId = data.itinernaryId;
-    // })
-  }).
-  error(function (data, status, headers, config) {
-    // $scope.itinernaryId = 1;
-  })
+  if (myTrip!=undefined) {
+    $scope.myTripsData.trip = myTrip.data.trip.trip_id;
+    console.log("this is myTrip");
+    console.log(myTrip.data.trip);
+    console.log("this is tripID");
+    console.log(myTrip.data.trip.trip_id);
+    $scope.myTripsData.title = myTrip.data.trip.title;
+    $scope.myTripsData.description = myTrip.data.trip.description;
+  } else {
+    $http.get('http://picwo.com:3100/api/trip', {
+      withCredentials: true
+    }).
+    success(function (data, status, headers, config) {
+      $scope.myTripsData.trip = data.trip;
+      console.log($scope.myTripsData);
+      // $http.post('http://picwo.com:3100/api/trip', $scope.myTripsData).
+      // success(function(data, status, headers, config){
+      //   $scope.itinernaryId = data.itinernaryId;
+      // })
+    }).
+    error(function (data, status, headers, config) {
+      // $scope.itinernaryId = 1;
+    })
+  }
+  
 
 
   $scope.upload = function (files) {
@@ -414,7 +423,7 @@ angular.module('stp.controllers', [])
 
   $scope.save = function (myTripsData) {
     console.log($scope.myTripsData);
-    $http.post('http://picwo.com:3100/api/trip', myTripsData, {
+    $http.put('http://picwo.com:3100/api/trip', myTripsData, {
       withCredentials: true
     }).
     success(function (data, status, headers, config) {
@@ -435,7 +444,8 @@ angular.module('stp.controllers', [])
 
   $scope.addItinerary = function () {
 
-    $http.post('http://picwo.com:3100/api/trip/'+$scope.myTripsData.trip +'/itinerary' , {}, {
+
+    $http.post('http://picwo.com:3100/api/trip/'+$scope.myTripsData.trip +'/itinerary' ,{}, {
       withCredentials: true
     }).
     success(function (data, status, headers, config) {
