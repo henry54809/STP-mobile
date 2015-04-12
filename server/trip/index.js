@@ -49,7 +49,7 @@ module.exports = function (app) {
             if (err) {
               console.log(err);
             }
-            return res.status(400).json(resp);
+            return res.json(resp);
           }
         } else {
           resp.status = ERROR;
@@ -99,7 +99,7 @@ module.exports = function (app) {
                                           from tb_event   \
                                          where event = $1 \
                                       )                   \
-                      );';
+                      ) returning event;';
       client.query(query, [
         event_pk,
         start_date,
@@ -114,7 +114,7 @@ module.exports = function (app) {
         if (result && result.rowCount ) {
           resp.status = OK;
           resp.message = "Trip created.";
-          resp.trip = result.rows[0].trip;
+          resp.trip = result.rows[0].event;
           return res.json(resp);
         } else if ( result.rowCount == 0 ){
           next();     
@@ -170,6 +170,7 @@ module.exports = function (app) {
         if (result && result.rowCount ) {
           resp.status = OK;
           resp.message = "Trip updated.";
+          resp.trip = event_pk;
           return res.json(resp);
         } else {
           resp.status = ERROR;
