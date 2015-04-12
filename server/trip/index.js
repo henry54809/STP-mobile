@@ -147,13 +147,13 @@ module.exports = function (app) {
     var title = msg.title;
     var description = msg.description;
     pg.connect(connectionString, function (err, client, done) {
-          var query = 'update tb_event                    \
-                          set start_date = $1,            \
-                              duration_days = $2,         \
-                              proposed_start_date = $3    \
-                              proposed_duration_days = $4 \
-                              description = $5            \
-                              title = $6                  \
+          var query = 'update tb_event                     \
+                          set start_date = $1,             \
+                              duration_days = $2,          \
+                              proposed_start_date = $3,    \
+                              proposed_duration_days = $4, \
+                              description = $5,            \
+                              title = $6,                  \
                               modifier = $7               \
                         where event = $8                  ';
        client.query(query, [
@@ -170,7 +170,6 @@ module.exports = function (app) {
         if (result && result.rowCount ) {
           resp.status = OK;
           resp.message = "Trip updated.";
-          resp.trip = result.rows[0].trip;
           return res.json(resp);
         } else {
           resp.status = ERROR;

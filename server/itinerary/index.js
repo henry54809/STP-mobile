@@ -143,7 +143,6 @@ module.exports = function (app) {
 		var ext_place_json = msg.ext_place_json;
 		var latitude = msg.latitude;
 		var longitude = msg.longitude;
-
 		var create_new_content = function (location) {
 			pg.connect(connectionString, function (err, client, done) {
 				var query = "insert into tb_itinerary_node_content  \
@@ -226,13 +225,13 @@ module.exports = function (app) {
 		}
 
 		pg.connect(connectionString, function (err, client, done) {
-			var query = "select inc.*, in.day, in.oredering_number     \
-	                       from tb_itinerary_node in \
+			var query = "select inc.*, itn.day, itn.ordering_number     \
+	                       from tb_itinerary_node itn \
 	                       join tb_itinerary_node_content inc \
-	                         on inc.itinerary_node = in.itinerary_node \
-	                      where in.itinerary = $1";
+	                         on inc.itinerary_node = itn.itinerary_node \
+	                      where itn.itinerary = $1";
 
-			client.query(query, [itinerary], function (err, result) {
+			client.query(query, [req.itinerary.itinerary], function (err, result) {
 				done();
 				if (result) {
 					if (result.rows) {
