@@ -45,6 +45,41 @@ module.exports = function (app) {
       });
     });
   });
+  
+  router.get('/:trip_id', function (req, res, next) {
+    var resp = {};
+    var trip_id = req.params.trip_id;
+    var cookies = req.cookies;
+    pg.connect(connectionString, function (err, client, done) {
+      var query = "select start_date,             \
+                          event as trip_id,       \
+                          duration_days,          \
+                          proposed_start_date,    \
+                          proposed_duration_days, \
+                          creator,                \
+                          modifier,               \
+                          description,            \
+                          title                   \
+                     from tb_event                \
+                    where event = $1";
+
+      client.query(query, [trip_id], function (err, result) {
+        done();
+        if (result && result.rows[0]) {
+          resp.status = OK;
+          resp.trip = result.rows[0];
+          return res.json(resp);
+        } else {
+          resp.status = ERROR;
+          resp.message = "Error when getting trip info.";
+          if (err) {
+            console.log(err);
+          }
+          return res.status(500).json(resp);
+        }
+      });
+    });
+  });
 
   router.get('/:trip_id/photos', function (req, res, next) {
     var aws = require('../util/aws');

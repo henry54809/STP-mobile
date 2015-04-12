@@ -7,7 +7,7 @@ var multer = require('multer');
 var pg = require('pg');
 var app = express();
 
-app.use(logger('[:date[clf]] :method :url :status :response-time ms - :res[content-length]'));
+app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
