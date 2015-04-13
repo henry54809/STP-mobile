@@ -6,14 +6,11 @@ module.exports = function (app) {
     var express = require('express');
     var router = express.Router();
 
-    var FRIEND = 'Friend';
-    var STARRED = 'Starred';
-
     //Check if they are friend.
     router.put('/:entity', function (req, res, next) {
         var action = req.query.action;
         if (action !== 'add') {
-            next();
+            return next();
         }
 
         var resp = {};
@@ -33,10 +30,18 @@ module.exports = function (app) {
     router.all('/:entity', function (req, res, next) {
         var action = req.query.action;
         var recipient = req.params.entity;
+        var resp = {};
         var callback = function (friend_request) {
             req.friend_request = friend_request;
-            return next();
+             return next();
         };
+
+        if(req.entity === recipient){
+            resp.status = ERROR;
+            resp.message = 'Entity cannot be friends of him/herself.';
+            return res.status(400).json(resp);
+        }
+
         return user_functions.if_friend_request_exists(req.entity, recipient, callback);
     });
 
@@ -104,19 +109,21 @@ module.exports = function (app) {
             return res.json(resp);
         };
 
-        user_functions.update_friend_request_type(
+        return user_functions.update_friend_request_type(
             friend_request.friend_request,
             constants.FRIEND_REQUEST_REJECTED,
             callback
         );
     });
 
+    //Accept friend request.
     router.put('/:entity', function (req, res, next) {
         var action = req.query.action;
         if (action !== 'accept') {
             return next();
         }
         var friend_request = req.friend_request;
+        var resp = {};
         var callback = function(modified){
             if( modified ){
                 resp.status = OK;
@@ -134,6 +141,7 @@ module.exports = function (app) {
                         done();
                         if(result && result.rows[0]){
                             resp.entity_friend = result.rows[0].entity_friend;
+                            return res.json(resp);
                         } else {
                             resp.status = ERROR;
                             resp.message = 'Could not add friend.';
@@ -147,11 +155,10 @@ module.exports = function (app) {
             } else {
                 resp.status = ERROR;
                 resp.message = 'Friend request not found.';
+                return res.json(resp);
             }
-            return res.json(resp);
         };
-
-        user_functions.update_friend_request_type(
+        return user_functions.update_friend_request_type(
             friend_request.friend_request,
             constants.FRIEND_REQUEST_ACCEPTED,
             callback
@@ -164,6 +171,7 @@ module.exports = function (app) {
         if (action !== 'delete') {
             return next();
         }
+
         var friend_request = req.friend_request;
         var query = 'delete from tb_friend_request \
                       where friend_request = $1';
@@ -186,13 +194,12 @@ module.exports = function (app) {
         });
     });
 
-    //fall through
+    //Fall through
     router.put('/:entity', function (req, res, next) {
         var resp = {};
         resp.status = ERROR;
         resp.message = "User action does not exist.";
         return res.json(resp);
     });
-
     app.use('/api/user', router);
 };

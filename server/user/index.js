@@ -3,6 +3,7 @@ var pg = require('pg');
 module.exports = function (app) {
   var express = require('express');
   var router = express.Router();
+  var user_functions = require('./functions');
 
   //Search among all entities.
   router.get('/', function (req, res, next) {
@@ -59,7 +60,7 @@ module.exports = function (app) {
     var resp = {};
     var cookies = req.cookies;
     pg.connect(connectionString, function (err, client, done) {
-      var query = 'select e.entity as id,                                  \
+      var query = 'select distinct on ( e.entity ) e.entity as id,               \
                                 e.username,                                      \
                                 ee.description,                                  \
                                 ee.first_name,                                   \
@@ -68,10 +69,6 @@ module.exports = function (app) {
                                 avatar_url,                                      \
                                 ft.label as friend_status                        \
                           from tb_entity_friend ef                               \
-                             on (                                                \
-                                    $1 = ef.entity                               \
-                                 or $1 = ef.friend                               \
-                                )                                                \
                       left join tb_entity e                                      \
                              on (                                                \
                                   e.entity = ef.entity                           \
@@ -81,7 +78,11 @@ module.exports = function (app) {
                              on e.entity_extra_info = ee.entity_extra_info       \
                       left join tb_friend_type as ft                             \
                              on ft.friend_type = ef.friend_type                  \
-                          where e.entity != $1';
+                          where e.entity != $1                                   \
+                             and (                                               \
+                                    $1 = ef.entity                               \
+                                 or $1 = ef.friend                               \
+                                ) ';
       client.query(query, [req.entity], function (err, result) {
         done();
         if (result) {
@@ -89,6 +90,9 @@ module.exports = function (app) {
             return res.json(result.rows);
           }
         } else {
+          if(err){
+            console.log(err);
+          }
           resp.status = ERROR;
           resp.message = "Friend not found.";
           return res.json(resp);
@@ -99,7 +103,6 @@ module.exports = function (app) {
 
   router.get('/friendRequests', function (req, res, next) {
     var resp = {};
-    var user_functions = require('./functions');
     var callback = function(data){
       if( !data ){
         resp.status = ERROR;
@@ -109,8 +112,8 @@ module.exports = function (app) {
       resp.status = OK;
       resp.friend_requests = data;
       return res.json(resp);
-    }
-    user_functions.get_friend_requests(req.entity);
+    };
+    user_functions.get_friend_requests(req.entity, callback);
   });
 
   //Check if entity is a number
@@ -123,9 +126,15 @@ module.exports = function (app) {
     }
     var entity = req.params.entity;
 
-    //Try to match it with some other route.
     if (!isNaN(entity)) {
-      next();
+      user_functions.if_entity_exists(entity, function(exists){
+        if(!exists){
+          resp.status = ERROR;
+          resp.message = 'User does not exist.';
+          return res.json(resp);
+        }
+        return next();
+      });
     } else {
       resp.status = ERROR;
       resp.message = "User id is not a number.";

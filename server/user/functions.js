@@ -45,14 +45,21 @@ var if_entity_friend = function (entity, entity2, callback) {
 };
 
 var get_friend_requests = function(entity, callback){
-    var query = "select *, 'requester' as direction \
-                   from tb_friend_request           \
+    var query = "select friend_request,             \
+                        requester,                  \
+                        requestee,                  \
+                        frt.label as status,        \
+                        message,                    \
+                        created,                    \
+                        case when requester = $1    \
+                        then 'requester'            \
+                        else 'receiver'             \
+                        end as direction            \
+                   from tb_friend_request fr        \
+                   join tb_friend_request_type frt  \
+                     on frt.friend_request_type = fr.friend_request_type \
                   where requester = $1              \
-                   union                            \
-                  select *, 'receiver' as direction \
-                    from tb_friend_request          \
-                   where requestee = $1             \
-                   ";
+                     or requestee = $1";
     pg.connect(connectionString, function (err, client, done) {
         client.query(query, [entity], function (err, result) {
             done();
@@ -69,10 +76,16 @@ var get_friend_requests = function(entity, callback){
 };
 
 var if_friend_request_exists = function( requester, requestee, callback ){
-    var query = "select *                           \
+    var query = "select *, 'requester' as direction \
                    from tb_friend_request           \
                   where requester = $1              \
                     and requestee = $2              \
+                    and friend_request_type in ( $3, $4 ) \
+                  union  \
+                  select *, 'receiver' as direction \
+                   from tb_friend_request           \
+                  where requester = $2              \
+                    and requestee = $1              \
                     and friend_request_type in ( $3, $4 ) \
                    ";
     pg.connect(connectionString, function (err, client, done) {
@@ -89,7 +102,7 @@ var if_friend_request_exists = function( requester, requestee, callback ){
             }
 
             if (result && result.rows[0]) {
-                return callback(true);
+                return callback(result.rows[0]);
             } else {
                 return callback(false);
             }
@@ -97,12 +110,12 @@ var if_friend_request_exists = function( requester, requestee, callback ){
     });
 };
 
-var update_friend_request_type = function( friend_request, type ){
+var update_friend_request_type = function( friend_request, type, callback ){
     var query = 'update tb_friend_request \
                     set friend_request_type = $1 \
                   where friend_request = $2';
     pg.connect(connectionString, function (err, client, done) {
-        client.query(query, [FRIEND_REQUEST_SENT, friend_request], function (err, result) {
+        client.query(query, [type, friend_request], function (err, result) {
             done();
             if(err){
                 console.log(err);
