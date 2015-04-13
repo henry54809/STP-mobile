@@ -67,6 +67,18 @@ var get_friend_requests = function(entity, callback){
                 console.log(err);
             }
             if (result && result.rows[0]) {
+                var friend_requests = {};
+                var requested = [];
+                var received = [];
+                for( var i=0; i< result.rows; i++){
+                    if( result.rows[i].direction === 'requester' ){
+                        friend_requests.requested.push(result.rows[i]) ;
+                    } else {
+                        friend_requests.received.push(result.rows[i]) ;
+                    }
+                }
+                friend_requests.requested = requested;
+                friend_requests.requested = received;
                 return callback(result.rows);
             } else {
                 return callback(null);
@@ -75,19 +87,21 @@ var get_friend_requests = function(entity, callback){
     });
 };
 
+//This should only produce 1 row.
 var if_friend_request_exists = function( requester, requestee, callback ){
-    var query = "select *, 'requester' as direction \
+    var query = "select *,                          \
+                        case when requester = $1    \
+                        then 'requester'            \
+                        else 'receiver'             \
+                        end as direction            \
                    from tb_friend_request           \
-                  where requester = $1              \
-                    and requestee = $2              \
+                  where ((requester = $1            \
+                    and requestee = $2 )            \
+                     or ( requester = $2            \
+                    and requestee = $1 ))           \
                     and friend_request_type in ( $3, $4 ) \
-                  union  \
-                  select *, 'receiver' as direction \
-                   from tb_friend_request           \
-                  where requester = $2              \
-                    and requestee = $1              \
-                    and friend_request_type in ( $3, $4 ) \
-                   ";
+               order by created                           \
+                  limit 1 ";
     pg.connect(connectionString, function (err, client, done) {
         client.query(query, [
                                 requester,

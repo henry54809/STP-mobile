@@ -27,7 +27,7 @@ module.exports = function (app) {
     });
 
     //Check if friend request exists.
-    router.all('/:entity', function (req, res, next) {
+    router.put('/:entity', function (req, res, next) {
         var action = req.query.action;
         var recipient = req.params.entity;
         var resp = {};
@@ -109,6 +109,11 @@ module.exports = function (app) {
             return res.json(resp);
         };
 
+        if( friend_request.direction !== 'receiver' ){
+            resp.status = ERROR;
+            resp.message = 'Action not allowed';
+            return res.status(400).json(resp);
+        }
         return user_functions.update_friend_request_type(
             friend_request.friend_request,
             constants.FRIEND_REQUEST_REJECTED,
@@ -158,6 +163,13 @@ module.exports = function (app) {
                 return res.json(resp);
             }
         };
+
+        //Check if the entity is on the receiving end of the friend request.
+        if( friend_request.direction !== 'receiver' ){
+            resp.status = ERROR;
+            resp.message = 'Action not allowed';
+            return res.status(400).json(resp);
+        }
         return user_functions.update_friend_request_type(
             friend_request.friend_request,
             constants.FRIEND_REQUEST_ACCEPTED,
@@ -171,7 +183,11 @@ module.exports = function (app) {
         if (action !== 'delete') {
             return next();
         }
-
+        if( friend_request.direction !== 'requester' ){
+            resp.status = ERROR;
+            resp.message = 'Action not allowed';
+            return res.status(400).json(resp);
+        }
         var friend_request = req.friend_request;
         var query = 'delete from tb_friend_request \
                       where friend_request = $1';
