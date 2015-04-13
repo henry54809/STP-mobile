@@ -116,6 +116,10 @@ var update_friend_request_type = function( friend_request, type ){
     });
 };
 
-module.exports.if_entity_exists = if_entity_exists;
-module.exports.if_entity_friend = if_entity_friend;
-module.exports.get_friend_requests = get_friend_requests;
+module.exports = {
+    if_entity_exists: if_entity_exists,
+    if_entity_friend: if_entity_friend,
+    get_friend_requests: get_friend_requests,
+    if_friend_request_exists: if_friend_request_exists,
+    update_friend_request_type: update_friend_request_type
+};

@@ -26,15 +26,12 @@ module.exports = function (app) {
             }
             return next();
         };
-        return user_functions.if_entity_friend(entity, recipient, callback);
+        return user_functions.if_entity_friend(req.entity, recipient, callback);
     });
 
     //Check if friend request exists.
     router.all('/:entity', function (req, res, next) {
         var action = req.query.action;
-        if (action !== 'add') {
-            next();
-        }
         var recipient = req.params.entity;
         var callback = function (friend_request) {
             req.friend_request = friend_request;

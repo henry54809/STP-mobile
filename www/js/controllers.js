@@ -744,7 +744,7 @@ angular.module('stp.controllers', [])
   }
 
   $scope.acceptRequest = function (friend) {
-    $http.post('http://m.picwo.com/api/user/1?accept', {}, {
+    $http.put('http://m.picwo.com/api/user/1?action=accept', {}, {
       withCredentials: true
     }).
     success(function (data, status, headers, config) {
@@ -765,7 +765,7 @@ angular.module('stp.controllers', [])
 
   $scope.declineRequest = function (friend) {
     $scope.sendRequest = function (friend) {
-      $http.post('http://m.picwo.com/api/user/1?decline', {}, {
+      $http.put('http://m.picwo.com/api/user/1?action=decline', {}, {
         withCredentials: true
       }).
       success(function (data, status, headers, config) {
@@ -827,7 +827,7 @@ angular.module('stp.controllers', [])
   }
 
   $scope.sendRequest = function (id) {
-    $http.post('http://picwo.com:3100/api/user/' + id + '?action=add', {}, {
+    $http.put('http://picwo.com:3100/api/user/' + id + '?action=add', {}, {
       withCredentials: true
     }).
     success(function (data, status, headers, config) {
